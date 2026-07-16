@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Avatar, Badge, StarRating, Button } from "@tekliflercepte/ui";
+import { formatPrice } from "@/lib/price";
 
 export function OfferCard({ offer, requestClosed }) {
   const router = useRouter();
@@ -40,7 +41,7 @@ export function OfferCard({ offer, requestClosed }) {
             <StarRating rating={Number(profile?.avgRating ?? 0)} reviewCount={profile?.reviewCount ?? 0} />
           </div>
         </div>
-        <div className="text-lg font-extrabold text-brand-700">{Number(offer.price)} ₺</div>
+        <div className="text-lg font-extrabold text-brand-700">{formatPrice(offer.price)}</div>
       </div>
 
       <div className="my-2 flex flex-wrap gap-1.5">

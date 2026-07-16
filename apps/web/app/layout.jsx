@@ -41,7 +41,7 @@ export default async function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-bg pb-16 font-sans text-text lg:pb-0">
+      <body className="min-h-screen bg-bg pb-16 font-sans text-text lg:pb-0" suppressHydrationWarning>
         <ThemeProvider>{children}</ThemeProvider>
         <ToastProvider />
         <BottomNavWrapper user={user} unreadCount={unreadCount} />

@@ -5,6 +5,7 @@ import { getSessionToken, getSessionUser } from "@/lib/session";
 import { apiUrl } from "@/lib/api";
 import { FavoriteButton } from "./favorite-button";
 import { formatResponseTime } from "@/lib/trust";
+import { formatPrice } from "@/lib/price";
 
 async function getProvider(id) {
   const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
@@ -215,7 +216,7 @@ export default async function ProviderProfilePage({ params }) {
         {provider.avgPrice != null && (
           <div>
             <div className="text-[10px] text-text-muted">Ortalama</div>
-            <div className="font-bold">{Number(provider.avgPrice)} ₺</div>
+            <div className="font-bold">{formatPrice(provider.avgPrice)}</div>
           </div>
         )}
         <Link href={requestHref} className="flex-1">

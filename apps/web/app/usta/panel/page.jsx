@@ -5,6 +5,7 @@ import { SiteHeader } from "../../site-header";
 import { EmptyIcon } from "../../empty-icons";
 import { apiUrl } from "@/lib/api";
 import { getSessionToken, getSessionUser } from "@/lib/session";
+import { formatPrice } from "@/lib/price";
 import { OfferForm } from "./offer-form";
 import { WithdrawButton } from "./withdraw-button";
 import { AvailabilityToggle } from "./availability-toggle";
@@ -161,13 +162,13 @@ export default async function UstaPanelPage() {
               {myOffers.map((offer) => (
                 <div
                   key={offer.id}
-                  className="flex items-center justify-between rounded-md border border-border bg-surface px-4 py-3 text-sm"
+                  className="flex flex-col gap-2.5 rounded-md border border-border bg-surface px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between"
                 >
-                  <div>
+                  <div className="min-w-0 truncate">
                     <span className="font-medium">{offer.serviceRequest.category?.name}</span>
-                    <span className="ml-2 text-text-muted">{Number(offer.price)} ₺</span>
+                    <span className="ml-2 whitespace-nowrap text-text-muted">{formatPrice(offer.price)}</span>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-3">
                     <Badge tone={OFFER_STATUS_TONE[offer.status]}>
                       {OFFER_STATUS_LABEL[offer.status]}
                     </Badge>

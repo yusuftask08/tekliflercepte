@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button, Checkbox } from "@tekliflercepte/ui";
+import { Button, Checkbox, Input } from "@tekliflercepte/ui";
 import { normalizePhone } from "@/lib/phone";
 
 export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
@@ -53,45 +53,46 @@ export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="mb-2 block text-sm font-semibold">Ad</label>
-          <input
+          <Input
             required
+            maxLength={50}
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
           />
         </div>
         <div>
           <label className="mb-2 block text-sm font-semibold">Soyad</label>
-          <input
+          <Input
             required
+            maxLength={50}
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
           />
         </div>
       </div>
 
       <div>
         <label className="mb-2 block text-sm font-semibold">Telefon</label>
-        <input
+        <Input
           required
           type="tel"
+          inputMode="numeric"
+          maxLength={14}
           placeholder="05XX XXX XX XX"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
+          onChange={(e) => setPhone(e.target.value.replace(/[^\d\s]/g, ""))}
         />
       </div>
 
       <div>
         <label className="mb-2 block text-sm font-semibold">E-posta</label>
-        <input
+        <Input
           required
           type="email"
+          maxLength={254}
           placeholder="ornek@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
         />
         <p className="mt-1 text-xs text-text-muted">
           Teklif/mesaj bildirimleri ve şifre sıfırlama için kullanılır.
@@ -100,13 +101,13 @@ export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
 
       <div>
         <label className="mb-2 block text-sm font-semibold">Şifre</label>
-        <input
+        <Input
           required
           type="password"
           minLength={6}
+          maxLength={72}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
         />
       </div>
 

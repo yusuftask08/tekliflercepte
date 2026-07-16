@@ -3,7 +3,6 @@ import { Button } from "@tekliflercepte/ui";
 import { getUnreadCount } from "@/lib/api";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import { AccountMenu } from "./account-menu";
-import { MobileMenu } from "./mobile-menu";
 
 // These two sections only exist on the homepage, but SiteHeader is shared by
 // every page — a plain "#id" href would just tack a dead hash onto whatever
@@ -92,8 +91,6 @@ export async function SiteHeader() {
             </>
           )}
         </div>
-
-        <MobileMenu links={NAV_LINKS} user={user} unreadCount={unreadCount} />
       </div>
     </header>
   );

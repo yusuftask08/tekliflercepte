@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ["@tekliflercepte/ui"],
+  // Dev-only indicator otherwise sits bottom-left and collides with the
+  // mobile bottom nav — moved out of the way, nothing else lives up there.
+  devIndicators: { position: "top-right" },
   async headers() {
     return [
       {
