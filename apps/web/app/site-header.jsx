@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@tekliflercepte/ui";
-import { apiUrl } from "@/lib/api";
+import { getUnreadCount } from "@/lib/api";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import { AccountMenu } from "./account-menu";
 import { MobileMenu } from "./mobile-menu";
@@ -8,36 +8,32 @@ import { MobileMenu } from "./mobile-menu";
 // These two sections only exist on the homepage, but SiteHeader is shared by
 // every page — a plain "#id" href would just tack a dead hash onto whatever
 // page you're currently on. Prefixing with "/" makes it a real Link that
-// navigates home first, then scrolls to the section.
-const BASE_NAV_LINKS = [
+// navigates home first, then scrolls to the section. Pure marketing content,
+// so only shown to guests — an already-registered user has no use for it.
+const MARKETING_LINKS = [
   { href: "/#nasil-calisir", label: "Nasıl Çalışır" },
   { href: "/#kategoriler", label: "Kategoriler" },
-  { href: "/ustalar", label: "Usta Ara" },
 ];
+
+// Real feature (finding a provider), not marketing — kept for guests and
+// logged-in customers, but dropped for providers, who have no reason to
+// browse other providers.
+const USTA_ARA_LINK = { href: "/ustalar", label: "Usta Ara" };
 
 // "Hizmet Ver" is a recruitment CTA for people who aren't members yet —
 // shown only to anonymous visitors, never to an already-logged-in user
 // (customer or provider).
 const GUEST_ONLY_LINK = { href: "/hizmet-ver", label: "Hizmet Ver" };
 
-async function getUnreadCount(token) {
-  if (!token) return 0;
-  try {
-    const res = await fetch(apiUrl("/me/unread-count"), {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-    });
-    if (!res.ok) return 0;
-    const data = await res.json();
-    return data.count ?? 0;
-  } catch {
-    return 0;
-  }
+function getNavLinks(user) {
+  if (!user) return [...MARKETING_LINKS, USTA_ARA_LINK, GUEST_ONLY_LINK];
+  if (user.role === "PROVIDER") return [];
+  return [USTA_ARA_LINK];
 }
 
 export async function SiteHeader() {
   const user = await getSessionUser();
-  const NAV_LINKS = user ? BASE_NAV_LINKS : [...BASE_NAV_LINKS, GUEST_ONLY_LINK];
+  const NAV_LINKS = getNavLinks(user);
   const unreadCount = user ? await getUnreadCount(await getSessionToken()) : 0;
 
   return (

@@ -12,6 +12,26 @@ const STEP_LABELS = ["İş Türü", "Konum", "Hizmetler", "Fotoğraf", "Tanıtı
 const MIN_BIO_LENGTH = 50;
 const MAX_PORTFOLIO_PHOTOS = 5;
 
+function TipIcon({ ok }) {
+  return (
+    <span
+      className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full ${
+        ok ? "bg-success/10 text-success" : "bg-danger/10 text-danger"
+      }`}
+    >
+      {ok ? (
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+          <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      ) : (
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+        </svg>
+      )}
+    </span>
+  );
+}
+
 function Header({ step, onBack }) {
   return (
     <>
@@ -460,23 +480,45 @@ export function OnboardingForm({ categories, initialProfile, header }) {
         )}
 
         {step === 3 && (
-          <div className="flex flex-col gap-4">
-            <label className="block text-sm font-semibold">Yüzünün net göründüğü bir fotoğraf</label>
-            <div className="flex items-center gap-4">
-              <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-border bg-surface-raised">
+          <div className="mx-auto flex max-w-sm flex-col items-center gap-5 py-4 text-center">
+            <div>
+              <label className="block text-sm font-semibold">Yüzünün net göründüğü bir fotoğraf</label>
+              <p className="mt-1 text-xs text-text-muted">Profilinde müşterinin ilk göreceği şey bu.</p>
+            </div>
+
+            <div className="relative">
+              <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border border-border bg-surface-raised">
                 {avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={`${apiOrigin}${avatarUrl}`} alt="" className="h-full w-full object-cover" />
                 ) : (
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="text-text-muted">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" className="text-text-muted">
                     <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="2" />
                     <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" strokeWidth="2" />
                   </svg>
                 )}
               </div>
-              <Button type="button" variant="secondary" onClick={() => avatarInputRef.current?.click()} disabled={avatarUploading}>
-                {avatarUploading ? "Yükleniyor..." : avatarUrl ? "Değiştir" : "Fotoğraf Yükle"}
-              </Button>
+              <button
+                type="button"
+                onClick={() => avatarInputRef.current?.click()}
+                disabled={avatarUploading}
+                aria-label={avatarUrl ? "Fotoğrafı değiştir" : "Fotoğraf yükle"}
+                className="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-text-on-brand shadow-md disabled:opacity-50"
+              >
+                {avatarUploading ? (
+                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="12" cy="13" r="3.2" stroke="currentColor" strokeWidth="1.8" />
+                  </svg>
+                )}
+              </button>
               <input
                 ref={avatarInputRef}
                 type="file"
@@ -486,26 +528,56 @@ export function OnboardingForm({ categories, initialProfile, header }) {
               />
             </div>
 
-            <div className="rounded-md border border-border bg-surface-raised p-3.5 text-xs text-text-muted">
-              <div className="mb-1.5 font-semibold text-text">Kaliteli bir fotoğraf için:</div>
-              <ul className="flex flex-col gap-1">
-                <li>✅ İyi ışıkta, yüzün net ve tek başına görünsün</li>
-                <li>✅ Kameraya bakan, gülümseyen bir fotoğraf tercih et</li>
-                <li>❌ Güneş gözlüğü, şapka veya filtre kullanma</li>
-                <li>❌ Grup fotoğrafından kesip kullanma</li>
+            <button
+              type="button"
+              onClick={() => avatarInputRef.current?.click()}
+              disabled={avatarUploading}
+              className="text-sm font-semibold text-primary disabled:opacity-50"
+            >
+              {avatarUploading ? "Yükleniyor..." : avatarUrl ? "Fotoğrafı Değiştir" : "Fotoğraf Yükle"}
+            </button>
+
+            <div className="w-full rounded-md border border-border bg-surface-raised p-4 text-left text-xs text-text-muted">
+              <div className="mb-2 font-semibold text-text">Kaliteli bir fotoğraf için:</div>
+              <ul className="flex flex-col gap-2">
+                <li className="flex items-center gap-2">
+                  <TipIcon ok /> İyi ışıkta, yüzün net ve tek başına görünsün
+                </li>
+                <li className="flex items-center gap-2">
+                  <TipIcon ok /> Kameraya bakan, gülümseyen bir fotoğraf tercih et
+                </li>
+                <li className="flex items-center gap-2">
+                  <TipIcon /> Güneş gözlüğü, şapka veya filtre kullanma
+                </li>
+                <li className="flex items-center gap-2">
+                  <TipIcon /> Grup fotoğrafından kesip kullanma
+                </li>
               </ul>
             </div>
           </div>
         )}
 
         {step === 4 && (
-          <div className="flex flex-col gap-4">
-            <div>
-              <label className="mb-2 block text-sm font-semibold">Kendini tanıt</label>
-              <p className="mb-2 text-xs text-text-muted">
+          <div className="mx-auto flex max-w-sm flex-col gap-4 py-4">
+            <div className="flex flex-col items-center gap-2 text-center">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-100 text-brand-600">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M4 5h16v10H8l-4 4V5Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinejoin="round"
+                  />
+                  <path d="M8 9h8M8 12h5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </span>
+              <label className="block text-sm font-semibold">Kendini tanıt</label>
+              <p className="text-xs text-text-muted">
                 Müşterinin dikkatini çekecek, seni farklı yapan şeylerden bahset — deneyimin,
                 uzmanlığın, çalışma tarzın gibi.
               </p>
+            </div>
+            <div>
               <textarea
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}

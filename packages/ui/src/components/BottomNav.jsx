@@ -1,6 +1,6 @@
 "use client";
 
-const ITEMS = [
+const DEFAULT_ITEMS = [
   {
     href: "/",
     label: "Ana Sayfa",
@@ -44,22 +44,27 @@ const ITEMS = [
   },
 ];
 
-export function BottomNav({ active = "/", LinkComponent = "a" }) {
+export function BottomNav({ active = "/", LinkComponent = "a", items = DEFAULT_ITEMS }) {
   const Link = LinkComponent;
   return (
     <nav className="flex justify-around border-t border-border bg-surface pb-7 pt-2.5">
-      {ITEMS.map((item) => {
-        const isActive = item.href === active;
+      {items.map((item) => {
+        const isActive = item.href === "/" ? active === "/" : active.startsWith(item.href);
         const color = isActive ? "var(--color-primary)" : "var(--color-text-muted)";
         return (
           <Link
             key={item.href}
             href={item.href}
-            className={`flex flex-col items-center gap-0.5 text-center ${
+            className={`relative flex flex-col items-center gap-0.5 text-center ${
               isActive ? "text-primary" : "text-text-muted"
             }`}
           >
             {item.icon(color)}
+            {item.badge > 0 && (
+              <span className="absolute -right-2 -top-1 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-danger px-1 text-[9px] font-bold text-white">
+                {item.badge > 9 ? "9+" : item.badge}
+              </span>
+            )}
             <span className={`text-[10px] ${isActive ? "font-semibold" : ""}`}>{item.label}</span>
           </Link>
         );

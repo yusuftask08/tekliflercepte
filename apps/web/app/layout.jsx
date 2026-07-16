@@ -1,5 +1,8 @@
 import { ThemeProvider } from "@tekliflercepte/ui";
 import { ToastProvider } from "./toast-provider";
+import { BottomNavWrapper } from "./bottom-nav-wrapper";
+import { getUnreadCount } from "@/lib/api";
+import { getSessionToken, getSessionUser } from "@/lib/session";
 import "./globals.css";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tekliflercepte.com";
@@ -24,7 +27,10 @@ export const metadata = {
   robots: { index: true, follow: true },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const user = await getSessionUser();
+  const unreadCount = user ? await getUnreadCount(await getSessionToken()) : 0;
+
   return (
     <html lang="tr" suppressHydrationWarning>
       <head>
@@ -35,9 +41,10 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-bg font-sans text-text">
+      <body className="min-h-screen bg-bg pb-16 font-sans text-text lg:pb-0">
         <ThemeProvider>{children}</ThemeProvider>
         <ToastProvider />
+        <BottomNavWrapper user={user} unreadCount={unreadCount} />
       </body>
     </html>
   );

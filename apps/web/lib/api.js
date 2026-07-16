@@ -6,6 +6,22 @@ export function apiUrl(path) {
   return `${base}${path}`;
 }
 
+/** Shared by SiteHeader and BottomNavWrapper so both badges stay in sync. */
+export async function getUnreadCount(token) {
+  if (!token) return 0;
+  try {
+    const res = await fetch(apiUrl("/me/unread-count"), {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!res.ok) return 0;
+    const data = await res.json();
+    return data.count ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
 /** Forwards a proxied mutation to the API with the session's Bearer token,
  *  used by app/api/* route handlers so client components never see the JWT. */
 export async function proxyAuthed(path, { method = "POST", body } = {}) {
