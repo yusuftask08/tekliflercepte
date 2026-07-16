@@ -222,7 +222,15 @@ export function OnboardingForm({ categories, initialProfile, header }) {
           body: JSON.stringify({ avatarUrl }),
         });
       }
-      setShowWelcome(true);
+      if (initialProfile) {
+        // Editing an already-complete profile — no "welcome", just confirm
+        // and go back to the panel.
+        toast.success("Profilin güncellendi.");
+        router.push("/usta/panel");
+        router.refresh();
+      } else {
+        setShowWelcome(true);
+      }
     } catch {
       toast.error("Bir bağlantı sorunu oluştu, lütfen tekrar dene.");
     } finally {
