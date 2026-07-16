@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Avatar, Button } from "@tekliflercepte/ui";
 import { LogoutButton } from "./logout-button";
 
-export function MobileMenu({ links, user }) {
+export function MobileMenu({ links, user, unreadCount = 0 }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -54,8 +54,16 @@ export function MobileMenu({ links, user }) {
                   Favorilerim
                 </Link>
               )}
-              <Link href="/mesajlar" className="rounded-md px-3 py-2.5 text-sm font-medium">
+              <Link
+                href="/mesajlar"
+                className="flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium"
+              >
                 Mesajlar
+                {unreadCount > 0 && (
+                  <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
               </Link>
               <Link
                 href="/profil"

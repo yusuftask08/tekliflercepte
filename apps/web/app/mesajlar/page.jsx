@@ -55,7 +55,14 @@ export default async function MesajlarimPage() {
                 className="flex items-center justify-between rounded-md border border-border bg-surface px-4 py-3.5 shadow-sm"
               >
                 <div>
-                  <div className="text-sm font-semibold">{conversation.otherPartyName}</div>
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    {conversation.otherPartyName}
+                    {conversation.unreadCount > 0 && (
+                      <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white">
+                        {conversation.unreadCount > 9 ? "9+" : conversation.unreadCount}
+                      </span>
+                    )}
+                  </div>
                   <div className="text-xs text-text-muted">{conversation.category}</div>
                 </div>
                 {conversation.lastMessage && (
