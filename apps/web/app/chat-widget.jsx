@@ -133,7 +133,7 @@ export function ChatWidget({ categories, onClose }) {
 
         {screen === "provider" && (
           <Link
-            href="/hizmet-ver"
+            href="/kayit?rol=usta"
             className="rounded-md bg-primary px-3.5 py-2.5 text-center text-sm font-bold text-text-on-brand"
           >
             Usta Kaydı Yap →
