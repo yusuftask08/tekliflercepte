@@ -64,8 +64,31 @@ model User {
   reportsReceived  Report[]         @relation("ReportTarget")
   blocksMade       Block[]          @relation("BlockOwner")
   blockedBy        Block[]          @relation("BlockTarget")
+  notifications    Notification[]
 
   @@map("users")
+}
+
+enum NotificationType {
+  REQUEST_APPROVED
+  NEW_MATCHING_REQUEST
+  NEW_OFFER
+  NEW_MESSAGE
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  body      String?
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([userId, createdAt])
+  @@map("notifications")
 }
 
 enum ReportReason {

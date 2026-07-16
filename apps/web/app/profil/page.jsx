@@ -83,11 +83,11 @@ export default async function ProfilPage() {
               <div className="mb-3 text-sm font-bold">Şifre Değiştir</div>
               <PasswordForm />
             </div>
-
-            <div className="mt-8 border-t border-border pt-6 lg:mt-6 lg:border-t-0 lg:pt-0">
-              <LogoutButton className="text-danger" />
-            </div>
           </div>
+        </div>
+
+        <div className="mt-8 rounded-lg border border-border bg-surface p-4 shadow-sm">
+          <LogoutButton className="text-danger" />
         </div>
       </div>
     </div>

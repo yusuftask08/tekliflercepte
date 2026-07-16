@@ -3,6 +3,7 @@ import { requireAuth } from "../lib/auth.js";
 import { safeUserSelect, publicUserSelect } from "../lib/selects.js";
 import { sendEmail, escapeHtml } from "../lib/mailer.js";
 import { isBlocked } from "../lib/blocks.js";
+import { createNotification } from "../lib/notifications.js";
 
 const DAILY_FREE_OFFER_LIMIT = 3;
 const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:3002";
@@ -77,6 +78,14 @@ export default async function offerRoutes(app) {
       to: targetRequest.customer.email,
       subject: `${targetRequest.category.name} talebine yeni teklif geldi`,
       html: `<p>Merhaba ${escapeHtml(targetRequest.customer.firstName)},</p><p>${escapeHtml(req.user.firstName)} ${escapeHtml(req.user.lastName)} isimli usta, "${escapeHtml(targetRequest.category.name)}" talebine ${priceNumber} ₺ teklif verdi.</p><p><a href="${WEB_ORIGIN}/taleplerim/${requestId}">Teklifi görüntüle</a></p>`,
+    });
+
+    await createNotification({
+      userId: targetRequest.customerId,
+      type: "NEW_OFFER",
+      title: "Yeni teklif geldi",
+      body: `${req.user.firstName} ${req.user.lastName}, "${targetRequest.category.name}" talebine ${priceNumber} ₺ teklif verdi.`,
+      link: `/taleplerim/${requestId}`,
     });
 
     return reply.code(201).send(offer);

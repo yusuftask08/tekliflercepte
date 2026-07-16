@@ -3,6 +3,7 @@ import { prisma } from "@tekliflercepte/db";
 import { requireAdmin, hashPassword } from "../lib/auth.js";
 import { safeUserSelect } from "../lib/selects.js";
 import { sendEmail, escapeHtml } from "../lib/mailer.js";
+import { createNotification, createNotifications, findMatchingProviderIds } from "../lib/notifications.js";
 
 const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:3002";
 
@@ -10,7 +11,7 @@ export default async function adminRoutes(app) {
   app.post("/admin/requests/:id/approve", { preHandler: requireAdmin }, async (req, reply) => {
     const request = await prisma.serviceRequest.findUnique({
       where: { id: req.params.id },
-      include: { category: true, customer: { select: { firstName: true, email: true } } },
+      include: { category: true, customer: { select: { id: true, firstName: true, email: true } } },
     });
     if (!request) return reply.code(404).send({ error: "Talep bulunamadı" });
     if (request.status !== "PENDING_REVIEW") {
@@ -26,6 +27,28 @@ export default async function adminRoutes(app) {
       subject: "Talebin onaylandı ve ustalara gönderildi",
       html: `<p>Merhaba ${escapeHtml(request.customer.firstName)},</p><p>"${escapeHtml(request.category.name)}" talebin onaylandı, uygun ustalar artık talebini görebiliyor.</p><p><a href="${WEB_ORIGIN}/taleplerim/${request.id}">Talebini görüntüle</a></p>`,
     });
+
+    await createNotification({
+      userId: request.customer.id,
+      type: "REQUEST_APPROVED",
+      title: "Talebin onaylandı",
+      body: `"${request.category.name}" talebin ustalara gönderildi.`,
+      link: `/taleplerim/${request.id}`,
+    });
+
+    const matchingProviderIds = await findMatchingProviderIds({
+      categoryId: request.categoryId,
+      city: request.city,
+    });
+    await createNotifications(
+      matchingProviderIds.map((userId) => ({
+        userId,
+        type: "NEW_MATCHING_REQUEST",
+        title: "Sana uygun yeni bir talep var",
+        body: `${request.city} bölgesinde "${request.category.name}" talebi geldi.`,
+        link: "/usta/panel",
+      }))
+    );
 
     return updated;
   });

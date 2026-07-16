@@ -3,6 +3,7 @@ import { Button } from "@tekliflercepte/ui";
 import { getUnreadCount } from "@/lib/api";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import { AccountMenu } from "./account-menu";
+import { NotificationBell } from "./notification-bell";
 
 // These two sections only exist on the homepage, but SiteHeader is shared by
 // every page — a plain "#id" href would just tack a dead hash onto whatever
@@ -56,40 +57,43 @@ export async function SiteHeader() {
           )}
         </nav>
 
-        <div className="hidden items-center gap-4 lg:flex">
-          {user ? (
-            <>
-              <Link
-                href={user.role === "PROVIDER" ? "/usta/panel" : "/taleplerim"}
-                className="text-sm font-semibold"
-              >
-                {user.role === "PROVIDER" ? "Usta Paneli" : "Taleplerim"}
-              </Link>
-              {user.role !== "PROVIDER" && (
-                <Link href="/favorilerim" className="text-sm font-semibold">
-                  Favorilerim
+        <div className="flex items-center gap-2 sm:gap-3">
+          {user && <NotificationBell />}
+          <div className="hidden items-center gap-4 lg:flex">
+            {user ? (
+              <>
+                <Link
+                  href={user.role === "PROVIDER" ? "/usta/panel" : "/taleplerim"}
+                  className="text-sm font-semibold"
+                >
+                  {user.role === "PROVIDER" ? "Usta Paneli" : "Taleplerim"}
                 </Link>
-              )}
-              <Link href="/mesajlar" className="relative text-sm font-semibold">
-                Mesajlar
-                {unreadCount > 0 && (
-                  <span className="absolute -right-3 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
+                {user.role !== "PROVIDER" && (
+                  <Link href="/favorilerim" className="text-sm font-semibold">
+                    Favorilerim
+                  </Link>
                 )}
-              </Link>
-              <AccountMenu user={user} />
-            </>
-          ) : (
-            <>
-              <Link href="/giris" className="text-sm font-semibold">
-                Giriş Yap
-              </Link>
-              <Link href="/talep-olustur">
-                <Button size="md">Talep Oluştur</Button>
-              </Link>
-            </>
-          )}
+                <Link href="/mesajlar" className="relative text-sm font-semibold">
+                  Mesajlar
+                  {unreadCount > 0 && (
+                    <span className="absolute -right-3 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </Link>
+                <AccountMenu user={user} />
+              </>
+            ) : (
+              <>
+                <Link href="/giris" className="text-sm font-semibold">
+                  Giriş Yap
+                </Link>
+                <Link href="/talep-olustur">
+                  <Button size="md">Talep Oluştur</Button>
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </header>

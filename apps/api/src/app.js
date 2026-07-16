@@ -23,6 +23,7 @@ import reportRoutes from "./routes/reports.js";
 import blockRoutes from "./routes/blocks.js";
 import statsRoutes from "./routes/stats.js";
 import locationRoutes from "./routes/locations.js";
+import notificationRoutes from "./routes/notifications.js";
 
 /** Builds the Fastify app without starting a listener — used by server.js
  *  for the real process, and directly by tests via app.inject(). */
@@ -69,6 +70,7 @@ export async function buildApp({ logger = true } = {}) {
   await app.register(blockRoutes);
   await app.register(statsRoutes);
   await app.register(locationRoutes);
+  await app.register(notificationRoutes);
 
   return app;
 }

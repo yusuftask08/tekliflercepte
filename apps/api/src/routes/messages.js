@@ -3,6 +3,7 @@ import { requireAuth } from "../lib/auth.js";
 import { safeUserSelect } from "../lib/selects.js";
 import { sendEmail, escapeHtml } from "../lib/mailer.js";
 import { isBlocked } from "../lib/blocks.js";
+import { createNotification } from "../lib/notifications.js";
 
 const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:3002";
 
@@ -72,6 +73,14 @@ export default async function messageRoutes(app) {
       to: recipient.email,
       subject: `${senderName} sana yeni bir mesaj gönderdi`,
       html: `<p>Merhaba ${escapeHtml(recipient.firstName)},</p><p>${escapeHtml(senderName)}: "${escapeHtml(body)}"</p><p><a href="${WEB_ORIGIN}/mesajlar/${req.params.offerId}">Yanıtla</a></p>`,
+    });
+
+    await createNotification({
+      userId: otherPartyId,
+      type: "NEW_MESSAGE",
+      title: `${senderName} sana mesaj gönderdi`,
+      body,
+      link: `/mesajlar/${req.params.offerId}`,
     });
 
     return reply.code(201).send(message);
