@@ -78,6 +78,7 @@ export function MessageThread({ offerId, initialMessages, customerId, viewerId }
         <button
           onClick={send}
           disabled={sending}
+          aria-label="Mesajı gönder"
           className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-primary disabled:opacity-50"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">

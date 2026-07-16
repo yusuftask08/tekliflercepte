@@ -385,7 +385,11 @@ export function OnboardingForm({ categories, initialProfile, header }) {
                     className="flex items-center gap-1.5 rounded-full bg-brand-100 px-3 py-1.5 text-xs font-semibold text-brand-700"
                   >
                     {c}
-                    <button type="button" onClick={() => setServiceCities((prev) => prev.filter((x) => x !== c))}>
+                    <button
+                      type="button"
+                      onClick={() => setServiceCities((prev) => prev.filter((x) => x !== c))}
+                      aria-label={`${c} şehrini kaldır`}
+                    >
                       ✕
                     </button>
                   </span>
@@ -546,6 +550,7 @@ export function OnboardingForm({ categories, initialProfile, header }) {
                   <button
                     type="button"
                     onClick={() => setPortfolioPhotos((prev) => prev.filter((p) => p !== url))}
+                    aria-label="Fotoğrafı kaldır"
                     className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-danger text-xs text-white"
                   >
                     ✕

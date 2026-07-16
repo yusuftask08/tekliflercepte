@@ -78,6 +78,7 @@ function CategoryChip({ category, onRemove }) {
     <div className="flex gap-1.5 px-4 pb-4 sm:px-6 lg:px-10">
       <button
         onClick={onRemove}
+        aria-label={`${category.name} kategorisini değiştir`}
         className="rounded-full bg-brand-100 px-3 py-1.5 text-xs font-semibold text-brand-700"
       >
         {category.name} ✕
@@ -358,6 +359,7 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
                     <button
                       type="button"
                       onClick={() => setPhotos((prev) => prev.filter((p) => p !== url))}
+                      aria-label="Fotoğrafı kaldır"
                       className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-danger text-xs text-white"
                     >
                       ✕
