@@ -33,6 +33,13 @@ export default async function messageRoutes(app) {
     const offer = await assertParticipant(req, reply, req.params.offerId);
     if (!offer) return;
 
+    // Viewing the thread marks the other party's messages as read — the
+    // read receipt reflects "they opened this conversation", not per-message.
+    await prisma.message.updateMany({
+      where: { offerId: req.params.offerId, senderId: { not: req.user.sub }, readAt: null },
+      data: { readAt: new Date() },
+    });
+
     return prisma.message.findMany({
       where: { offerId: req.params.offerId },
       include: { sender: { select: safeUserSelect } },

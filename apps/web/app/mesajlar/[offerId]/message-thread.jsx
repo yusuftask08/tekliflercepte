@@ -7,7 +7,7 @@ function formatTime(iso) {
   return new Date(iso).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
 }
 
-export function MessageThread({ offerId, initialMessages, customerId }) {
+export function MessageThread({ offerId, initialMessages, customerId, viewerId }) {
   const router = useRouter();
   const [messages, setMessages] = useState(initialMessages);
   const [draft, setDraft] = useState("");
@@ -43,6 +43,7 @@ export function MessageThread({ offerId, initialMessages, customerId }) {
         <div className="flex flex-col gap-2.5">
           {messages.map((message) => {
             const isCustomer = message.senderId === customerId;
+            const isMine = message.senderId === viewerId;
             return (
               <div key={message.id} className={`max-w-[75%] ${isCustomer ? "self-end" : "self-start"}`}>
                 <div
@@ -54,8 +55,11 @@ export function MessageThread({ offerId, initialMessages, customerId }) {
                 >
                   {message.body}
                 </div>
-                <div className={`mt-0.5 text-[10px] text-text-muted ${isCustomer ? "text-right" : ""}`}>
+                <div
+                  className={`mt-0.5 flex items-center gap-1 text-[10px] text-text-muted ${isCustomer ? "justify-end" : ""}`}
+                >
                   {formatTime(message.createdAt)}
+                  {isMine && <span>· {message.readAt ? "Görüldü" : "Gönderildi"}</span>}
                 </div>
               </div>
             );

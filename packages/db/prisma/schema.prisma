@@ -242,6 +242,7 @@ model Message {
   sender    User     @relation("MessageSender", fields: [senderId], references: [id])
   body      String?
   imageUrl  String?
+  readAt    DateTime?
   createdAt DateTime @default(now())
 
   @@index([offerId, createdAt])

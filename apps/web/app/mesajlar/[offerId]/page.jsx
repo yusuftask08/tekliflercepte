@@ -99,6 +99,7 @@ export default async function MessagingPage({ params }) {
             offerId={offer.id}
             initialMessages={messages}
             customerId={offer.serviceRequest.customerId}
+            viewerId={sessionUser?.id}
           />
         </div>
       </div>
