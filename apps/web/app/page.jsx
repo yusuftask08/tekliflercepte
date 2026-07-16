@@ -8,6 +8,39 @@ import { HeroSearch } from "./hero-search";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tekliflercepte.com";
+
+export const metadata = {
+  title: "Teklifler Cepte — Ustanı Bul, Ücretsiz Teklif Al",
+  description:
+    "Temizlik, tadilat, nakliyat, tamir, özel ders ve daha fazlası için ustalardan ücretsiz teklif al. Teklif vermek ücretsiz, komisyon yok — ödemeyi doğrudan ustaya yaparsın.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Teklifler Cepte — Ustanı Bul, Ücretsiz Teklif Al",
+    description:
+      "Temizlik, tadilat, nakliyat, tamir, özel ders ve daha fazlası için ustalardan ücretsiz teklif al. Komisyon yok.",
+    url: "/",
+  },
+};
+
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      name: "Teklifler Cepte",
+      url: SITE_URL,
+      description: "Hizmet almak isteyenleri, hizmet verenlerle ücretsiz buluşturan platform.",
+    },
+    {
+      "@type": "WebSite",
+      name: "Teklifler Cepte",
+      url: SITE_URL,
+      inLanguage: "tr-TR",
+    },
+  ],
+};
+
 const HOW_IT_WORKS = [
   {
     icon: "request",
@@ -74,6 +107,12 @@ export default async function HomePage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
+      <script
+        type="application/ld+json"
+        // Static, server-controlled JSON only — no user input is ever
+        // interpolated here, so this dangerouslySetInnerHTML is safe.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+      />
       <SiteHeader />
 
       {/* Hero */}
@@ -247,7 +286,7 @@ export default async function HomePage() {
       </section>
 
       <SiteFooter />
-      <HomeFab />
+      <HomeFab categories={categories} />
     </div>
   );
 }

@@ -47,6 +47,15 @@ export default async function ProviderProfilePage({ params }) {
   const profile = provider.providerProfile;
   const name = `${provider.firstName} ${provider.lastName}`;
   const memberSinceYear = profile ? new Date(profile.createdAt).getFullYear() : null;
+  // "Mesaj Gönder" doesn't actually message this provider — there's no
+  // cold-messaging path (Message is scoped to an Offer, which doesn't exist
+  // yet). Best honest behavior: send them into the wizard pre-filled with
+  // this provider's own category, so the request they create is one this
+  // provider can actually respond to.
+  const primaryCategorySlug = profile?.categories?.[0]?.category?.slug;
+  const requestHref = primaryCategorySlug
+    ? `/talep-olustur?kategori=${primaryCategorySlug}`
+    : "/talep-olustur";
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
@@ -154,9 +163,9 @@ export default async function ProviderProfilePage({ params }) {
             </div>
           )}
 
-          <Link href="/talep-olustur" className="hidden lg:block">
+          <Link href={requestHref} className="hidden lg:block">
             <Button className="w-full" size="lg">
-              Mesaj Gönder
+              Bu Ustaya Teklif İste
             </Button>
           </Link>
         </aside>
@@ -205,9 +214,9 @@ export default async function ProviderProfilePage({ params }) {
             <div className="font-bold">{Number(provider.avgPrice)} ₺</div>
           </div>
         )}
-        <Link href="/talep-olustur" className="flex-1">
+        <Link href={requestHref} className="flex-1">
           <Button className="w-full" size="lg">
-            Mesaj Gönder
+            Bu Ustaya Teklif İste
           </Button>
         </Link>
       </div>

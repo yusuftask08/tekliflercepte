@@ -2,9 +2,26 @@ import { ThemeProvider } from "@tekliflercepte/ui";
 import { ToastProvider } from "./toast-provider";
 import "./globals.css";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tekliflercepte.com";
+
 export const metadata = {
-  title: "Teklifler Cepte",
-  description: "Hizmet almak isteyenleri, hizmet verenlerle ücretsiz buluşturan platform.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Teklifler Cepte — Ustanı Bul, Ücretsiz Teklif Al",
+    template: "%s | Teklifler Cepte",
+  },
+  description:
+    "Hizmet almak isteyenleri, hizmet verenlerle ücretsiz buluşturan platform. Teklif vermek ücretsiz, komisyon yok.",
+  openGraph: {
+    type: "website",
+    locale: "tr_TR",
+    siteName: "Teklifler Cepte",
+    url: SITE_URL,
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({ children }) {
