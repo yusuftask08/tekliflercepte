@@ -5,9 +5,13 @@ import { getSessionToken, getSessionUser } from "@/lib/session";
 import { AccountMenu } from "./account-menu";
 import { MobileMenu } from "./mobile-menu";
 
+// These two sections only exist on the homepage, but SiteHeader is shared by
+// every page — a plain "#id" href would just tack a dead hash onto whatever
+// page you're currently on. Prefixing with "/" makes it a real Link that
+// navigates home first, then scrolls to the section.
 const BASE_NAV_LINKS = [
-  { href: "#nasil-calisir", label: "Nasıl Çalışır" },
-  { href: "#kategoriler", label: "Kategoriler" },
+  { href: "/#nasil-calisir", label: "Nasıl Çalışır" },
+  { href: "/#kategoriler", label: "Kategoriler" },
   { href: "/ustalar", label: "Usta Ara" },
 ];
 
