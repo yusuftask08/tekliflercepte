@@ -1,6 +1,7 @@
 import path from "node:path";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
+import helmet from "@fastify/helmet";
 import multipart from "@fastify/multipart";
 import fastifyStatic from "@fastify/static";
 import rateLimit from "@fastify/rate-limit";
@@ -30,6 +31,16 @@ export async function buildApp({ logger = true } = {}) {
 
   await app.register(cors, {
     origin: [process.env.WEB_ORIGIN, process.env.PANEL_ORIGIN].filter(Boolean),
+  });
+  // contentSecurityPolicy off: this is a JSON API + static image server, not
+  // an HTML-serving app, so a CSP directive has nothing to police here.
+  // crossOriginResourcePolicy relaxed: uploaded photos are fetched directly
+  // from this origin via <img> tags on apps/web and apps/panel, which run on
+  // different origins — helmet's default "same-origin" would make browsers
+  // block those image loads.
+  await app.register(helmet, {
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
   });
   await app.register(rateLimit, { max: 100, timeWindow: "1 minute" });
   // 15MB — generous enough for an unedited modern-phone photo so onboarding
