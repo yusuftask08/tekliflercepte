@@ -11,7 +11,6 @@ export function OfferForm({ requestId }) {
   const [price, setPrice] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [sent, setSent] = useState(false);
 
   const submit = async (e) => {
     e.preventDefault();
@@ -31,18 +30,13 @@ export function OfferForm({ requestId }) {
         toast.error(data.error ?? "Teklif gönderilemedi, lütfen tekrar dene.");
         return;
       }
-      setSent(true);
-      router.refresh();
+      router.push(`/mesajlar/${data.id}`);
     } catch {
       toast.error("Bir bağlantı sorunu oluştu, lütfen tekrar dene.");
     } finally {
       setSubmitting(false);
     }
   };
-
-  if (sent) {
-    return <div className="rounded-md bg-success/10 px-4 py-2.5 text-sm text-success">Teklifin gönderildi.</div>;
-  }
 
   if (!open) {
     return (

@@ -4,6 +4,7 @@ import { Avatar } from "@tekliflercepte/ui";
 import { SiteHeader } from "../../site-header";
 import { MessageThread } from "./message-thread";
 import { ReportBlockMenu } from "./report-block-menu";
+import { OfferStatusBar } from "./offer-status-bar";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import { apiUrl } from "@/lib/api";
 
@@ -60,8 +61,8 @@ export default async function MessagingPage({ params }) {
   }
 
   const name = `${offer.provider.firstName} ${offer.provider.lastName}`;
-  const otherPartyId =
-    sessionUser?.id === offer.provider.id ? offer.serviceRequest.customerId : offer.provider.id;
+  const isProvider = sessionUser?.id === offer.provider.id;
+  const otherPartyId = isProvider ? offer.serviceRequest.customerId : offer.provider.id;
 
   return (
     <div className="flex h-screen flex-col bg-bg">
@@ -89,10 +90,15 @@ export default async function MessagingPage({ params }) {
             />
           </div>
 
-          <div className="px-4 py-3">
+          <div className="flex flex-col gap-2 px-4 py-3">
             <div className="rounded-md border border-border bg-surface-raised px-3 py-2.5 text-xs text-text-muted">
               {offer.serviceRequest.category?.name} talebi · {offer.serviceRequest.city}
             </div>
+            <OfferStatusBar
+              offerId={offer.id}
+              status={offer.status}
+              canWithdraw={isProvider && offer.status === "PENDING"}
+            />
           </div>
 
           <MessageThread

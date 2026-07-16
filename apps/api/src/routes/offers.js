@@ -52,6 +52,17 @@ export default async function offerRoutes(app) {
       return reply.code(403).send({ error: "Bu talebe teklif veremezsin" });
     }
 
+    // A provider can withdraw and later change their mind — the unique
+    // (serviceRequestId, providerId) constraint means re-offering has to
+    // update that same row (upsert below) rather than insert a second one,
+    // which would otherwise fail with a constraint violation.
+    const existingOffer = await prisma.offer.findUnique({
+      where: { serviceRequestId_providerId: { serviceRequestId: requestId, providerId: req.user.sub } },
+    });
+    if (existingOffer && existingOffer.status !== "WITHDRAWN") {
+      return reply.code(409).send({ error: "Bu talebe zaten bir teklifin var" });
+    }
+
     const profile = await prisma.providerProfile.findUnique({
       where: { userId: req.user.sub },
       select: { isPremium: true },
@@ -70,8 +81,10 @@ export default async function offerRoutes(app) {
       }
     }
 
-    const offer = await prisma.offer.create({
-      data: { serviceRequestId: requestId, providerId: req.user.sub, price: priceNumber, message },
+    const offer = await prisma.offer.upsert({
+      where: { serviceRequestId_providerId: { serviceRequestId: requestId, providerId: req.user.sub } },
+      create: { serviceRequestId: requestId, providerId: req.user.sub, price: priceNumber, message },
+      update: { price: priceNumber, message, status: "PENDING" },
     });
 
     sendEmail({

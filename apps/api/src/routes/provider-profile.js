@@ -92,7 +92,10 @@ export default async function providerProfileRoutes(app) {
         categoryId: { in: categoryIds },
         city: { in: [profile.city, ...profile.serviceCities] },
         status: "OPEN",
-        offers: { none: { providerId: req.user.sub } },
+        // A withdrawn offer isn't a real answer — the provider changed their
+        // mind and may still want to re-offer, so only an active
+        // (non-withdrawn) offer should take this request off their list.
+        offers: { none: { providerId: req.user.sub, status: { not: "WITHDRAWN" } } },
       },
       include: { category: true, customer: { select: safeUserSelect } },
       orderBy: { createdAt: "desc" },
