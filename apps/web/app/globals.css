@@ -1,0 +1,10 @@
+@import "@tekliflercepte/ui/tokens.css";
+@import "react-toastify/dist/ReactToastify.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}

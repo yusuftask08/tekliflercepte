@@ -1,0 +1,122 @@
+:root {
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 22px;
+  --font-size-2xl: 28px;
+  --font-size-3xl: 34px;
+  --font-size-4xl: 42px;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 40px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px rgba(18, 32, 28, 0.06);
+  --shadow-md: 0 4px 12px rgba(18, 32, 28, 0.08);
+  --shadow-lg: 0 12px 32px rgba(18, 32, 28, 0.12);
+
+  /* brand — "Yön A: Güven Mavi-Yeşil" (Trust Teal), see design handoff */
+  --color-brand-50: #eafbf6;
+  --color-brand-100: #cff5ea;
+  --color-brand-300: #7fdfc7;
+  --color-brand-500: #12977e;
+  --color-brand-600: #0c7c67;
+  --color-brand-700: #096354;
+
+  --color-success: #22a559;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+  --color-info: #2563eb;
+
+  --color-bg: #f7f9f8;
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-border: #e2e8e6;
+  --color-text: #12201c;
+  --color-text-muted: #5b6b67;
+  --color-text-on-brand: #ffffff;
+
+  /* semantic roles — the brand scale's perceptual order flips in dark mode,
+     so solid fills reference these instead of a fixed brand-N step */
+  --color-primary: var(--color-brand-600);
+  --color-primary-strong: var(--color-brand-700);
+}
+
+:root[data-theme="dark"] {
+  --color-brand-50: #0e2622;
+  --color-brand-100: #12352f;
+  --color-brand-300: #1e5c4f;
+  --color-brand-500: #2bc4a3;
+  --color-brand-600: #3ed9b6;
+  --color-brand-700: #63e6c8;
+
+  --color-success: #3ddc84;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
+  --color-info: #60a5fa;
+
+  --color-bg: #0b1512;
+  --color-surface: #101e1a;
+  --color-surface-raised: #16241f;
+  --color-border: #24352f;
+  --color-text: #eaf3f0;
+  --color-text-muted: #9aaca6;
+  --color-text-on-brand: #06231d;
+
+  --color-primary: var(--color-brand-500);
+  --color-primary-strong: var(--color-brand-600);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-brand-50: #0e2622;
+    --color-brand-100: #12352f;
+    --color-brand-300: #1e5c4f;
+    --color-brand-500: #2bc4a3;
+    --color-brand-600: #3ed9b6;
+    --color-brand-700: #63e6c8;
+
+    --color-success: #3ddc84;
+    --color-warning: #fbbf24;
+    --color-danger: #f87171;
+    --color-info: #60a5fa;
+
+    --color-bg: #0b1512;
+    --color-surface: #101e1a;
+    --color-surface-raised: #16241f;
+    --color-border: #24352f;
+    --color-text: #eaf3f0;
+    --color-text-muted: #9aaca6;
+    --color-text-on-brand: #06231d;
+
+    --color-primary: var(--color-brand-500);
+    --color-primary-strong: var(--color-brand-600);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+  }
+}

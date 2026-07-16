@@ -1,0 +1,16 @@
+{
+  "name": "@tekliflercepte/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./tokens.css": "./src/tokens.css",
+    "./tailwind-preset": "./tailwind-preset.js"
+  },
+  "peerDependencies": {
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  }
+}

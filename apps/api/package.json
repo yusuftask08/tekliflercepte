@@ -1,0 +1,27 @@
+{
+  "name": "@tekliflercepte/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.1",
+    "@fastify/multipart": "^9.0.1",
+    "@fastify/rate-limit": "^11.1.0",
+    "@fastify/static": "^8.0.2",
+    "@tekliflercepte/db": "workspace:*",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.7",
+    "fastify": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "resend": "^6.17.2"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.10"
+  }
+}

@@ -1,0 +1,264 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CUSTOMER
+  PROVIDER
+  ADMIN
+}
+
+enum RequestStatus {
+  /// Just submitted by the customer — not yet visible to any provider until
+  /// an admin reviews it (POST /admin/requests/:id/approve or /reject).
+  /// Every request goes through this, not just ones with photos.
+  PENDING_REVIEW
+  OPEN
+  OFFER_SELECTED
+  CLOSED
+  CANCELLED
+  REJECTED
+}
+
+enum OfferStatus {
+  /// Unused — offer moderation was tried and reverted; kept only because
+  /// Postgres enum values can't be cheaply dropped. Do not use for new code.
+  PENDING_REVIEW
+  PENDING
+  SELECTED
+  REJECTED
+  WITHDRAWN
+}
+
+model User {
+  id           String   @id @default(cuid())
+  role         UserRole @default(CUSTOMER)
+  firstName    String
+  lastName     String
+  phone        String   @unique
+  phoneVerifiedAt DateTime?
+  email        String?  @unique
+  passwordHash String
+  avatarUrl    String?
+  /// Timestamp of accepting the Kullanıcı Sözleşmesi + KVKK Aydınlatma Metni
+  /// checkbox at registration — the legal text itself is still a draft
+  /// pending lawyer review, but the consent-capture mechanism is real.
+  termsAcceptedAt DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  providerProfile  ProviderProfile?
+  serviceRequests  ServiceRequest[] @relation("CustomerRequests")
+  offers           Offer[]          @relation("ProviderOffers")
+  messages         Message[]        @relation("MessageSender")
+  reviewsWritten   Review[]         @relation("ReviewAuthor")
+  reviewsReceived  Review[]         @relation("ReviewTarget")
+  favorites        Favorite[]       @relation("FavoriteOwner")
+  favoritedBy      Favorite[]       @relation("FavoriteProvider")
+  reportsFiled     Report[]         @relation("ReportReporter")
+  reportsReceived  Report[]         @relation("ReportTarget")
+  blocksMade       Block[]          @relation("BlockOwner")
+  blockedBy        Block[]          @relation("BlockTarget")
+
+  @@map("users")
+}
+
+enum ReportReason {
+  HARASSMENT
+  SPAM
+  FRAUD
+  OTHER
+}
+
+enum ReportStatus {
+  OPEN
+  REVIEWED
+}
+
+model Report {
+  id             String       @id @default(cuid())
+  reporterId     String
+  reporter       User         @relation("ReportReporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  reportedUserId String
+  reportedUser   User         @relation("ReportTarget", fields: [reportedUserId], references: [id], onDelete: Cascade)
+  offerId        String?
+  reason         ReportReason
+  details        String?
+  status         ReportStatus @default(OPEN)
+  createdAt      DateTime     @default(now())
+
+  @@map("reports")
+}
+
+model Block {
+  id            String   @id @default(cuid())
+  blockerId     String
+  blocker       User     @relation("BlockOwner", fields: [blockerId], references: [id], onDelete: Cascade)
+  blockedUserId String
+  blockedUser   User     @relation("BlockTarget", fields: [blockedUserId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+
+  @@unique([blockerId, blockedUserId])
+  @@map("blocks")
+}
+
+model Favorite {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation("FavoriteOwner", fields: [userId], references: [id], onDelete: Cascade)
+  providerId String
+  provider   User     @relation("FavoriteProvider", fields: [providerId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, providerId])
+  @@map("favorites")
+}
+
+model ProviderProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName    String?
+  taxOffice       String?
+  taxNumber       String?
+  city            String
+  district        String?
+  /// Additional cities this provider also travels to/serves, beyond `city` —
+  /// lets a provider cover a wider region than a single-city match would.
+  serviceCities   String[] @default([])
+  /// Manually toggled by an admin (Ustalar panel) — no automated ID-check
+  /// integration yet, this is an honest "admin verified" flag, not a claim
+  /// of a real identity-verification pipeline.
+  identityVerifiedAt DateTime?
+  bio             String?
+  experienceYears Int?
+  avgRating       Decimal  @default(0) @db.Decimal(2, 1)
+  reviewCount     Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  portfolioPhotos String[] @default([])
+
+  /// Freemium flag: premium providers skip the daily free-offer cap
+  /// (enforced in POST /requests/:id/offers). No billing integration yet —
+  /// admin-toggled for now, same pattern as identityVerifiedAt, until a real
+  /// payment provider is wired up.
+  isPremium Boolean @default(false)
+
+  /// Provider-controlled pause — when false, they're skipped by
+  /// /me/matching-requests and hidden from /providers, /ustalar search, and
+  /// /usta/[id]. Lets a busy provider stop new inbound requests without
+  /// deleting their profile.
+  isAvailable Boolean @default(true)
+
+  categories ProviderCategory[]
+
+  @@map("provider_profiles")
+}
+
+model Category {
+  id        String  @id @default(cuid())
+  name      String
+  slug      String  @unique
+  parentId  String?
+  parent    Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryTree")
+  /// Qualifying questions shown in the request wizard's Detay step for this
+  /// group, e.g. [{ id, label, type: "text"|"number"|"select", options? }].
+  /// Set on top-level groups; leaf subcategories inherit their parent's.
+  questions Json?
+
+  serviceRequests    ServiceRequest[]
+  providerCategories ProviderCategory[]
+
+  @@map("categories")
+}
+
+model ProviderCategory {
+  id         String          @id @default(cuid())
+  providerId String
+  provider   ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  categoryId String
+  category   Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, categoryId])
+  @@map("provider_categories")
+}
+
+model ServiceRequest {
+  id            String         @id @default(cuid())
+  customerId    String
+  customer      User           @relation("CustomerRequests", fields: [customerId], references: [id])
+  categoryId    String
+  category      Category       @relation(fields: [categoryId], references: [id])
+  city          String
+  district      String?
+  details       String
+  /// Answers to the chosen category's qualifying questions, keyed by question id.
+  answers       Json?
+  photos        String[] @default([])
+  preferredDate DateTime?
+  status        RequestStatus  @default(PENDING_REVIEW)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  offers   Offer[]
+  review   Review?
+
+  @@index([categoryId, city])
+  @@map("service_requests")
+}
+
+model Offer {
+  id               String         @id @default(cuid())
+  serviceRequestId String
+  serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+  providerId       String
+  provider         User           @relation("ProviderOffers", fields: [providerId], references: [id])
+  price            Decimal        @db.Decimal(10, 2)
+  message          String?
+  status           OfferStatus    @default(PENDING)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  messages Message[]
+
+  @@unique([serviceRequestId, providerId])
+  @@map("offers")
+}
+
+/// One thread per (request, provider) pair — scoped to the offer rather than
+/// the request directly, since a request can carry multiple providers' offers.
+model Message {
+  id        String   @id @default(cuid())
+  offerId   String
+  offer     Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User     @relation("MessageSender", fields: [senderId], references: [id])
+  body      String?
+  imageUrl  String?
+  createdAt DateTime @default(now())
+
+  @@index([offerId, createdAt])
+  @@map("messages")
+}
+
+model Review {
+  id               String         @id @default(cuid())
+  serviceRequestId String         @unique
+  serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+  authorId         String
+  author           User           @relation("ReviewAuthor", fields: [authorId], references: [id])
+  targetId         String
+  target           User           @relation("ReviewTarget", fields: [targetId], references: [id])
+  rating           Int
+  comment          String?
+  createdAt        DateTime       @default(now())
+
+  @@map("reviews")
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@tekliflercepte/config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "eslint.js",
+  "exports": {
+    "./eslint": "./eslint.js"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0"
+  }
+}
