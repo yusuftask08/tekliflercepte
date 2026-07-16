@@ -28,5 +28,5 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: ["/((?!giris|api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!giris|api|_next/static|_next/image|favicon.ico|icon).*)"],
 };
