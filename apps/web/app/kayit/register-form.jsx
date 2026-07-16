@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button } from "@tekliflercepte/ui";
+import { Button, Checkbox } from "@tekliflercepte/ui";
 import { normalizePhone } from "@/lib/phone";
 
 export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
@@ -137,13 +137,7 @@ export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
       </div>
 
       <label className="flex items-start gap-2.5 text-sm">
-        <input
-          type="checkbox"
-          required
-          checked={termsAccepted}
-          onChange={(e) => setTermsAccepted(e.target.checked)}
-          className="mt-0.5"
-        />
+        <Checkbox checked={termsAccepted} onChange={setTermsAccepted} className="mt-0.5" />
         <span>
           <Link href="/kullanici-sozlesmesi" target="_blank" className="font-semibold text-primary">
             Kullanıcı Sözleşmesi

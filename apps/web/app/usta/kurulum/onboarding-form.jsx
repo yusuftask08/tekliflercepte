@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { Button } from "@tekliflercepte/ui";
+import { Button, Checkbox } from "@tekliflercepte/ui";
 import { SearchSelect } from "../../search-select";
 import { MascotIcon } from "../../mascot-icon";
 import { TR_LOCATIONS } from "@/lib/turkey-locations";
@@ -29,6 +29,47 @@ function TipIcon({ ok }) {
         </svg>
       )}
     </span>
+  );
+}
+
+function PhotoExample({ ok, label }) {
+  return (
+    <div className="flex flex-col items-center gap-1.5">
+      <div
+        className={`relative flex h-16 w-16 items-center justify-center rounded-full ${
+          ok ? "bg-success/10" : "bg-danger/10"
+        }`}
+      >
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="9" r="4.5" stroke={ok ? "var(--color-success)" : "var(--color-danger)"} strokeWidth="1.8" />
+          {ok ? (
+            <path d="M9 9.3c.6.5 1.4.8 2.3.8s1.7-.3 2.3-.8" stroke="var(--color-success)" strokeWidth="1.6" strokeLinecap="round" />
+          ) : (
+            <>
+              <path d="M8 8h3M13 8h3" stroke="var(--color-danger)" strokeWidth="1.8" strokeLinecap="round" />
+              <path d="M9.5 11h5" stroke="var(--color-danger)" strokeWidth="1.6" strokeLinecap="round" />
+            </>
+          )}
+          <path d="M5 20c0-3.5 3.1-6 7-6s7 2.5 7 6" stroke={ok ? "var(--color-success)" : "var(--color-danger)"} strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+        <span
+          className={`absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-white ${
+            ok ? "bg-success" : "bg-danger"
+          }`}
+        >
+          {ok ? (
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+              <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          ) : (
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none">
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+            </svg>
+          )}
+        </span>
+      </div>
+      <span className={`text-[11px] font-semibold ${ok ? "text-success" : "text-danger"}`}>{label}</span>
+    </div>
   );
 }
 
@@ -67,9 +108,6 @@ export function OnboardingForm({ categories, initialProfile, header }) {
 
   // İş Türü
   const [businessType, setBusinessType] = useState(initialProfile?.businessType ?? "");
-  const [businessName, setBusinessName] = useState(initialProfile?.businessName ?? "");
-  const [taxOffice, setTaxOffice] = useState(initialProfile?.taxOffice ?? "");
-  const [taxNumber, setTaxNumber] = useState(initialProfile?.taxNumber ?? "");
 
   // Konum
   const [city, setCity] = useState(initialProfile?.city ?? "");
@@ -186,7 +224,7 @@ export function OnboardingForm({ categories, initialProfile, header }) {
   };
 
   const canProceed = [
-    Boolean(businessType) && (businessType !== "SIRKET" || businessName.trim().length > 0),
+    Boolean(businessType),
     Boolean(city),
     selected.size > 0,
     true, // face photo is encouraged, not required
@@ -212,9 +250,6 @@ export function OnboardingForm({ categories, initialProfile, header }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           businessType,
-          businessName: businessName || undefined,
-          taxOffice: taxOffice || undefined,
-          taxNumber: taxNumber || undefined,
           city,
           district: district || undefined,
           neighborhood: neighborhood || undefined,
@@ -322,37 +357,6 @@ export function OnboardingForm({ categories, initialProfile, header }) {
                 </button>
               </div>
             </div>
-
-            {businessType === "SIRKET" && (
-              <div className="flex flex-col gap-3">
-                <div>
-                  <label className="mb-2 block text-sm font-semibold">Şirket Adı</label>
-                  <input
-                    value={businessName}
-                    onChange={(e) => setBusinessName(e.target.value)}
-                    className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="mb-2 block text-sm font-semibold">Vergi Dairesi</label>
-                    <input
-                      value={taxOffice}
-                      onChange={(e) => setTaxOffice(e.target.value)}
-                      className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-2 block text-sm font-semibold">Vergi No</label>
-                    <input
-                      value={taxNumber}
-                      onChange={(e) => setTaxNumber(e.target.value)}
-                      className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -538,6 +542,10 @@ export function OnboardingForm({ categories, initialProfile, header }) {
             </button>
 
             <div className="w-full rounded-md border border-border bg-surface-raised p-4 text-left text-xs text-text-muted">
+              <div className="mb-3 flex items-center justify-center gap-8">
+                <PhotoExample ok label="Örnek" />
+                <PhotoExample label="Kaçın" />
+              </div>
               <div className="mb-2 font-semibold text-text">Kaliteli bir fotoğraf için:</div>
               <ul className="flex flex-col gap-2">
                 <li className="flex items-center gap-2">
@@ -591,12 +599,7 @@ export function OnboardingForm({ categories, initialProfile, header }) {
             </div>
 
             <label className="flex items-start gap-2.5 text-sm">
-              <input
-                type="checkbox"
-                checked={dataConsent}
-                onChange={(e) => setDataConsent(e.target.checked)}
-                className="mt-0.5"
-              />
+              <Checkbox checked={dataConsent} onChange={setDataConsent} className="mt-0.5" />
               <span>
                 Profil bilgilerimin (isim, fotoğraf, tanıtım yazısı, portföy) müşterilerle ve
                 talep eşleşmeleriyle paylaşılmasına, kişisel verilerimin bu amaçla işlenmesine
@@ -608,9 +611,12 @@ export function OnboardingForm({ categories, initialProfile, header }) {
 
         {step === 5 && (
           <div className="flex flex-col gap-2">
-            <label className="mb-1 block text-sm font-semibold">
-              Geçmiş iş fotoğrafları (opsiyonel, en fazla {MAX_PORTFOLIO_PHOTOS})
-            </label>
+            <div className="mb-1 flex items-center justify-between">
+              <label className="block text-sm font-semibold">Geçmiş iş fotoğrafları (opsiyonel)</label>
+              <span className="text-xs font-semibold text-text-muted">
+                {portfolioPhotos.length}/{MAX_PORTFOLIO_PHOTOS}
+              </span>
+            </div>
             <p className="mb-2 text-xs text-text-muted">
               Yaptığın işlerden kaliteli fotoğraflar profilinde görünür, güven oluşturur.
             </p>

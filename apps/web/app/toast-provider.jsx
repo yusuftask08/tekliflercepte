@@ -10,7 +10,7 @@ export function ToastProvider() {
       hideProgressBar
       closeOnClick
       pauseOnHover
-      theme="colored"
+      theme="light"
     />
   );
 }
