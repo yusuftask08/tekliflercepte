@@ -21,6 +21,7 @@ import favoriteRoutes from "./routes/favorites.js";
 import reportRoutes from "./routes/reports.js";
 import blockRoutes from "./routes/blocks.js";
 import statsRoutes from "./routes/stats.js";
+import locationRoutes from "./routes/locations.js";
 
 /** Builds the Fastify app without starting a listener — used by server.js
  *  for the real process, and directly by tests via app.inject(). */
@@ -31,7 +32,9 @@ export async function buildApp({ logger = true } = {}) {
     origin: [process.env.WEB_ORIGIN, process.env.PANEL_ORIGIN].filter(Boolean),
   });
   await app.register(rateLimit, { max: 100, timeWindow: "1 minute" });
-  await app.register(multipart, { limits: { fileSize: 8 * 1024 * 1024 } });
+  // 15MB — generous enough for an unedited modern-phone photo so onboarding
+  // uploads (face photo, portfolio) don't get rejected by a tight limit.
+  await app.register(multipart, { limits: { fileSize: 15 * 1024 * 1024 } });
   await app.register(fastifyStatic, {
     root: path.join(process.cwd(), "uploads"),
     prefix: "/uploads/",
@@ -54,6 +57,7 @@ export async function buildApp({ logger = true } = {}) {
   await app.register(reportRoutes);
   await app.register(blockRoutes);
   await app.register(statsRoutes);
+  await app.register(locationRoutes);
 
   return app;
 }

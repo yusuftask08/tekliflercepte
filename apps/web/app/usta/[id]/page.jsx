@@ -64,7 +64,11 @@ export default async function ProviderProfilePage({ params }) {
 
       <div className="mx-auto -mt-8 w-full max-w-5xl flex-1 px-4 pb-24 sm:px-6 lg:mt-0 lg:grid lg:grid-cols-[320px_1fr] lg:gap-10 lg:px-8 lg:py-10">
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <Avatar name={name} size="lg" />
+          <Avatar
+            name={name}
+            src={provider.avatarUrl ? `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}${provider.avatarUrl}` : null}
+            size="lg"
+          />
           <div className="mt-2.5 text-xl font-bold">{name}</div>
           {profile?.businessName && (
             <div className="text-sm text-text-muted">{profile.businessName}</div>
@@ -83,7 +87,7 @@ export default async function ProviderProfilePage({ params }) {
                   strokeWidth="2"
                 />
               </svg>
-              {profile.city}
+              {[profile.neighborhood, profile.district, profile.city].filter(Boolean).join(" / ")}
               {profile.serviceCities?.length > 0 && ` + ${profile.serviceCities.length} şehir daha`}
             </div>
           )}

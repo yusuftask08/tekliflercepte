@@ -1,29 +1,36 @@
 import Link from "next/link";
+import { getSessionUser } from "@/lib/session";
 
-const COLUMNS = [
-  {
-    title: "Şirket",
-    links: [
-      { href: "/#nasil-calisir", label: "Nasıl Çalışır" },
-      { href: "/hizmet-ver", label: "Hizmet Ver" },
-      { href: "/iletisim", label: "İletişim" },
-    ],
-  },
-  {
-    title: "Kategoriler",
-    links: [{ href: "/kategoriler", label: "Tüm Kategoriler" }],
-  },
-  {
-    title: "Yasal",
-    links: [
-      { href: "/kullanici-sozlesmesi", label: "Kullanıcı Sözleşmesi" },
-      { href: "/gizlilik-politikasi", label: "Gizlilik Politikası" },
-      { href: "/kvkk", label: "KVKK Aydınlatma Metni" },
-    ],
-  },
-];
+function getColumns(isLoggedIn) {
+  return [
+    {
+      title: "Şirket",
+      links: [
+        { href: "/#nasil-calisir", label: "Nasıl Çalışır" },
+        // Recruitment CTA for non-members only — same rule as the header nav.
+        ...(isLoggedIn ? [] : [{ href: "/hizmet-ver", label: "Hizmet Ver" }]),
+        { href: "/iletisim", label: "İletişim" },
+      ],
+    },
+    {
+      title: "Kategoriler",
+      links: [{ href: "/kategoriler", label: "Tüm Kategoriler" }],
+    },
+    {
+      title: "Yasal",
+      links: [
+        { href: "/kullanici-sozlesmesi", label: "Kullanıcı Sözleşmesi" },
+        { href: "/gizlilik-politikasi", label: "Gizlilik Politikası" },
+        { href: "/kvkk", label: "KVKK Aydınlatma Metni" },
+      ],
+    },
+  ];
+}
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const user = await getSessionUser();
+  const COLUMNS = getColumns(Boolean(user));
+
   return (
     <footer className="mt-auto border-t border-border px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">

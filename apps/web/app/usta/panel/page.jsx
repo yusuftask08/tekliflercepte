@@ -69,6 +69,9 @@ export default async function UstaPanelPage() {
             <Link href="/usta/kurulum" className="text-sm font-semibold text-primary">
               Profilimi düzenle
             </Link>
+            <Link href="/usta/ayarlar" className="text-sm font-semibold text-text-muted">
+              Ayarlar
+            </Link>
           </div>
         </div>
 

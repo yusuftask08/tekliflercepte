@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Button } from "@tekliflercepte/ui";
 import { HowItWorksIcon } from "../how-it-works-icon";
 import { SiteHeader } from "../site-header";
 import { SiteFooter } from "../site-footer";
+import { getSessionUser } from "@/lib/session";
 
 export const metadata = {
   title: "Hizmet Ver — Teklifler Cepte",
@@ -49,7 +51,12 @@ const STEPS = [
   },
 ];
 
-export default function HizmetVerPage() {
+export default async function HizmetVerPage() {
+  const user = await getSessionUser();
+  if (user) {
+    redirect(user.role === "PROVIDER" ? "/usta/panel" : "/");
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-bg">
       <SiteHeader />

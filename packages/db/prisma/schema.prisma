@@ -119,15 +119,22 @@ model Favorite {
   @@map("favorites")
 }
 
+enum BusinessType {
+  SAHIS
+  SIRKET
+}
+
 model ProviderProfile {
   id              String   @id @default(cuid())
   userId          String   @unique
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessType    BusinessType?
   businessName    String?
   taxOffice       String?
   taxNumber       String?
   city            String
   district        String?
+  neighborhood    String?
   /// Additional cities this provider also travels to/serves, beyond `city` —
   /// lets a provider cover a wider region than a single-city match would.
   serviceCities   String[] @default([])
@@ -155,6 +162,12 @@ model ProviderProfile {
   /// /usta/[id]. Lets a busy provider stop new inbound requests without
   /// deleting their profile.
   isAvailable Boolean @default(true)
+
+  /// Explicit consent, collected during onboarding, that profile info
+  /// (name, photo, bio, portfolio) will be shown publicly to customers and
+  /// shared with matching service requests — separate from the general
+  /// KVKK/Kullanıcı Sözleşmesi consent captured on User.termsAcceptedAt.
+  dataConsentAt DateTime?
 
   categories ProviderCategory[]
 

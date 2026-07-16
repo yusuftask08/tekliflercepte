@@ -4,15 +4,20 @@ import { getSessionUser } from "@/lib/session";
 import { AccountMenu } from "./account-menu";
 import { MobileMenu } from "./mobile-menu";
 
-const NAV_LINKS = [
+const BASE_NAV_LINKS = [
   { href: "#nasil-calisir", label: "Nasıl Çalışır" },
   { href: "#kategoriler", label: "Kategoriler" },
   { href: "/ustalar", label: "Usta Ara" },
-  { href: "/hizmet-ver", label: "Hizmet Ver" },
 ];
+
+// "Hizmet Ver" is a recruitment CTA for people who aren't members yet —
+// shown only to anonymous visitors, never to an already-logged-in user
+// (customer or provider).
+const GUEST_ONLY_LINK = { href: "/hizmet-ver", label: "Hizmet Ver" };
 
 export async function SiteHeader() {
   const user = await getSessionUser();
+  const NAV_LINKS = user ? BASE_NAV_LINKS : [...BASE_NAV_LINKS, GUEST_ONLY_LINK];
 
   return (
     <header className="sticky top-0 z-10 border-b border-border bg-surface/90 backdrop-blur">

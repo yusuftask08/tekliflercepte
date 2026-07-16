@@ -31,18 +31,5 @@ export default async function UstaKurulumPage() {
   const token = await getSessionToken();
   const [categories, profile] = await Promise.all([getCategories(), getMyProviderProfile(token)]);
 
-  return (
-    <div className="flex min-h-screen flex-col bg-bg">
-      <SiteHeader />
-      <div className="mx-auto w-full max-w-2xl flex-1 px-4 py-8 sm:px-6 sm:py-12 lg:max-w-4xl lg:py-16">
-        <h1 className="text-2xl font-bold sm:text-3xl">Usta Profilini Tamamla</h1>
-        <p className="mt-2 text-text-muted">
-          Hangi hizmetleri verdiğini ve nerede çalıştığını seç, sana uygun talepler önüne gelsin.
-        </p>
-        <div className="mt-8">
-          <OnboardingForm categories={categories} initialProfile={profile} />
-        </div>
-      </div>
-    </div>
-  );
+  return <OnboardingForm categories={categories} initialProfile={profile} header={<SiteHeader />} />;
 }

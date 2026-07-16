@@ -11,19 +11,45 @@ export default async function providerProfileRoutes(app) {
   });
 
   app.put("/me/provider-profile", { preHandler: requireAuth }, async (req, reply) => {
-    const { city, district, bio, experienceYears, categoryIds, serviceCities, portfolioPhotos } =
-      req.body ?? {};
+    const {
+      businessType,
+      businessName,
+      taxOffice,
+      taxNumber,
+      city,
+      district,
+      neighborhood,
+      bio,
+      experienceYears,
+      categoryIds,
+      serviceCities,
+      portfolioPhotos,
+      dataConsent,
+    } = req.body ?? {};
     if (!city || !Array.isArray(categoryIds) || categoryIds.length === 0) {
       return reply.code(400).send({ error: "city ve en az bir categoryId zorunlu" });
     }
+    if (bio && bio.length < 50) {
+      return reply.code(400).send({ error: "Tanıtım yazısı en az 50 karakter olmalı" });
+    }
+    if (businessType && !["SAHIS", "SIRKET"].includes(businessType)) {
+      return reply.code(400).send({ error: "Geçersiz businessType" });
+    }
 
+    const existingProfile = await prisma.providerProfile.findUnique({ where: { userId: req.user.sub } });
     const data = {
+      ...(businessType ? { businessType } : {}),
+      businessName,
+      taxOffice,
+      taxNumber,
       city,
       district,
+      neighborhood,
       bio,
       experienceYears,
       serviceCities: Array.isArray(serviceCities) ? serviceCities : [],
       ...(portfolioPhotos ? { portfolioPhotos } : {}),
+      ...(dataConsent && !existingProfile?.dataConsentAt ? { dataConsentAt: new Date() } : {}),
     };
     const profile = await prisma.providerProfile.upsert({
       where: { userId: req.user.sub },
