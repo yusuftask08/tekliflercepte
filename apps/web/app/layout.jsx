@@ -25,6 +25,16 @@ export const metadata = {
     card: "summary_large_image",
   },
   robots: { index: true, follow: true },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Teklifler Cepte",
+  },
+};
+
+export const viewport = {
+  themeColor: "#0c7c67",
 };
 
 export default async function RootLayout({ children }) {

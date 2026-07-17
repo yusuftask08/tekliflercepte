@@ -47,7 +47,10 @@ const DEFAULT_ITEMS = [
 export function BottomNav({ active = "/", LinkComponent = "a", items = DEFAULT_ITEMS }) {
   const Link = LinkComponent;
   return (
-    <nav className="flex justify-around border-t border-border bg-surface pb-7 pt-2.5">
+    <nav
+      className="flex justify-around border-t border-border bg-surface pt-2.5"
+      style={{ paddingBottom: "max(1.75rem, env(safe-area-inset-bottom))" }}
+    >
       {items.map((item) => {
         const isActive = item.href === "/" ? active === "/" : active.startsWith(item.href);
         const color = isActive ? "var(--color-primary)" : "var(--color-text-muted)";
