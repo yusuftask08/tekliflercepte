@@ -9,7 +9,10 @@ const DAILY_FREE_OFFER_LIMIT = 3;
 const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:3002";
 
 export default async function offerRoutes(app) {
-  app.get("/offers/:id", async (req, reply) => {
+  // Auth required: this returns the negotiated price/message plus both
+  // participants' info — not something a third party should be able to
+  // pull just by knowing/guessing an offer id.
+  app.get("/offers/:id", { preHandler: requireAuth }, async (req, reply) => {
     const offer = await prisma.offer.findUnique({
       where: { id: req.params.id },
       include: {
@@ -18,6 +21,9 @@ export default async function offerRoutes(app) {
       },
     });
     if (!offer) return reply.code(404).send({ error: "Teklif bulunamadı" });
+    if (req.user.sub !== offer.providerId && req.user.sub !== offer.serviceRequest.customerId) {
+      return reply.code(403).send({ error: "Bu teklifin tarafı değilsin" });
+    }
     return offer;
   });
 

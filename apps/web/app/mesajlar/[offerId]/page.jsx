@@ -9,9 +9,12 @@ import { getSessionToken, getSessionUser } from "@/lib/session";
 import { apiUrl } from "@/lib/api";
 import { displayName } from "@/lib/name";
 
-async function getOffer(id) {
+async function getOffer(id, token) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
-  const res = await fetch(`${apiUrl}/offers/${id}`, { cache: "no-store" });
+  const res = await fetch(`${apiUrl}/offers/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
   if (!res.ok) return null;
   return res.json();
 }
@@ -42,7 +45,7 @@ export default async function MessagingPage({ params }) {
   const sessionUser = await getSessionUser();
 
   const [offer, messages, blockedIds] = await Promise.all([
-    getOffer(offerId),
+    getOffer(offerId, token),
     getMessages(offerId, token),
     getBlockedIds(token),
   ]);

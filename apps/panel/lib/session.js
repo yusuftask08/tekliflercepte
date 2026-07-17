@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
@@ -18,7 +19,7 @@ export async function getSessionToken() {
   return store.get(SESSION_COOKIE)?.value ?? null;
 }
 
-export async function getSessionUser() {
+export const getSessionUser = cache(async function getSessionUser() {
   const token = await getSessionToken();
   if (!token) return null;
   try {
@@ -32,4 +33,4 @@ export async function getSessionUser() {
   } catch {
     return null;
   }
-}
+});

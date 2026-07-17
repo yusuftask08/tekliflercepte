@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { NextResponse } from "next/server";
 import { getSessionToken } from "@/lib/session";
 
@@ -6,8 +7,11 @@ export function apiUrl(path) {
   return `${base}${path}`;
 }
 
-/** Shared by SiteHeader and BottomNavWrapper so both badges stay in sync. */
-export async function getUnreadCount(token) {
+/** Both the root layout (for BottomNavWrapper) and SiteHeader (rendered on
+ *  almost every page) need this — wrapped in React's cache() so the two
+ *  calls within a single request collapse into one actual fetch instead of
+ *  hitting the API twice per page load. */
+export const getUnreadCount = cache(async function getUnreadCount(token) {
   if (!token) return 0;
   try {
     const res = await fetch(apiUrl("/me/unread-count"), {
@@ -20,7 +24,7 @@ export async function getUnreadCount(token) {
   } catch {
     return 0;
   }
-}
+});
 
 /** Forwards a proxied mutation to the API with the session's Bearer token,
  *  used by app/api/* route handlers so client components never see the JWT. */

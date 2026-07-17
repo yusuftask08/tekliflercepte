@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
@@ -18,7 +19,10 @@ export async function getSessionToken() {
   return store.get(SESSION_COOKIE)?.value ?? null;
 }
 
-export async function getSessionUser() {
+// Almost every page calls this directly *and* renders <SiteHeader/>, which
+// calls it again — cache() collapses all of those into one JWT verify per
+// request instead of three or four.
+export const getSessionUser = cache(async function getSessionUser() {
   const token = await getSessionToken();
   if (!token) return null;
   try {
@@ -32,4 +36,4 @@ export async function getSessionUser() {
   } catch {
     return null;
   }
-}
+});

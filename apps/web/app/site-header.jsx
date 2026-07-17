@@ -73,10 +73,10 @@ export async function SiteHeader() {
                     Favorilerim
                   </Link>
                 )}
-                <Link href="/mesajlar" className="relative text-sm font-semibold">
+                <Link href="/mesajlar" className="inline-flex items-center gap-1.5 text-sm font-semibold">
                   Mesajlar
                   {unreadCount > 0 && (
-                    <span className="absolute -right-3 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white">
+                    <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold leading-none text-white">
                       {unreadCount > 9 ? "9+" : unreadCount}
                     </span>
                   )}
