@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Avatar } from "@tekliflercepte/ui";
 import { MessageThread } from "./message-thread";
 import { ReportBlockMenu } from "./report-block-menu";
+import { BlockedProvider } from "./message-panel";
 import { OfferStatusBar } from "./offer-status-bar";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import { apiUrl } from "@/lib/api";
@@ -20,7 +21,7 @@ async function getOffer(id, token) {
 
 async function getMessages(offerId, token) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
-  const res = await fetch(`${apiUrl}/offers/${offerId}/messages`, {
+  const res = await fetch(`${apiUrl}/offers/${offerId}/messages?take=30`, {
     headers: { Authorization: `Bearer ${token}` },
     cache: "no-store",
   });
@@ -67,48 +68,40 @@ export default async function MessagingPage({ params }) {
   const otherPartyId = isProvider ? offer.serviceRequest.customerId : offer.provider.id;
 
   return (
-    <div className="flex h-screen flex-col bg-bg">
+    <div className="flex h-dvh flex-col bg-bg">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col overflow-hidden sm:max-w-2xl sm:py-6">
-        <div className="flex flex-1 flex-col overflow-hidden sm:rounded-lg sm:border sm:border-border sm:shadow-md">
-          <div className="flex items-center gap-2.5 border-b border-border bg-surface px-4 py-3">
-            <Link href={`/taleplerim/${offer.serviceRequestId}`}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M15 5l-7 7 7 7" stroke="var(--color-text)" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </Link>
-            <Avatar name={name} size="sm" />
-            <div className="flex-1">
-              <div className="text-sm font-bold">{name}</div>
-              <div className="flex items-center gap-1 text-[11px] text-success">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-success" />
-                Çevrimiçi
+        <BlockedProvider initialBlocked={blockedIds.includes(otherPartyId)}>
+          <div className="flex flex-1 flex-col overflow-hidden sm:rounded-lg sm:border sm:border-border sm:shadow-md">
+            <div className="flex items-center gap-2.5 border-b border-border bg-surface px-4 py-3">
+              <Link href={`/taleplerim/${offer.serviceRequestId}`}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <path d="M15 5l-7 7 7 7" stroke="var(--color-text)" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </Link>
+              <Avatar name={name} size="sm" />
+              <div className="flex-1 text-sm font-bold">{name}</div>
+              <ReportBlockMenu otherUserId={otherPartyId} offerId={offer.id} />
+            </div>
+
+            <div className="flex flex-col gap-2 px-4 py-3">
+              <div className="rounded-md border border-border bg-surface-raised px-3 py-2.5 text-xs text-text-muted">
+                {offer.serviceRequest.category?.name} talebi · {offer.serviceRequest.city}
               </div>
+              <OfferStatusBar
+                offerId={offer.id}
+                status={offer.status}
+                canWithdraw={isProvider && offer.status === "PENDING"}
+              />
             </div>
-            <ReportBlockMenu
-              otherUserId={otherPartyId}
+
+            <MessageThread
               offerId={offer.id}
-              initialBlocked={blockedIds.includes(otherPartyId)}
+              initialMessages={messages}
+              customerId={offer.serviceRequest.customerId}
+              viewerId={sessionUser?.id}
             />
           </div>
-
-          <div className="flex flex-col gap-2 px-4 py-3">
-            <div className="rounded-md border border-border bg-surface-raised px-3 py-2.5 text-xs text-text-muted">
-              {offer.serviceRequest.category?.name} talebi · {offer.serviceRequest.city}
-            </div>
-            <OfferStatusBar
-              offerId={offer.id}
-              status={offer.status}
-              canWithdraw={isProvider && offer.status === "PENDING"}
-            />
-          </div>
-
-          <MessageThread
-            offerId={offer.id}
-            initialMessages={messages}
-            customerId={offer.serviceRequest.customerId}
-            viewerId={sessionUser?.id}
-          />
-        </div>
+        </BlockedProvider>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useBlocked } from "./message-panel";
 
 const REASONS = [
   { value: "HARASSMENT", label: "Taciz / uygunsuz davranış" },
@@ -9,12 +10,12 @@ const REASONS = [
   { value: "OTHER", label: "Diğer" },
 ];
 
-export function ReportBlockMenu({ otherUserId, offerId, initialBlocked }) {
+export function ReportBlockMenu({ otherUserId, offerId }) {
   const [open, setOpen] = useState(false);
   const [reporting, setReporting] = useState(false);
   const [reason, setReason] = useState("HARASSMENT");
   const [details, setDetails] = useState("");
-  const [blocked, setBlocked] = useState(initialBlocked);
+  const [blocked, setBlocked] = useBlocked();
   const [submitting, setSubmitting] = useState(false);
   const [reportSent, setReportSent] = useState(false);
   const rootRef = useRef(null);
