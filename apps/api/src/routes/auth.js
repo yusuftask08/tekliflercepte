@@ -53,13 +53,17 @@ export default async function authRoutes(app) {
 
   app.post("/auth/login", { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } }, async (req, reply) => {
     const { password } = req.body ?? {};
-    const phone = req.body?.phone ? normalizePhone(req.body.phone) : null;
-    if (!phone || !password) {
-      return reply.code(400).send({ error: "phone ve password zorunlu" });
+    // Accepts either a phone number or an email address — an "@" is never
+    // valid inside a phone number, so it unambiguously tells them apart.
+    const identifier = req.body?.identifier?.trim();
+    if (!identifier || !password) {
+      return reply.code(400).send({ error: "telefon/email ve password zorunlu" });
     }
-    const user = await prisma.user.findUnique({ where: { phone } });
+    const user = identifier.includes("@")
+      ? await prisma.user.findUnique({ where: { email: identifier.toLowerCase() } })
+      : await prisma.user.findUnique({ where: { phone: normalizePhone(identifier) } });
     if (!user || !(await verifyPassword(password, user.passwordHash))) {
-      return reply.code(401).send({ error: "Telefon numarası veya şifre hatalı" });
+      return reply.code(401).send({ error: "Telefon/email veya şifre hatalı" });
     }
     return { token: signToken(user), user: publicUser(user) };
   });

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Avatar, Badge, StarRating } from "@tekliflercepte/ui";
 import { formatResponseTime } from "../lib/trust";
+import { displayName } from "../lib/name";
 
 export function ProviderCard({ provider }) {
   const profile = provider.providerProfile;
-  const name = `${provider.firstName} ${provider.lastName}`;
+  const name = displayName(provider);
   const responseLabel = formatResponseTime(provider.trust?.avgResponseMinutes);
 
   return (

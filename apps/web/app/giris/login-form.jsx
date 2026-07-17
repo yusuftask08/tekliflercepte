@@ -18,10 +18,11 @@ export function LoginForm({ next }) {
     setSubmitting(true);
     setError(null);
     try {
+      const identifier = phone.includes("@") ? phone.trim().toLowerCase() : normalizePhone(phone);
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: normalizePhone(phone), password }),
+        body: JSON.stringify({ identifier, password }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -38,15 +39,13 @@ export function LoginForm({ next }) {
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
       <div>
-        <label className="mb-2 block text-sm font-semibold">Telefon</label>
+        <label className="mb-2 block text-sm font-semibold">Telefon veya E-posta</label>
         <Input
           required
-          type="tel"
-          inputMode="numeric"
-          maxLength={14}
-          placeholder="05XX XXX XX XX"
+          maxLength={254}
+          placeholder="05XX XXX XX XX veya email"
           value={phone}
-          onChange={(e) => setPhone(e.target.value.replace(/[^\d\s]/g, ""))}
+          onChange={(e) => setPhone(e.target.value)}
         />
       </div>
 

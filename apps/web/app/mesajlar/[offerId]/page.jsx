@@ -7,6 +7,7 @@ import { ReportBlockMenu } from "./report-block-menu";
 import { OfferStatusBar } from "./offer-status-bar";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import { apiUrl } from "@/lib/api";
+import { displayName } from "@/lib/name";
 
 async function getOffer(id) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
@@ -60,8 +61,8 @@ export default async function MessagingPage({ params }) {
     );
   }
 
-  const name = `${offer.provider.firstName} ${offer.provider.lastName}`;
   const isProvider = sessionUser?.id === offer.provider.id;
+  const name = displayName(isProvider ? offer.serviceRequest.customer : offer.provider);
   const otherPartyId = isProvider ? offer.serviceRequest.customerId : offer.provider.id;
 
   return (

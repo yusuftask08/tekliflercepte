@@ -14,7 +14,7 @@ export default async function offerRoutes(app) {
       where: { id: req.params.id },
       include: {
         provider: { select: { ...publicUserSelect, providerProfile: true } },
-        serviceRequest: { include: { category: true } },
+        serviceRequest: { include: { category: true, customer: { select: publicUserSelect } } },
       },
     });
     if (!offer) return reply.code(404).send({ error: "Teklif bulunamadı" });

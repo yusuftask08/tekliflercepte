@@ -18,7 +18,7 @@ export function LoginForm() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, password }),
+        body: JSON.stringify({ identifier: phone, password }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -35,10 +35,9 @@ export function LoginForm() {
   return (
     <form onSubmit={submit} className="flex w-full max-w-sm flex-col gap-4">
       <div>
-        <label className="mb-2 block text-sm font-semibold">Telefon</label>
+        <label className="mb-2 block text-sm font-semibold">Telefon veya E-posta</label>
         <input
           required
-          type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"

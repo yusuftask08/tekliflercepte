@@ -30,10 +30,13 @@ export default async function conversationRoutes(app) {
 
     return offers.map((offer) => {
       const otherParty = isProvider ? offer.serviceRequest.customer : offer.provider;
+      // Last name truncated to an initial — this name is shown to the other
+      // party in the conversation, not just back to its owner.
+      const lastInitial = otherParty.lastName?.trim()?.[0];
       return {
         offerId: offer.id,
         category: offer.serviceRequest.category?.name,
-        otherPartyName: `${otherParty.firstName} ${otherParty.lastName}`,
+        otherPartyName: lastInitial ? `${otherParty.firstName} ${lastInitial}.` : otherParty.firstName,
         lastMessage: offer.messages[0]?.body ?? null,
         lastMessageAt: offer.messages[0]?.createdAt ?? offer.createdAt,
         unreadCount: unreadByOffer.get(offer.id) ?? 0,

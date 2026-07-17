@@ -6,6 +6,7 @@ import { apiUrl } from "@/lib/api";
 import { FavoriteButton } from "./favorite-button";
 import { formatResponseTime } from "@/lib/trust";
 import { formatPrice } from "@/lib/price";
+import { displayName } from "@/lib/name";
 
 async function getProvider(id) {
   const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
@@ -46,7 +47,7 @@ export default async function ProviderProfilePage({ params }) {
   }
 
   const profile = provider.providerProfile;
-  const name = `${provider.firstName} ${provider.lastName}`;
+  const name = displayName(provider);
   const memberSinceYear = profile ? new Date(profile.createdAt).getFullYear() : null;
   // "Mesaj Gönder" doesn't actually message this provider — there's no
   // cold-messaging path (Message is scoped to an Offer, which doesn't exist
@@ -198,9 +199,7 @@ export default async function ProviderProfilePage({ params }) {
             {provider.reviewsReceived.map((review) => (
               <div key={review.id} className="rounded-md border border-border bg-surface p-3">
                 <div className="flex justify-between text-xs font-semibold">
-                  <span>
-                    {review.author.firstName} {review.author.lastName[0]}.
-                  </span>
+                  <span>{displayName(review.author)}</span>
                   <StarRating rating={review.rating} />
                 </div>
                 {review.comment && (

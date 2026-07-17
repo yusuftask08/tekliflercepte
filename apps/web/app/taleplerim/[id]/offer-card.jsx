@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Avatar, Badge, StarRating, Button } from "@tekliflercepte/ui";
 import { formatPrice } from "@/lib/price";
+import { displayName } from "@/lib/name";
 
 export function OfferCard({ offer, requestClosed }) {
   const router = useRouter();
   const [selecting, setSelecting] = useState(false);
   const provider = offer.provider;
   const profile = provider.providerProfile;
-  const name = `${provider.firstName} ${provider.lastName}`;
+  const name = displayName(provider);
   const isSelected = offer.status === "SELECTED";
 
   const selectOffer = async () => {
