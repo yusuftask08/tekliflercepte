@@ -4,6 +4,9 @@ import { safeUserSelect } from "../lib/selects.js";
 import { sendEmail, escapeHtml } from "../lib/mailer.js";
 import { isBlocked } from "../lib/blocks.js";
 import { createNotification } from "../lib/notifications.js";
+import { subscribe, unsubscribe, publish } from "../lib/message-broadcaster.js";
+
+const HEARTBEAT_MS = 20000;
 
 const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:3002";
 
@@ -83,6 +86,33 @@ export default async function messageRoutes(app) {
       link: `/mesajlar/${req.params.offerId}`,
     });
 
+    publish(req.params.offerId, message);
+
     return reply.code(201).send(message);
+  });
+
+  // Server-Sent Events push for the open thread — no polling. Proxied
+  // through a Next.js route handler (which attaches the Bearer token
+  // server-side), so the browser's EventSource just points at same-origin
+  // /api/... and never needs the JWT itself.
+  app.get("/offers/:offerId/messages/stream", { preHandler: requireAuth }, async (req, reply) => {
+    const offer = await assertParticipant(req, reply, req.params.offerId);
+    if (!offer) return;
+
+    reply.hijack();
+    reply.raw.writeHead(200, {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+    });
+    reply.raw.write(":ok\n\n");
+
+    subscribe(req.params.offerId, reply.raw);
+    const heartbeat = setInterval(() => reply.raw.write(":hb\n\n"), HEARTBEAT_MS);
+
+    req.raw.on("close", () => {
+      clearInterval(heartbeat);
+      unsubscribe(req.params.offerId, reply.raw);
+    });
   });
 }

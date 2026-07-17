@@ -7,8 +7,6 @@ function formatTime(iso) {
   return new Date(iso).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
 }
 
-const POLL_INTERVAL_MS = 4000;
-
 export function MessageThread({ offerId, initialMessages, customerId, viewerId }) {
   const router = useRouter();
   const [messages, setMessages] = useState(initialMessages);
@@ -27,26 +25,17 @@ export function MessageThread({ offerId, initialMessages, customerId, viewerId }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Lightweight polling so a reply from the other person shows up without
-  // the viewer having to manually refresh the page — there's no websocket
-  // layer in this app, so a short interval is the pragmatic stand-in.
+  // Live push via Server-Sent Events — no polling. The API broadcasts a
+  // new message to everyone subscribed to this offerId the moment it's
+  // created; this just appends it (deduped in case it's an echo of a
+  // message we already added optimistically after sending).
   useEffect(() => {
-    let cancelled = false;
-    const poll = async () => {
-      try {
-        const res = await fetch(`/api/offers/${offerId}/messages`);
-        if (!res.ok) return;
-        const fresh = await res.json();
-        if (!cancelled) setMessages(fresh);
-      } catch {
-        // transient network error — next poll will retry
-      }
+    const source = new EventSource(`/api/offers/${offerId}/messages/stream`);
+    source.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      setMessages((prev) => (prev.some((m) => m.id === message.id) ? prev : [...prev, message]));
     };
-    const interval = setInterval(poll, POLL_INTERVAL_MS);
-    return () => {
-      cancelled = true;
-      clearInterval(interval);
-    };
+    return () => source.close();
   }, [offerId]);
 
   useEffect(() => {
