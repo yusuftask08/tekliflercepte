@@ -1,17 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 function formatTime(iso) {
   return new Date(iso).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
 }
 
+const POLL_INTERVAL_MS = 4000;
+
 export function MessageThread({ offerId, initialMessages, customerId, viewerId }) {
   const router = useRouter();
   const [messages, setMessages] = useState(initialMessages);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
+  const scrollRef = useRef(null);
+
+  const scrollToBottom = (behavior = "auto") => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior });
+  };
+
+  // Jump to the latest message the moment the thread mounts — a chat should
+  // always open where the conversation left off, not at its oldest message.
+  useEffect(() => {
+    scrollToBottom("auto");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Lightweight polling so a reply from the other person shows up without
+  // the viewer having to manually refresh the page — there's no websocket
+  // layer in this app, so a short interval is the pragmatic stand-in.
+  useEffect(() => {
+    let cancelled = false;
+    const poll = async () => {
+      try {
+        const res = await fetch(`/api/offers/${offerId}/messages`);
+        if (!res.ok) return;
+        const fresh = await res.json();
+        if (!cancelled) setMessages(fresh);
+      } catch {
+        // transient network error — next poll will retry
+      }
+    };
+    const interval = setInterval(poll, POLL_INTERVAL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [offerId]);
+
+  useEffect(() => {
+    scrollToBottom("smooth");
+  }, [messages.length]);
 
   const send = async () => {
     if (!draft.trim()) return;
@@ -30,7 +70,6 @@ export function MessageThread({ offerId, initialMessages, customerId, viewerId }
         const message = await res.json();
         setMessages((prev) => [...prev, message]);
         setDraft("");
-        router.refresh();
       }
     } finally {
       setSending(false);
@@ -39,13 +78,13 @@ export function MessageThread({ offerId, initialMessages, customerId, viewerId }
 
   return (
     <>
-      <div className="flex-1 overflow-auto px-4">
+      <div ref={scrollRef} className="flex-1 overflow-auto px-4">
         <div className="flex flex-col gap-2.5">
           {messages.map((message) => {
-            const isCustomer = message.senderId === customerId;
             const isMine = message.senderId === viewerId;
+            const isCustomer = message.senderId === customerId;
             return (
-              <div key={message.id} className={`max-w-[75%] ${isCustomer ? "self-end" : "self-start"}`}>
+              <div key={message.id} className={`max-w-[75%] ${isMine ? "self-end" : "self-start"}`}>
                 <div
                   className={
                     isCustomer
@@ -56,7 +95,7 @@ export function MessageThread({ offerId, initialMessages, customerId, viewerId }
                   {message.body}
                 </div>
                 <div
-                  className={`mt-0.5 flex items-center gap-1 text-[10px] text-text-muted ${isCustomer ? "justify-end" : ""}`}
+                  className={`mt-0.5 flex items-center gap-1 text-[10px] text-text-muted ${isMine ? "justify-end" : ""}`}
                 >
                   {formatTime(message.createdAt)}
                   {isMine && <span>· {message.readAt ? "Görüldü" : "Gönderildi"}</span>}
