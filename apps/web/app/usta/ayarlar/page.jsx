@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { SiteHeader } from "../../site-header";
 import { apiUrl } from "@/lib/api";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import { LogoutButton } from "../../logout-button";
@@ -42,15 +41,12 @@ export default async function UstaAyarlarPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
-      <SiteHeader />
       <div className="mx-auto w-full max-w-xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
         <h1 className="mb-6 text-2xl font-bold">Ayarlar</h1>
 
         <div className="mb-3 text-xs font-bold uppercase tracking-wide text-text-muted">Profil</div>
         <div className="mb-6 divide-y divide-border rounded-lg border border-border bg-surface shadow-sm">
-          <MenuRow href="/usta/kurulum" label="Profil" />
-          <MenuRow href="/usta/kurulum" label="Hizmetler" />
-          <MenuRow href="/profil" label="Hesap Ayarları" />
+          <MenuRow href="/profil" label="Profilim" />
           {profile && (
             <div className="flex items-center justify-between px-4 py-3.5 text-sm">
               <span>Tercihler</span>

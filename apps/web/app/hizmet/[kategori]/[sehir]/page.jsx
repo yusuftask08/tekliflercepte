@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EmptyState } from "@tekliflercepte/ui";
-import { SiteHeader } from "../../../site-header";
 import { SiteFooter } from "../../../site-footer";
 import { EmptyIcon } from "../../../empty-icons";
 import { ProviderCard } from "../../../provider-card";
@@ -32,10 +31,10 @@ async function getProviders(city, kategori) {
   const params = new URLSearchParams({ city, kategori });
   try {
     const res = await fetch(`${apiUrl}/providers?${params.toString()}`, { cache: "no-store" });
-    if (!res.ok) return [];
+    if (!res.ok) return { providers: [], total: 0 };
     return res.json();
   } catch {
-    return [];
+    return { providers: [], total: 0 };
   }
 }
 
@@ -51,9 +50,9 @@ export async function generateMetadata({ params }) {
   const { city, category } = await resolveParams(params);
   if (!city || !category) return {};
 
-  const providers = await getProviders(city.name, category.slug);
-  const title = `${city.name} ${category.name} Ustaları — Ücretsiz Teklif Al | Teklifler Cepte`;
-  const description = `${city.name}'de ${category.name.toLocaleLowerCase("tr")} hizmeti veren ${providers.length} usta. Profilleri incele, ücretsiz teklif al, komisyon yok.`;
+  const { providers, total } = await getProviders(city.name, category.slug);
+  const title = `${city.name} ${category.name} Ustaları — Ücretsiz Teklif Al`;
+  const description = `${city.name}'de ${category.name.toLocaleLowerCase("tr")} hizmeti veren ${total} usta. Profilleri incele, ücretsiz teklif al, komisyon yok.`;
 
   return {
     title,
@@ -66,11 +65,10 @@ export default async function HizmetSehirPage({ params }) {
   const { city, category } = await resolveParams(params);
   if (!city || !category) notFound();
 
-  const providers = await getProviders(city.name, category.slug);
+  const { providers, total } = await getProviders(city.name, category.slug);
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
-      <SiteHeader />
       <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
         <nav className="mb-4 text-xs text-text-muted">
           <Link href="/kategoriler" className="hover:text-primary">
@@ -91,7 +89,7 @@ export default async function HizmetSehirPage({ params }) {
           {city.name} bölgesinde {category.name.toLocaleLowerCase("tr")} ihtiyacın için Teklifler
           Cepte&apos;de kayıtlı ustaları inceleyebilir, profillerini karşılaştırabilir ve tamamen
           ücretsiz teklif alabilirsin — komisyon ya da teklif ücreti yok. Aşağıda {city.name}
-          &apos;de {category.name.toLocaleLowerCase("tr")} hizmeti veren {providers.length} usta
+          &apos;de {category.name.toLocaleLowerCase("tr")} hizmeti veren {total} usta
           listeleniyor.
         </p>
 
@@ -114,11 +112,23 @@ export default async function HizmetSehirPage({ params }) {
             />
           </div>
         ) : (
-          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {providers.map((provider) => (
-              <ProviderCard key={provider.id} provider={provider} />
-            ))}
-          </div>
+          <>
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {providers.map((provider) => (
+                <ProviderCard key={provider.id} provider={provider} />
+              ))}
+            </div>
+            {total > providers.length && (
+              <div className="mt-6 text-center">
+                <Link
+                  href={`/ustalar?kategori=${category.slug}&sehir=${city.name}`}
+                  className="text-sm font-semibold text-primary hover:underline"
+                >
+                  Kalan {total - providers.length} ustayı gör →
+                </Link>
+              </div>
+            )}
+          </>
         )}
       </div>
       <SiteFooter />

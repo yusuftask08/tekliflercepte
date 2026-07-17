@@ -30,7 +30,7 @@ export function HomeFab({ categories }) {
   if (dismissed && !chatOpen) return null;
 
   return (
-    <div className="fixed bottom-24 right-5 z-20 flex flex-col items-end gap-2 lg:bottom-5">
+    <div className="fixed bottom-24 right-5 z-fab flex flex-col items-end gap-2 lg:bottom-5">
       {chatOpen ? (
         <ChatWidget categories={categories} onClose={() => setChatOpen(false)} />
       ) : (

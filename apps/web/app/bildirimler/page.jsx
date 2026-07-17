@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { EmptyState } from "@tekliflercepte/ui";
-import { SiteHeader } from "../site-header";
 import { apiUrl } from "@/lib/api";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import { EmptyIcon } from "../empty-icons";
@@ -54,7 +53,6 @@ export default async function BildirimlerPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
-      <SiteHeader />
       <div className="mx-auto w-full max-w-2xl px-4 py-8 sm:px-6 sm:py-12">
         <h1 className="text-2xl font-bold sm:text-3xl">Bildirimler</h1>
 

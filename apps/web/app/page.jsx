@@ -5,7 +5,6 @@ import { categoryTone } from "./category-theme";
 import { HowItWorksIcon } from "./how-it-works-icon";
 import { HomeFab } from "./home-fab";
 import { HeroSearch } from "./hero-search";
-import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tekliflercepte.com";
@@ -113,7 +112,6 @@ export default async function HomePage() {
         // interpolated here, so this dangerouslySetInnerHTML is safe.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
       />
-      <SiteHeader />
 
       {/* Hero */}
       <section className="px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24">

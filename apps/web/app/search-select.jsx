@@ -39,7 +39,7 @@ export function SearchSelect({ value, onChange, options, placeholder, disabled }
         placeholder={placeholder}
       />
       {open && filtered.length > 0 && (
-        <ul className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md border border-border bg-surface shadow-md">
+        <ul className="absolute z-dropdown mt-1 max-h-56 w-full overflow-auto rounded-md border border-border bg-surface shadow-md">
           {filtered.map((option) => (
             <li key={option}>
               <button

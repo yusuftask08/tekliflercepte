@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { SiteHeader } from "../../site-header";
 import { apiUrl } from "@/lib/api";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import { OnboardingForm } from "./onboarding-form";
@@ -31,5 +30,9 @@ export default async function UstaKurulumPage() {
   const token = await getSessionToken();
   const [categories, profile] = await Promise.all([getCategories(), getMyProviderProfile(token)]);
 
-  return <OnboardingForm categories={categories} initialProfile={profile} header={<SiteHeader />} />;
+  // First-time onboarding only — once a profile exists, editing happens on
+  // /profil, not here.
+  if (profile) redirect("/profil");
+
+  return <OnboardingForm categories={categories} initialProfile={profile} />;
 }

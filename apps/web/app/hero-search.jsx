@@ -53,7 +53,7 @@ export function HeroSearch({ categories }) {
       </div>
 
       {open && results.length > 0 && (
-        <ul className="absolute z-10 mt-1.5 w-full overflow-hidden rounded-md bg-surface shadow-lg ring-1 ring-border">
+        <ul className="absolute z-dropdown mt-1.5 w-full overflow-hidden rounded-md bg-surface shadow-lg ring-1 ring-border">
           {results.map(({ group, sub }) => (
             <li key={sub.id}>
               <button

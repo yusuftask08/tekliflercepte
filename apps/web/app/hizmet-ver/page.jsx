@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@tekliflercepte/ui";
 import { HowItWorksIcon } from "../how-it-works-icon";
-import { SiteHeader } from "../site-header";
 import { SiteFooter } from "../site-footer";
 import { getSessionUser } from "@/lib/session";
 
@@ -59,7 +58,6 @@ export default async function HizmetVerPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
-      <SiteHeader />
 
       <section className="px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-8 text-center lg:flex-row lg:text-left">

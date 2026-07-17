@@ -1,4 +1,3 @@
-import { SiteHeader } from "../site-header";
 import { ResetPasswordForm } from "./reset-password-form";
 
 export const metadata = {
@@ -11,7 +10,6 @@ export default async function SifremiSifirlaPage({ searchParams }) {
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
-      <SiteHeader />
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-10 sm:py-16">
         <h1 className="mb-6 text-2xl font-bold">Yeni Şifre Belirle</h1>
         {token ? (

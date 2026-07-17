@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Badge, EmptyState } from "@tekliflercepte/ui";
-import { SiteHeader } from "../../site-header";
 import { EmptyIcon } from "../../empty-icons";
 import { OfferCard } from "./offer-card";
 import { ReviewForm } from "./review-form";
@@ -38,7 +37,6 @@ export default async function OffersInboxPage({ params, searchParams }) {
   if (!request) {
     return (
       <div className="flex min-h-screen flex-col bg-bg">
-        <SiteHeader />
         <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
           <p className="text-sm text-text-muted">Talep bulunamadı.</p>
           <Link href="/" className="mt-3 text-sm font-semibold text-primary">
@@ -57,7 +55,6 @@ export default async function OffersInboxPage({ params, searchParams }) {
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
-      <SiteHeader />
       <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
         <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
           <div>

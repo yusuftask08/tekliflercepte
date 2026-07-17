@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { Button } from "@tekliflercepte/ui";
-import { getUnreadCount } from "@/lib/api";
-import { getSessionToken, getSessionUser } from "@/lib/session";
 import { AccountMenu } from "./account-menu";
 import { NotificationBell } from "./notification-bell";
 
@@ -31,13 +29,14 @@ function getNavLinks(user) {
   return [USTA_ARA_LINK];
 }
 
-export async function SiteHeader() {
-  const user = await getSessionUser();
+// user/unreadCount are passed down from the root layout, which already
+// fetches both for BottomNavWrapper — avoids fetching them a second time
+// on every single page.
+export function SiteHeader({ user, unreadCount }) {
   const NAV_LINKS = getNavLinks(user);
-  const unreadCount = user ? await getUnreadCount(await getSessionToken()) : 0;
 
   return (
-    <header className="sticky top-0 z-10 border-b border-border bg-surface/90 backdrop-blur">
+    <header className="sticky top-0 z-header border-b border-border bg-surface/90 backdrop-blur">
       <div className="relative mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         <Link href="/" className="text-lg font-extrabold sm:text-xl">
           Teklifler Cepte
@@ -66,7 +65,7 @@ export async function SiteHeader() {
                   href={user.role === "PROVIDER" ? "/usta/panel" : "/taleplerim"}
                   className="text-sm font-semibold"
                 >
-                  {user.role === "PROVIDER" ? "Usta Paneli" : "Taleplerim"}
+                  {user.role === "PROVIDER" ? "Açık İşler" : "Taleplerim"}
                 </Link>
                 {user.role !== "PROVIDER" && (
                   <Link href="/favorilerim" className="text-sm font-semibold">

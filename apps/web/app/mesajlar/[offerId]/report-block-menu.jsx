@@ -71,7 +71,7 @@ export function ReportBlockMenu({ otherUserId, offerId, initialBlocked }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-10 mt-2 w-64 rounded-md border border-border bg-surface p-3 shadow-md">
+        <div className="absolute right-0 top-full z-dropdown mt-2 w-64 rounded-md border border-border bg-surface p-3 shadow-md">
           {reporting ? (
             reportSent ? (
               <div className="text-sm text-success">Şikayetin alındı, inceleyeceğiz.</div>

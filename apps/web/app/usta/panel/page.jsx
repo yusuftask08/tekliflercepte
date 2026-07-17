@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Badge, EmptyState } from "@tekliflercepte/ui";
-import { SiteHeader } from "../../site-header";
 import { EmptyIcon } from "../../empty-icons";
 import { apiUrl } from "@/lib/api";
 import { getSessionToken, getSessionUser } from "@/lib/session";
@@ -37,7 +36,7 @@ function buildQuestionLookup(categories) {
   const map = new Map();
   for (const group of categories) {
     for (const sub of group.children) {
-      map.set(sub.id, group.questions ?? []);
+      map.set(sub.id, sub.questions ?? group.questions ?? []);
     }
   }
   return map;
@@ -61,19 +60,15 @@ export default async function UstaPanelPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
-      <SiteHeader />
       <div className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold sm:text-3xl">Usta Paneli</h1>
-          <div className="flex items-center gap-3">
-            <AvailabilityToggle isAvailable={profile.isAvailable} />
-            <Link href="/usta/kurulum" className="text-sm font-semibold text-primary">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-bold sm:text-3xl">Açık İşler</h1>
+            <Link href="/profil" className="mt-1 inline-block text-sm font-semibold text-primary">
               Profilimi düzenle
             </Link>
-            <Link href="/usta/ayarlar" className="text-sm font-semibold text-text-muted">
-              Ayarlar
-            </Link>
           </div>
+          <AvailabilityToggle isAvailable={profile.isAvailable} />
         </div>
 
         <section className="mt-8">

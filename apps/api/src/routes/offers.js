@@ -136,6 +136,23 @@ export default async function offerRoutes(app) {
       }),
     ]);
 
+    // Keep ProviderProfile.avgPrice in sync — same pattern as
+    // avgRating/reviewCount in reviews.js, needed so /providers can filter
+    // by price range at the query level.
+    const providerProfile = await prisma.providerProfile.findUnique({
+      where: { userId: offer.providerId },
+    });
+    if (providerProfile) {
+      const priceAgg = await prisma.offer.aggregate({
+        where: { providerId: offer.providerId, status: "SELECTED" },
+        _avg: { price: true },
+      });
+      await prisma.providerProfile.update({
+        where: { id: providerProfile.id },
+        data: { avgPrice: priceAgg._avg.price },
+      });
+    }
+
     sendEmail({
       to: offer.provider.email,
       subject: `Teklifin kabul edildi — ${offer.serviceRequest.category.name}`,

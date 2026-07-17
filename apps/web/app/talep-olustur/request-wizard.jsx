@@ -95,7 +95,7 @@ function findLeafBy(categories, key, value) {
   return null;
 }
 
-export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug, header }) {
+export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug }) {
   const router = useRouter();
   const preselectedGroup = categories.find((c) => c.slug === preselectedSlug) ?? null;
   const preselectedLeaf = preselectedLeafSlug
@@ -116,6 +116,10 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
   const apiOrigin = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  // The specific subcategory's own questions take priority — the group's
+  // shared default doesn't fit every one of its subcategories (e.g. "kaç
+  // oda?" makes no sense for Apartman Temizliği or Kuru Temizleme).
+  const questionSet = category?.questions ?? group?.questions ?? [];
 
   useEffect(() => {
     const saved = sessionStorage.getItem(DRAFT_KEY);
@@ -210,7 +214,6 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
   if (submitted) {
     return (
       <div className="flex min-h-screen flex-col bg-bg">
-        {header}
         <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
           <div className="text-4xl">🎉</div>
           <div className="text-xl font-bold">Talebin gönderildi!</div>
@@ -227,7 +230,6 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
-      {header}
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col sm:max-w-xl sm:py-8 lg:max-w-3xl lg:py-14">
         <div className="flex flex-1 flex-col sm:rounded-lg sm:border sm:border-border sm:bg-surface sm:shadow-md lg:shadow-lg">
           <Header step={step} onBack={goBack} />
@@ -317,7 +319,7 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
 
         {step === 2 && (
           <div className="flex flex-col gap-4">
-            {group?.questions?.map((question) => (
+            {questionSet.map((question) => (
               <QuestionField
                 key={question.id}
                 question={question}
@@ -412,8 +414,8 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
                 {city}
                 {district ? ` / ${district}` : ""}
               </div>
-              {group?.questions
-                ?.filter((q) => answers[q.id])
+              {questionSet
+                .filter((q) => answers[q.id])
                 .map((q) => (
                   <div key={q.id} className="mb-3">
                     <div className="mb-1 text-xs font-semibold uppercase text-text-muted">{q.label}</div>

@@ -44,50 +44,93 @@ async function getTrustStats(providerIds) {
   return result;
 }
 
-export default async function providerRoutes(app) {
-  app.get("/providers", async (req) => {
-    const { city, kategori, q } = req.query ?? {};
+const PAGE_SIZE = 20;
 
-    const providers = await prisma.user.findMany({
-      where: {
-        role: "PROVIDER",
-        providerProfile: {
-          is: {
-            isAvailable: true,
-            ...(city ? { OR: [{ city }, { serviceCities: { has: city } }] } : {}),
-            ...(kategori
-              ? {
-                  categories: {
-                    some: {
-                      category: { OR: [{ slug: kategori }, { parent: { slug: kategori } }] },
-                    },
-                  },
-                }
-              : {}),
-          },
-        },
-        ...(q
+function buildProvidersWhere({ city, kategori, q, minRating, minPrice, maxPrice }) {
+  return {
+    role: "PROVIDER",
+    providerProfile: {
+      is: {
+        isAvailable: true,
+        ...(city ? { OR: [{ city }, { serviceCities: { has: city } }] } : {}),
+        ...(kategori
           ? {
-              OR: [
-                { firstName: { contains: q, mode: "insensitive" } },
-                { lastName: { contains: q, mode: "insensitive" } },
-              ],
+              categories: {
+                some: {
+                  category: { OR: [{ slug: kategori }, { parent: { slug: kategori } }] },
+                },
+              },
+            }
+          : {}),
+        ...(minRating ? { avgRating: { gte: Number(minRating) } } : {}),
+        ...(minPrice || maxPrice
+          ? {
+              avgPrice: {
+                ...(minPrice ? { gte: Number(minPrice) } : {}),
+                ...(maxPrice ? { lte: Number(maxPrice) } : {}),
+              },
             }
           : {}),
       },
-      select: {
-        ...publicUserSelect,
-        providerProfile: {
-          include: { categories: { include: { category: true } } },
+    },
+    ...(q
+      ? {
+          OR: [
+            { firstName: { contains: q, mode: "insensitive" } },
+            { lastName: { contains: q, mode: "insensitive" } },
+            { providerProfile: { is: { businessName: { contains: q, mode: "insensitive" } } } },
+            { providerProfile: { is: { bio: { contains: q, mode: "insensitive" } } } },
+          ],
+        }
+      : {}),
+  };
+}
+
+// Most providers sit at avgRating 0 (new/unrated) — sorting by rating alone
+// leaves them in undefined order, permanently buried. reviewCount/createdAt
+// tiebreak keeps that group stable and gives new providers a fair position.
+function buildProvidersOrderBy(sort) {
+  if (sort === "new") return { providerProfile: { createdAt: "desc" } };
+  // isPremium boost only applies to the default/rating sort — "new" is
+  // meant to show genuinely newest providers, boosting would defeat that.
+  return [
+    { providerProfile: { isPremium: "desc" } },
+    { providerProfile: { avgRating: "desc" } },
+    { providerProfile: { reviewCount: "desc" } },
+    { providerProfile: { createdAt: "desc" } },
+  ];
+}
+
+export default async function providerRoutes(app) {
+  app.get("/providers", async (req) => {
+    const { city, kategori, q, sort, minRating, minPrice, maxPrice, page } = req.query ?? {};
+    const where = buildProvidersWhere({ city, kategori, q, minRating, minPrice, maxPrice });
+    const pageNum = Math.max(1, Number(page) || 1);
+    const skip = (pageNum - 1) * PAGE_SIZE;
+
+    const [providers, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        select: {
+          ...publicUserSelect,
+          providerProfile: {
+            include: { categories: { include: { category: true } } },
+          },
         },
-      },
-      orderBy: { providerProfile: { avgRating: "desc" } },
-      take: 60,
-    });
+        orderBy: buildProvidersOrderBy(sort),
+        take: PAGE_SIZE,
+        skip,
+      }),
+      prisma.user.count({ where }),
+    ]);
 
     const withProfile = providers.filter((p) => p.providerProfile);
     const trustStats = await getTrustStats(withProfile.map((p) => p.id));
-    return withProfile.map((p) => ({ ...p, trust: trustStats.get(p.id) }));
+    return {
+      providers: withProfile.map((p) => ({ ...p, trust: trustStats.get(p.id) })),
+      total,
+      hasMore: skip + PAGE_SIZE < total,
+    };
   });
 
   /** (city, category-slug) combinations that have at least one provider —
@@ -116,7 +159,19 @@ export default async function providerRoutes(app) {
     });
   });
 
+  const REVIEW_PAGE_SIZE = 10;
+
+  function reviewOrderBy(reviewSirala) {
+    if (reviewSirala === "puan-yuksek") return { rating: "desc" };
+    if (reviewSirala === "puan-dusuk") return { rating: "asc" };
+    return { createdAt: "desc" };
+  }
+
   app.get("/providers/:id", async (req, reply) => {
+    const { reviewSayfa, reviewSirala } = req.query ?? {};
+    const reviewPageNum = Math.max(1, Number(reviewSayfa) || 1);
+    const reviewSkip = (reviewPageNum - 1) * REVIEW_PAGE_SIZE;
+
     const provider = await prisma.user.findUnique({
       where: { id: req.params.id, role: "PROVIDER" },
       select: {
@@ -126,7 +181,9 @@ export default async function providerRoutes(app) {
         },
         reviewsReceived: {
           include: { author: { select: publicUserSelect } },
-          orderBy: { createdAt: "desc" },
+          orderBy: reviewOrderBy(reviewSirala),
+          take: REVIEW_PAGE_SIZE,
+          skip: reviewSkip,
         },
       },
     });
@@ -135,16 +192,17 @@ export default async function providerRoutes(app) {
     const completedJobsCount = await prisma.offer.count({
       where: { providerId: provider.id, status: "SELECTED" },
     });
-    const priceStats = await prisma.offer.aggregate({
-      where: { providerId: provider.id, status: "SELECTED" },
-      _avg: { price: true },
-    });
+    const reviewTotal = await prisma.review.count({ where: { targetId: provider.id } });
     const trustStats = await getTrustStats([provider.id]);
 
     return {
       ...provider,
       completedJobsCount,
-      avgPrice: priceStats._avg.price,
+      reviewTotal,
+      reviewHasMore: reviewSkip + REVIEW_PAGE_SIZE < reviewTotal,
+      // Denormalized on ProviderProfile, kept in sync in POST
+      // /offers/:id/select — no need for a fresh aggregate here.
+      avgPrice: provider.providerProfile?.avgPrice ?? null,
       trust: trustStats.get(provider.id),
     };
   });

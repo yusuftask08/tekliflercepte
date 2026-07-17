@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Avatar } from "@tekliflercepte/ui";
-import { SiteHeader } from "../../site-header";
 import { MessageThread } from "./message-thread";
 import { ReportBlockMenu } from "./report-block-menu";
 import { OfferStatusBar } from "./offer-status-bar";
@@ -53,7 +52,6 @@ export default async function MessagingPage({ params }) {
   if (!offer) {
     return (
       <div className="flex min-h-screen flex-col bg-bg">
-        <SiteHeader />
         <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
           <p className="text-sm text-text-muted">Görüşme bulunamadı.</p>
           <Link href="/" className="mt-3 text-sm font-semibold text-primary">
@@ -70,7 +68,6 @@ export default async function MessagingPage({ params }) {
 
   return (
     <div className="flex h-screen flex-col bg-bg">
-      <SiteHeader />
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col overflow-hidden sm:max-w-2xl sm:py-6">
         <div className="flex flex-1 flex-col overflow-hidden sm:rounded-lg sm:border sm:border-border sm:shadow-md">
           <div className="flex items-center gap-2.5 border-b border-border bg-surface px-4 py-3">

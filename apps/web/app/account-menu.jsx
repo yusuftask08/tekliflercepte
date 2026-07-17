@@ -37,7 +37,7 @@ export function AccountMenu({ user }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-48 rounded-md border border-border bg-surface py-1.5 shadow-md">
+        <div className="absolute right-0 top-full z-modal mt-2 w-48 rounded-md border border-border bg-surface py-1.5 shadow-md">
           <Link
             href="/profil"
             onClick={() => setOpen(false)}

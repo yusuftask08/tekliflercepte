@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { SiteHeader } from "../site-header";
 import { getSessionUser } from "@/lib/session";
 import { RequestWizard } from "./request-wizard";
 
@@ -33,7 +32,6 @@ export default async function TalepOlusturPage({ searchParams }) {
       categories={categories}
       preselectedSlug={preselectedSlug}
       preselectedLeafSlug={preselectedLeafSlug}
-      header={<SiteHeader />}
     />
   );
 }

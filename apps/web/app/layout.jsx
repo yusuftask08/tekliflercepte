@@ -1,6 +1,7 @@
 import { ThemeProvider } from "@tekliflercepte/ui";
 import { ToastProvider } from "./toast-provider";
 import { BottomNavWrapper } from "./bottom-nav-wrapper";
+import { SiteHeader } from "./site-header";
 import { getUnreadCount } from "@/lib/api";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import "./globals.css";
@@ -52,7 +53,10 @@ export default async function RootLayout({ children }) {
         />
       </head>
       <body className="min-h-screen bg-bg pb-16 font-sans text-text lg:pb-0" suppressHydrationWarning>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <SiteHeader user={user} unreadCount={unreadCount} />
+          {children}
+        </ThemeProvider>
         <ToastProvider />
         <BottomNavWrapper user={user} unreadCount={unreadCount} />
       </body>

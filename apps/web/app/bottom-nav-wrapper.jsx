@@ -70,6 +70,13 @@ const ICONS = {
       />
     </svg>
   ),
+  briefcase: (color) => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="8" width="18" height="12" rx="1.5" stroke={color} strokeWidth="2" />
+      <path d="M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke={color} strokeWidth="2" />
+      <path d="M3 13h18" stroke={color} strokeWidth="2" />
+    </svg>
+  ),
 };
 
 function getItems(user, unreadCount) {
@@ -78,12 +85,13 @@ function getItems(user, unreadCount) {
       { href: "/", label: "Ana Sayfa", icon: ICONS.home },
       { href: "/ustalar", label: "Usta Ara", icon: ICONS.search },
       { href: "/talep-olustur", label: "Talep Oluştur", icon: ICONS.add },
+      { href: "/hizmet-ver", label: "Hizmet Ver", icon: ICONS.briefcase },
       { href: "/giris", label: "Giriş Yap", icon: ICONS.profile },
     ];
   }
   if (user.role === "PROVIDER") {
     return [
-      { href: "/usta/panel", label: "Panel", icon: ICONS.panel },
+      { href: "/usta/panel", label: "Açık İşler", icon: ICONS.panel },
       { href: "/mesajlar", label: "Mesajlar", icon: ICONS.messages, badge: unreadCount },
       { href: "/usta/ayarlar", label: "Ayarlar", icon: ICONS.settings },
     ];
@@ -101,7 +109,7 @@ export function BottomNavWrapper({ user, unreadCount }) {
   if (HIDDEN_PREFIXES.some((prefix) => pathname.startsWith(prefix))) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-bottomnav lg:hidden">
       <BottomNav active={pathname} LinkComponent={Link} items={getItems(user, unreadCount)} />
     </div>
   );

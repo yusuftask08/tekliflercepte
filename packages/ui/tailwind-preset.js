@@ -72,6 +72,17 @@ export default {
         md: "var(--shadow-md)",
         lg: "var(--shadow-lg)",
       },
+      // Named layers instead of raw z-10/20/30 so stacking order is a
+      // deliberate scale, not whatever value a component happened to reach
+      // for. Higher number = closer to the user.
+      zIndex: {
+        dropdown: "10",
+        fab: "20",
+        bottomnav: "30",
+        header: "40",
+        actionbar: "40",
+        modal: "50",
+      },
     },
   },
 };

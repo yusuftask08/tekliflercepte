@@ -169,6 +169,10 @@ model ProviderProfile {
   experienceYears Int?
   avgRating       Decimal  @default(0) @db.Decimal(2, 1)
   reviewCount     Int      @default(0)
+  /// Denormalized from SELECTED offers, kept in sync in POST
+  /// /offers/:id/select — same pattern as avgRating/reviewCount, needed so
+  /// /providers can filter by price range at the query level.
+  avgPrice        Decimal? @db.Decimal(10, 2)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -204,9 +208,13 @@ model Category {
   parentId  String?
   parent    Category?  @relation("CategoryTree", fields: [parentId], references: [id])
   children  Category[] @relation("CategoryTree")
-  /// Qualifying questions shown in the request wizard's Detay step for this
-  /// group, e.g. [{ id, label, type: "text"|"number"|"select", options? }].
-  /// Set on top-level groups; leaf subcategories inherit their parent's.
+  /// Qualifying questions shown in the request wizard's Detay step,
+  /// e.g. [{ id, label, type: "text"|"number"|"select", options? }]. A leaf
+  /// subcategory's own questions take priority; if it has none, the wizard
+  /// falls back to the top-level group's — most subcategories under a group
+  /// are similar enough to share one set, but some (Kuru Temizleme under
+  /// Temizlik, for example) need their own because the group default
+  /// (oda sayısı, alan m²) makes no sense for them.
   questions Json?
 
   serviceRequests    ServiceRequest[]
