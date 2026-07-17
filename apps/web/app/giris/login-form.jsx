@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button } from "@tekliflercepte/ui";
+import { Button, Input } from "@tekliflercepte/ui";
 import { normalizePhone } from "@/lib/phone";
 
 export function LoginForm({ next }) {
@@ -39,13 +39,14 @@ export function LoginForm({ next }) {
     <form onSubmit={submit} className="flex flex-col gap-4">
       <div>
         <label className="mb-2 block text-sm font-semibold">Telefon</label>
-        <input
+        <Input
           required
           type="tel"
+          inputMode="numeric"
+          maxLength={14}
           placeholder="05XX XXX XX XX"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
+          onChange={(e) => setPhone(e.target.value.replace(/[^\d\s]/g, ""))}
         />
       </div>
 
@@ -56,12 +57,12 @@ export function LoginForm({ next }) {
             Şifremi unuttum
           </Link>
         </div>
-        <input
+        <Input
           required
           type="password"
+          maxLength={72}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
         />
       </div>
 

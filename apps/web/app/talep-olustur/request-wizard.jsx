@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { Button } from "@tekliflercepte/ui";
+import { Button, Input, Textarea } from "@tekliflercepte/ui";
 import { CategoryIcon } from "../category-icon";
 import { SearchSelect } from "../search-select";
 import { TR_LOCATIONS } from "@/lib/turkey-locations";
@@ -62,11 +62,11 @@ function QuestionField({ question, value, onChange }) {
   return (
     <div>
       <label className="mb-2 block text-sm font-semibold">{question.label}</label>
-      <input
+      <Input
         type={question.type === "number" ? "number" : "text"}
+        maxLength={question.type === "number" ? undefined : 200}
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-md border border-border bg-surface px-3.5 py-3.5 text-sm"
       />
     </div>
   );
@@ -327,22 +327,22 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
             ))}
             <div>
               <label className="mb-2 block text-sm font-semibold">İşin detaylarını anlat</label>
-              <textarea
+              <Textarea
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
                 placeholder="Örn: 3+1 daire, genel temizlik, pencere dahil..."
                 rows={4}
-                className="w-full rounded-md border border-border bg-surface px-3.5 py-3.5 text-sm"
+                maxLength={1000}
               />
             </div>
             <div>
               <label className="mb-2 block text-sm font-semibold">Bu iş için bütçen ne kadar?</label>
               <p className="mb-2 text-xs text-text-muted">Opsiyonel — paylaşmak istemezsen boş bırakabilirsin.</p>
-              <input
+              <Input
                 value={budget}
                 onChange={(e) => setBudget(e.target.value)}
                 placeholder="Örn: 1.500 ₺"
-                className="w-full rounded-md border border-border bg-surface px-3.5 py-3.5 text-sm"
+                maxLength={20}
               />
             </div>
             <div>

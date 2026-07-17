@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@tekliflercepte/ui";
+import { Button, Input } from "@tekliflercepte/ui";
 
 export function PasswordForm() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -38,23 +38,23 @@ export function PasswordForm() {
     <form onSubmit={submit} className="flex flex-col gap-4">
       <div>
         <label className="mb-2 block text-sm font-semibold">Mevcut Şifre</label>
-        <input
+        <Input
           type="password"
           required
+          maxLength={72}
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
-          className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
         />
       </div>
       <div>
         <label className="mb-2 block text-sm font-semibold">Yeni Şifre</label>
-        <input
+        <Input
           type="password"
           required
           minLength={6}
+          maxLength={72}
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
-          className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
         />
       </div>
       {error && <div className="text-sm text-danger">{error}</div>}

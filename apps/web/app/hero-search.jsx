@@ -41,6 +41,7 @@ export function HeroSearch({ categories }) {
         </svg>
         <input
           value={query}
+          maxLength={100}
           onChange={(e) => {
             setQuery(e.target.value);
             setOpen(true);

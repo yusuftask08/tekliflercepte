@@ -93,6 +93,7 @@ export function ReportBlockMenu({ otherUserId, offerId, initialBlocked }) {
                   onChange={(e) => setDetails(e.target.value)}
                   placeholder="Detay (opsiyonel)"
                   rows={2}
+                  maxLength={500}
                   className="rounded-md border border-border bg-bg px-2 py-1.5 text-sm"
                 />
                 <button

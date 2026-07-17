@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Input } from "@tekliflercepte/ui";
 import { TR_LOCATIONS } from "../../lib/turkey-locations";
 import { SearchSelect } from "../search-select";
 
@@ -44,14 +45,14 @@ export function Filters({ city, kategori, q, categories }) {
         ))}
       </select>
 
-      <input
+      <Input
         defaultValue={q ?? ""}
+        maxLength={100}
         onKeyDown={(e) => {
           if (e.key === "Enter") pushParams({ city, kategori, q: e.currentTarget.value });
         }}
         onBlur={(e) => pushParams({ city, kategori, q: e.currentTarget.value })}
         placeholder="Usta ismiyle ara"
-        className="w-full rounded-md border border-border bg-surface px-3.5 py-3.5 text-sm"
       />
     </div>
   );

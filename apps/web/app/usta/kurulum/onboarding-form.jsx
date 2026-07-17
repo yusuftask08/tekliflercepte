@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { Button, Checkbox } from "@tekliflercepte/ui";
+import { Button, Checkbox, Input, Textarea } from "@tekliflercepte/ui";
 import { SearchSelect } from "../../search-select";
 import { MascotIcon } from "../../mascot-icon";
 import { TR_LOCATIONS } from "@/lib/turkey-locations";
@@ -442,11 +442,12 @@ export function OnboardingForm({ categories, initialProfile, header }) {
           <div className="flex flex-col gap-4">
             <div>
               <label className="mb-2 block text-sm font-semibold">Hangi hizmetleri veriyorsun?</label>
-              <input
+              <Input
+                maxLength={50}
                 value={categorySearch}
                 onChange={(e) => setCategorySearch(e.target.value)}
                 placeholder="Kategori ara..."
-                className="mb-3 w-full rounded-md border border-border bg-surface px-3.5 py-2.5 text-sm"
+                className="mb-3"
               />
               <div className="flex max-h-72 flex-col gap-5 overflow-auto">
                 {filteredCategories.map((group) => (
@@ -472,12 +473,13 @@ export function OnboardingForm({ categories, initialProfile, header }) {
             </div>
             <div>
               <label className="mb-2 block text-sm font-semibold">Deneyim (yıl, opsiyonel)</label>
-              <input
+              <Input
                 type="number"
                 min="0"
+                max="80"
                 value={experienceYears}
                 onChange={(e) => setExperienceYears(e.target.value)}
-                className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm sm:w-40"
+                className="sm:w-40"
               />
             </div>
           </div>
@@ -586,12 +588,12 @@ export function OnboardingForm({ categories, initialProfile, header }) {
               </p>
             </div>
             <div>
-              <textarea
+              <Textarea
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 rows={4}
+                maxLength={600}
                 placeholder="Örn: 6 yıldır Kadıköy ve çevresinde ev temizliği yapıyorum, malzemelerimi kendim getiriyorum..."
-                className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
               />
               <div className={`mt-1 text-xs ${bio.length >= MIN_BIO_LENGTH ? "text-success" : "text-text-muted"}`}>
                 {bio.length}/{MIN_BIO_LENGTH} karakter

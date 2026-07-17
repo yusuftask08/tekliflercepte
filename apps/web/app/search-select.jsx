@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Input } from "@tekliflercepte/ui";
 
 export function SearchSelect({ value, onChange, options, placeholder, disabled }) {
   const [query, setQuery] = useState(value ?? "");
@@ -25,9 +26,10 @@ export function SearchSelect({ value, onChange, options, placeholder, disabled }
 
   return (
     <div ref={rootRef} className="relative">
-      <input
+      <Input
         value={query}
         disabled={disabled}
+        maxLength={100}
         onChange={(e) => {
           setQuery(e.target.value);
           setOpen(true);
@@ -35,7 +37,6 @@ export function SearchSelect({ value, onChange, options, placeholder, disabled }
         }}
         onFocus={() => setOpen(true)}
         placeholder={placeholder}
-        className="w-full rounded-md border border-border bg-surface px-3.5 py-3.5 text-sm disabled:opacity-50"
       />
       {open && filtered.length > 0 && (
         <ul className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md border border-border bg-surface shadow-md">

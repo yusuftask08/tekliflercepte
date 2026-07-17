@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@tekliflercepte/ui";
+import { Button, Input } from "@tekliflercepte/ui";
 
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -43,13 +43,13 @@ export function ForgotPasswordForm() {
     <form onSubmit={submit} className="flex flex-col gap-4">
       <div>
         <label className="mb-2 block text-sm font-semibold">E-posta</label>
-        <input
+        <Input
           required
           type="email"
+          maxLength={254}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="ornek@email.com"
-          className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
         />
       </div>
 

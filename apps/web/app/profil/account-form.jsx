@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Avatar, Button } from "@tekliflercepte/ui";
+import { Avatar, Button, Input } from "@tekliflercepte/ui";
 import { normalizePhone } from "@/lib/phone";
 
 export function AccountForm({ user }) {
@@ -93,39 +93,33 @@ export function AccountForm({ user }) {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="mb-2 block text-sm font-semibold">Ad</label>
-          <input
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
-          />
+          <Input maxLength={50} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
         </div>
         <div>
           <label className="mb-2 block text-sm font-semibold">Soyad</label>
-          <input
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
-          />
+          <Input maxLength={50} value={lastName} onChange={(e) => setLastName(e.target.value)} />
         </div>
       </div>
 
       <div>
         <label className="mb-2 block text-sm font-semibold">Telefon</label>
-        <input
+        <Input
+          type="tel"
+          inputMode="numeric"
+          maxLength={14}
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
+          onChange={(e) => setPhone(e.target.value.replace(/[^\d\s]/g, ""))}
         />
       </div>
 
       <div>
         <label className="mb-2 block text-sm font-semibold">E-posta</label>
-        <input
+        <Input
           type="email"
+          maxLength={254}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="ornek@email.com"
-          className="w-full rounded-md border border-border bg-surface px-3.5 py-3 text-sm"
         />
         {!email && (
           <p className="mt-1 text-xs text-warning">

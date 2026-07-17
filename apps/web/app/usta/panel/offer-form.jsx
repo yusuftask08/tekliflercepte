@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { Button } from "@tekliflercepte/ui";
+import { Button, Input, Textarea } from "@tekliflercepte/ui";
 
 export function OfferForm({ requestId }) {
   const router = useRouter();
@@ -50,23 +50,23 @@ export function OfferForm({ requestId }) {
     <form onSubmit={submit} className="flex flex-col gap-3 rounded-md border border-border bg-bg p-3">
       <div>
         <label className="mb-1.5 block text-xs font-semibold">Fiyatın (₺)</label>
-        <input
+        <Input
           type="number"
           required
           min="1"
+          max="1000000"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
-          className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm"
         />
       </div>
       <div>
         <label className="mb-1.5 block text-xs font-semibold">Mesaj (opsiyonel)</label>
-        <textarea
+        <Textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           rows={2}
+          maxLength={500}
           placeholder="Örn: Yarın sabah 09:00'da gelebilirim..."
-          className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm"
         />
       </div>
       <div className="flex gap-2">
