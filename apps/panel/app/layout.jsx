@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@tekliflercepte/ui";
+import { ToastProvider } from "./toast-provider";
 import "./globals.css";
 
 export const metadata = {
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className="min-h-screen bg-bg font-sans text-text">
         <ThemeProvider>{children}</ThemeProvider>
+        <ToastProvider />
       </body>
     </html>
   );

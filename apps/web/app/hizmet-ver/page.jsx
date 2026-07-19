@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@tekliflercepte/ui";
 import { HowItWorksIcon } from "../how-it-works-icon";
+import { TrustIcon } from "../trust-icon";
 import { SiteFooter } from "../site-footer";
 import { getSessionUser } from "@/lib/session";
 
@@ -13,38 +14,35 @@ export const metadata = {
 
 const BENEFITS = [
   {
+    icon: "free",
     title: "Teklif vermek ücretsiz",
     body: "Diğer platformların aksine teklif verme ücreti almıyoruz — sınırsız teklif ver.",
-    tone: "bg-brand-100 text-brand-600",
   },
   {
+    icon: "shield",
     title: "Komisyon yok",
     body: "İşi kazandığında da bir kesinti yok. Kazandığın ücret tamamen sana kalır.",
-    tone: "bg-info/10 text-info",
   },
   {
+    icon: "phone",
     title: "Güvenilir profil",
     body: "Telefon doğrulama, puan ve tamamlanan iş sayınla müşterilerin gözünde öne çık.",
-    tone: "bg-success/10 text-success",
   },
 ];
 
 const STEPS = [
   {
     icon: "request",
-    tone: "bg-brand-100 text-brand-600",
     title: "Ücretsiz kayıt ol",
     body: "Birkaç adımda hesabını oluştur, hizmet verdiğin kategorileri seç.",
   },
   {
     icon: "compare",
-    tone: "bg-info/10 text-info",
     title: "Sana uygun talepleri gör",
     body: "Kategorine ve bölgene uygun açık talepler önüne gelsin.",
   },
   {
     icon: "choose",
-    tone: "bg-success/10 text-success",
     title: "Teklif ver, işi kazan",
     body: "Fiyatını ve mesajını gönder, müşteri seni seçerse doğrudan anlaşın.",
   },
@@ -81,35 +79,53 @@ export default async function HizmetVerPage() {
             </div>
           </div>
 
-          <div className="relative w-full max-w-md overflow-hidden rounded-lg bg-gradient-to-br from-primary to-primary-strong p-6 shadow-lg sm:p-10 lg:flex-1">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -right-10 -top-16 h-56 w-56 rounded-full bg-white/10"
-            />
-            <div className="relative grid grid-cols-2 gap-4 text-center text-text-on-brand">
+          <div className="w-full max-w-md rounded-lg border border-border bg-surface p-6 shadow-lg sm:p-8 lg:flex-1">
+            <div className="grid grid-cols-2 gap-4 border-b border-border pb-6 text-center">
               <div>
-                <div className="text-2xl font-extrabold sm:text-3xl">%0</div>
-                <div className="mt-1 text-xs opacity-85 sm:text-sm">teklif ücreti</div>
+                <div className="text-2xl font-extrabold text-primary sm:text-3xl">%0</div>
+                <div className="mt-1 text-xs text-text-muted sm:text-sm">teklif ücreti</div>
               </div>
               <div>
-                <div className="text-2xl font-extrabold sm:text-3xl">%0</div>
-                <div className="mt-1 text-xs opacity-85 sm:text-sm">komisyon</div>
+                <div className="text-2xl font-extrabold text-primary sm:text-3xl">%0</div>
+                <div className="mt-1 text-xs text-text-muted sm:text-sm">komisyon</div>
               </div>
+            </div>
+            <div className="mt-5 flex flex-col gap-3 text-left">
+              {["Telefon doğrulama ile profilini güçlendir", "Bölgene uygun talepler önüne gelsin", "Kazandığın ücret tamamen sana kalır"].map(
+                (text) => (
+                  <div key={text} className="flex items-center gap-2.5 text-sm">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 text-success">
+                      <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.15" />
+                      <path d="M8 12.5l2.5 2.5L16 9.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <span className="text-text-muted">{text}</span>
+                  </div>
+                )
+              )}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="border-t border-border bg-surface px-4 py-12 sm:px-6 lg:px-8">
+      <section className="border-t border-border bg-surface px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <h2 className="text-center text-2xl font-bold sm:text-3xl">Nasıl Çalışır?</h2>
-          <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-3">
-            {STEPS.map((step) => (
-              <div key={step.title} className="text-center sm:text-left">
-                <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-lg sm:mx-0 ${step.tone}`}>
-                  <HowItWorksIcon name={step.icon} />
+          <div className="relative mt-12 grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-6 hidden border-t border-dashed border-border sm:block"
+            />
+            {STEPS.map((step, i) => (
+              <div key={step.title} className="relative text-center sm:text-left">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border-2 border-primary bg-bg text-sm font-extrabold text-primary sm:mx-0">
+                  {i + 1}
                 </div>
-                <div className="mt-4 text-lg font-bold">{step.title}</div>
+                <div className="mt-4 flex items-center justify-center gap-2.5 sm:justify-start">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-100 text-brand-600">
+                    <HowItWorksIcon name={step.icon} />
+                  </span>
+                  <div className="text-lg font-bold">{step.title}</div>
+                </div>
                 <p className="mt-2 text-sm leading-relaxed text-text-muted">{step.body}</p>
               </div>
             ))}
@@ -117,7 +133,7 @@ export default async function HizmetVerPage() {
         </div>
       </section>
 
-      <section className="px-4 py-12 sm:px-6 lg:px-8">
+      <section className="px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <h2 className="text-center text-2xl font-bold sm:text-3xl">Neden Teklifler Cepte?</h2>
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
@@ -126,12 +142,10 @@ export default async function HizmetVerPage() {
                 key={item.title}
                 className="rounded-lg border border-border bg-surface p-6 shadow-sm transition-shadow hover:shadow-md"
               >
-                <div className={`mb-4 flex h-11 w-11 items-center justify-center rounded-lg ${item.tone}`}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-brand-100 text-brand-600">
+                  <TrustIcon name={item.icon} />
                 </div>
-                <div className="text-lg font-bold">{item.title}</div>
+                <div className="mt-4 text-lg font-bold">{item.title}</div>
                 <p className="mt-2 text-sm leading-relaxed text-text-muted">{item.body}</p>
               </div>
             ))}

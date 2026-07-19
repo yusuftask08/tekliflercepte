@@ -91,7 +91,7 @@ function getItems(user, unreadCount) {
   }
   if (user.role === "PROVIDER") {
     return [
-      { href: "/usta/panel", label: "Açık İşler", icon: ICONS.panel },
+      { href: "/usta/panel", label: "Panelim", icon: ICONS.panel },
       { href: "/mesajlar", label: "Mesajlar", icon: ICONS.messages, badge: unreadCount },
       { href: "/usta/ayarlar", label: "Ayarlar", icon: ICONS.settings },
     ];

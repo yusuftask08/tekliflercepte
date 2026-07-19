@@ -1,5 +1,55 @@
 @import "@tekliflercepte/ui/tokens.css";
+@import "react-toastify/dist/ReactToastify.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Toasts use the app's own surface/success/danger tokens instead of
+   react-toastify's default saturated fill colors — same treatment as
+   apps/web/app/globals.css, kept in sync. */
+:root {
+  --toastify-color-light: var(--color-surface);
+  --toastify-color-success: var(--color-success);
+  --toastify-color-error: var(--color-danger);
+  --toastify-color-info: var(--color-info);
+  --toastify-color-warning: var(--color-warning, #d97706);
+  --toastify-text-color-light: var(--color-text);
+  --toastify-font-family: var(--font-sans, inherit);
+}
+
+.Toastify__toast {
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  padding: 0.5rem;
+}
+
+.Toastify__toast-body {
+  color: var(--color-text);
+  font-size: 0.875rem;
+}
+
+/* Baseline polish applied once, globally — a visible keyboard focus ring
+   and a light transition on interactive elements. Same rules as
+   apps/web/app/globals.css, kept in sync. */
+a,
+button,
+[role="button"] {
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

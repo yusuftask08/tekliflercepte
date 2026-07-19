@@ -3,9 +3,11 @@ import { Button } from "@tekliflercepte/ui";
 import { CategoryIcon } from "./category-icon";
 import { categoryTone } from "./category-theme";
 import { HowItWorksIcon } from "./how-it-works-icon";
+import { TrustIcon } from "./trust-icon";
 import { HomeFab } from "./home-fab";
 import { HeroSearch } from "./hero-search";
 import { SiteFooter } from "./site-footer";
+import { getSessionUser } from "@/lib/session";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tekliflercepte.com";
 
@@ -40,42 +42,67 @@ const JSON_LD = {
   ],
 };
 
+const VALUE_PROPS = [
+  {
+    icon: "free",
+    title: "Teklif Almak Ücretsiz",
+    body: "İhtiyacını paylaş, ustalardan gelen teklifleri karşılaştır. Cebinden bir kuruş çıkmaz.",
+  },
+  {
+    icon: "clock",
+    title: "Zaman Kazan",
+    body: "Dükkan dükkan gezmek yerine teklifler sana gelsin, zamanın sevdiklerinle kalsın.",
+  },
+  {
+    icon: "shield",
+    title: "Doğrulanmış Ustalar",
+    body: "Telefonu doğrulanmış, puanı ve geçmiş işleri görünür ustalarla çalış.",
+  },
+  {
+    icon: "spark",
+    title: "Kolayca Kullan",
+    body: "Birkaç soruyu cevapla, talebini bir dakikada oluştur.",
+  },
+];
+
 const HOW_IT_WORKS = [
   {
     icon: "request",
-    tone: "bg-brand-100 text-brand-600",
     title: "Talebini anlat",
     body: "Ne tür bir hizmete ihtiyacın olduğunu, konumunu ve detayları birkaç adımda gir.",
   },
   {
     icon: "compare",
-    tone: "bg-info/10 text-info",
     title: "Ücretsiz teklifleri karşılaştır",
     body: "Ustalar sana teklif gönderir — bu tamamen ücretsiz, komisyon yok.",
   },
   {
     icon: "choose",
-    tone: "bg-success/10 text-success",
     title: "Ustanı seç, işini yaptır",
     body: "Beğendiğin teklifi seç, ustayla doğrudan anlaş, ödemeyi ona doğrudan yap.",
   },
 ];
 
-const DIFFERENTIATORS = [
+const TRUST_SIGNALS = [
   {
-    title: "Teklif vermek ücretsiz",
-    body: "Diğer platformların aksine ustalardan teklif ücreti almıyoruz.",
-    tone: "bg-brand-100 text-brand-600",
+    icon: "phone",
+    title: "Telefon Doğrulama",
+    body: "Ustalar platforma katılmadan önce telefon numarasını doğrular, kimliğini teyit eder.",
   },
   {
-    title: "Komisyon yok",
-    body: "İş gerçekleştiğinde de bir kesinti yok — ödeme tamamen sizin aranızda.",
-    tone: "bg-info/10 text-info",
+    icon: "checklist",
+    title: "İçerik Moderasyonu",
+    body: "Her talep, ustalara görünmeden önce ekibimiz tarafından incelenir ve onaylanır.",
   },
   {
-    title: "Doğrulanmış ustalar",
-    body: "Telefonu doğrulanmış, geçmiş işleri ve puanı görünür ustalarla çalış.",
-    tone: "bg-success/10 text-success",
+    icon: "lock",
+    title: "KVKK Uyumlu",
+    body: "Verilerin yalnızca rızan dahilinde işlenir; aydınlatma metnimizi dilediğin zaman okuyabilirsin.",
+  },
+  {
+    icon: "shield",
+    title: "Güvenli Mesajlaşma",
+    body: "Şüpheli kullanıcıları engelleyebilir, raporlayabilirsin; spam ve kötüye kullanıma karşı sınırlarımız var.",
   },
 ];
 
@@ -102,7 +129,12 @@ async function getPublicStats() {
 }
 
 export default async function HomePage() {
-  const [categories, stats] = await Promise.all([getCategories(), getPublicStats()]);
+  const [categories, stats, user] = await Promise.all([
+    getCategories(),
+    getPublicStats(),
+    getSessionUser(),
+  ]);
+  const showProviderCta = !user || user.role !== "PROVIDER";
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
@@ -114,25 +146,25 @@ export default async function HomePage() {
       />
 
       {/* Hero */}
-      <section className="px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-8 text-center lg:flex-row lg:text-left">
-          <div className="lg:max-w-xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-brand-100 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-brand-700">
+      <section className="px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-10 text-center lg:flex-row lg:items-stretch lg:gap-14 lg:text-left">
+          <div className="lg:max-w-xl lg:py-4">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-brand-100 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-brand-700">
               Türkiye&apos;nin ücretsiz teklif pazaryeri
             </div>
-            <h1 className="text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">
+            <h1 className="text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
               Ustanı bul, <span className="text-primary">teklif iste</span>
             </h1>
-            <p className="mt-4 text-base text-text-muted sm:text-lg">
+            <p className="mt-4 text-base leading-relaxed text-text-muted sm:text-lg">
               Teklif vermek ücretsiz, komisyon yok. Ödemeyi doğrudan ustaya yaparsın — aracı olarak
               cebinden bir kuruş almayız.
             </p>
-            <div className="mt-6 flex justify-center lg:justify-start">
+            <div className="mt-7 flex justify-center lg:justify-start">
               <HeroSearch categories={categories} />
             </div>
             <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
               <Link href="/talep-olustur">
-                <Button size="lg" className="w-full shadow-lg sm:w-auto">
+                <Button size="lg" className="w-full shadow-md sm:w-auto">
                   Talep Oluştur
                 </Button>
               </Link>
@@ -144,46 +176,99 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="relative w-full max-w-md overflow-hidden rounded-lg bg-gradient-to-br from-primary to-primary-strong p-6 shadow-lg sm:p-10 lg:flex-1">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -right-10 -top-16 h-56 w-56 rounded-full bg-white/10"
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -bottom-14 -left-10 h-40 w-40 rounded-full bg-white/10"
-            />
-            <div className="relative grid grid-cols-3 gap-4 text-center text-text-on-brand">
-              <div>
-                <div className="text-2xl font-extrabold sm:text-3xl">{stats?.completedJobsCount ?? 0}</div>
-                <div className="mt-1 text-xs opacity-85 sm:text-sm">tamamlanan iş</div>
-              </div>
-              <div>
-                <div className="text-2xl font-extrabold sm:text-3xl">
-                  {stats?.avgRating ? `${stats.avgRating.toFixed(1)} ★` : "—"}
+          <div className="w-full max-w-md rounded-lg border border-border bg-surface p-6 shadow-lg sm:p-8 lg:flex-1">
+            {/* Below a real-traction threshold, raw counters (1 tamamlanan iş,
+                "—" ortalama puan) undersell a brand-new platform — qualitative
+                promises read better than a low number. Once there's enough
+                completed work to be genuinely impressive, this flips itself
+                over to the real stats automatically. */}
+            {stats?.completedJobsCount >= 20 ? (
+              <div className="grid grid-cols-3 gap-4 border-b border-border pb-6 text-center">
+                <div>
+                  <div className="text-2xl font-extrabold text-primary sm:text-3xl">
+                    {stats.completedJobsCount}+
+                  </div>
+                  <div className="mt-1 text-xs text-text-muted sm:text-sm">tamamlanan iş</div>
                 </div>
-                <div className="mt-1 text-xs opacity-85 sm:text-sm">ortalama puan</div>
+                <div>
+                  <div className="text-2xl font-extrabold text-primary sm:text-3xl">
+                    {stats.avgRating ? `${stats.avgRating.toFixed(1)} ★` : "—"}
+                  </div>
+                  <div className="mt-1 text-xs text-text-muted sm:text-sm">ortalama puan</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-extrabold text-primary sm:text-3xl">%100</div>
+                  <div className="mt-1 text-xs text-text-muted sm:text-sm">ücretsiz teklif</div>
+                </div>
               </div>
-              <div>
-                <div className="text-2xl font-extrabold sm:text-3xl">%100</div>
-                <div className="mt-1 text-xs opacity-85 sm:text-sm">ücretsiz teklif</div>
+            ) : (
+              <div className="grid grid-cols-3 gap-3 border-b border-border pb-6 text-center">
+                <div>
+                  <div className="text-xl font-extrabold text-primary sm:text-2xl">Ücretsiz</div>
+                  <div className="mt-1 text-xs text-text-muted sm:text-sm">teklif almak</div>
+                </div>
+                <div>
+                  <div className="text-xl font-extrabold text-primary sm:text-2xl">%0</div>
+                  <div className="mt-1 text-xs text-text-muted sm:text-sm">komisyon</div>
+                </div>
+                <div>
+                  <div className="text-xl font-extrabold text-primary sm:text-2xl">Dakikalar</div>
+                  <div className="mt-1 text-xs text-text-muted sm:text-sm">içinde teklif al</div>
+                </div>
               </div>
+            )}
+            <div className="mt-5 flex flex-col gap-3 text-left">
+              {["Telefonu doğrulanmış ustalar", "Talepler onaydan geçmeden yayınlanmaz", "KVKK uyumlu veri işleme"].map(
+                (text) => (
+                  <div key={text} className="flex items-center gap-2.5 text-sm">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 text-success">
+                      <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.15" />
+                      <path d="M8 12.5l2.5 2.5L16 9.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <span className="text-text-muted">{text}</span>
+                  </div>
+                )
+              )}
             </div>
           </div>
         </div>
       </section>
 
+      {/* Değer önerileri */}
+      <section className="border-y border-border bg-surface px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {VALUE_PROPS.map((item) => (
+            <div key={item.title} className="text-center sm:text-left">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-100 text-brand-600 sm:mx-0">
+                <TrustIcon name={item.icon} />
+              </div>
+              <div className="mt-3 text-base font-bold">{item.title}</div>
+              <p className="mt-1.5 text-sm leading-relaxed text-text-muted">{item.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Nasıl Çalışır */}
-      <section id="nasil-calisir" className="border-t border-border bg-surface px-4 py-12 sm:px-6 lg:px-8">
+      <section id="nasil-calisir" className="px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <h2 className="text-center text-2xl font-bold sm:text-3xl">Nasıl Çalışır?</h2>
-          <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-3">
-            {HOW_IT_WORKS.map((step) => (
-              <div key={step.title} className="text-center sm:text-left">
-                <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-lg sm:mx-0 ${step.tone}`}>
-                  <HowItWorksIcon name={step.icon} />
+          <div className="relative mt-12 grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-6 hidden border-t border-dashed border-border sm:block"
+            />
+            {HOW_IT_WORKS.map((step, i) => (
+              <div key={step.title} className="relative text-center sm:text-left">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border-2 border-primary bg-surface text-sm font-extrabold text-primary sm:mx-0">
+                  {i + 1}
                 </div>
-                <div className="mt-4 text-lg font-bold">{step.title}</div>
+                <div className="mt-4 flex items-center justify-center gap-2.5 sm:justify-start">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-100 text-brand-600">
+                    <HowItWorksIcon name={step.icon} />
+                  </span>
+                  <div className="text-lg font-bold">{step.title}</div>
+                </div>
                 <p className="mt-2 text-sm leading-relaxed text-text-muted">{step.body}</p>
               </div>
             ))}
@@ -192,7 +277,7 @@ export default async function HomePage() {
       </section>
 
       {/* Kategoriler */}
-      <section id="kategoriler" className="px-4 py-12 sm:px-6 lg:px-8">
+      <section id="kategoriler" className="border-t border-border bg-surface px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -211,7 +296,7 @@ export default async function HomePage() {
               et.
             </p>
           ) : (
-            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {categories.map((category) => {
                 const tone = categoryTone(category.slug);
                 const shown = category.children.slice(0, 6);
@@ -219,7 +304,7 @@ export default async function HomePage() {
                 return (
                   <div
                     key={category.id}
-                    className="rounded-lg border border-border bg-surface p-5 shadow-sm transition-shadow hover:shadow-md"
+                    className="rounded-lg border border-border bg-bg p-5 shadow-sm transition-shadow hover:shadow-md"
                   >
                     <Link
                       href={`/talep-olustur?kategori=${category.slug}`}
@@ -238,7 +323,7 @@ export default async function HomePage() {
                         <Link
                           key={sub.id}
                           href={`/talep-olustur?kategori=${category.slug}&hizmet=${sub.slug}`}
-                          className="rounded-full bg-bg px-2.5 py-1 text-xs text-text-muted hover:bg-brand-50 hover:text-brand-700"
+                          className="rounded-full bg-surface px-2.5 py-1 text-xs text-text-muted hover:bg-brand-50 hover:text-brand-700"
                         >
                           {sub.name}
                         </Link>
@@ -260,22 +345,46 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Neden Teklifler Cepte */}
-      <section className="border-t border-border bg-surface px-4 py-12 sm:px-6 lg:px-8">
+      {/* Hizmet veren olarak katıl */}
+      {showProviderCta && (
+        <section className="px-4 py-14 sm:px-6 lg:px-8">
+          <div className="mx-auto flex max-w-7xl flex-col items-center gap-8 overflow-hidden rounded-lg bg-gradient-to-br from-primary to-primary-strong p-8 text-center text-text-on-brand sm:p-12 lg:flex-row lg:justify-between lg:text-left">
+            <div className="lg:max-w-lg">
+              <h2 className="text-2xl font-extrabold sm:text-3xl">Hizmet veren olarak katıl</h2>
+              <p className="mt-3 text-sm leading-relaxed opacity-90 sm:text-base">
+                Bölgende açılan taleplere ücretsiz teklif ver, komisyon ödemeden iş kazan. Kayıt
+                olmak bir dakika sürer.
+              </p>
+            </div>
+            <Link href="/hizmet-ver" className="flex-shrink-0">
+              <Button size="lg" className="w-full bg-surface !text-primary shadow-md hover:opacity-90 sm:w-auto">
+                Ücretsiz üye ol →
+              </Button>
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {/* Güven & Şeffaflık */}
+      <section className="border-t border-border bg-surface px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <h2 className="text-center text-2xl font-bold sm:text-3xl">Neden Teklifler Cepte?</h2>
-          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
-            {DIFFERENTIATORS.map((item) => (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold sm:text-3xl">Güven & Şeffaflık</h2>
+            <p className="mx-auto mt-2 max-w-2xl text-sm text-text-muted sm:text-base">
+              Aracı hizmet sağlayıcı olarak, ödeme veya sözleşmeye taraf olmadan güvenli bir buluşma
+              noktası olmayı hedefliyoruz.
+            </p>
+          </div>
+          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {TRUST_SIGNALS.map((item) => (
               <div
                 key={item.title}
                 className="rounded-lg border border-border bg-bg p-6 shadow-sm transition-shadow hover:shadow-md"
               >
-                <div className={`mb-4 flex h-11 w-11 items-center justify-center rounded-lg ${item.tone}`}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-brand-100 text-brand-600">
+                  <TrustIcon name={item.icon} />
                 </div>
-                <div className="text-lg font-bold">{item.title}</div>
+                <div className="mt-4 text-base font-bold">{item.title}</div>
                 <p className="mt-2 text-sm leading-relaxed text-text-muted">{item.body}</p>
               </div>
             ))}

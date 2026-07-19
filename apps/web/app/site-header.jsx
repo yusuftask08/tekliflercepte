@@ -56,7 +56,7 @@ export function SiteHeader({ user, unreadCount }) {
           )}
         </nav>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-4">
           {user && <NotificationBell />}
           <div className="hidden items-center gap-4 lg:flex">
             {user ? (
@@ -65,7 +65,7 @@ export function SiteHeader({ user, unreadCount }) {
                   href={user.role === "PROVIDER" ? "/usta/panel" : "/taleplerim"}
                   className="text-sm font-semibold"
                 >
-                  {user.role === "PROVIDER" ? "Açık İşler" : "Taleplerim"}
+                  {user.role === "PROVIDER" ? "Panelim" : "Taleplerim"}
                 </Link>
                 {user.role !== "PROVIDER" && (
                   <Link href="/favorilerim" className="text-sm font-semibold">

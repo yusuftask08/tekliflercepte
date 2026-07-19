@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export function ResetPasswordButton({ userId }) {
   const [tempPassword, setTempPassword] = useState(null);
@@ -12,7 +13,13 @@ export function ResetPasswordButton({ userId }) {
     try {
       const res = await fetch(`/api/users/${userId}/reset-password`, { method: "POST" });
       const data = await res.json();
-      if (res.ok) setTempPassword(data.tempPassword);
+      if (res.ok) {
+        setTempPassword(data.tempPassword);
+      } else {
+        toast.error(data.error ?? "Şifre sıfırlanamadı, tekrar dene.");
+      }
+    } catch {
+      toast.error("Bir bağlantı sorunu oluştu, lütfen tekrar dene.");
     } finally {
       setSubmitting(false);
     }

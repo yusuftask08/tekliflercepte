@@ -9,6 +9,31 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Baseline polish applied once, globally, instead of per-component:
+   a visible keyboard focus ring (previously only 1 file had any focus
+   style at all) and a light transition on the interactive elements that
+   don't already define their own (most raw <button>s in the app). */
+a,
+button,
+[role="button"] {
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* Toasts use the app's own surface/success/danger tokens instead of
    react-toastify's default saturated fill colors, so they read as a
    notification card rather than a solid block of color. */

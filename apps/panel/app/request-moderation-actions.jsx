@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export function RequestModerationActions({ requestId }) {
   const router = useRouter();
@@ -10,8 +11,15 @@ export function RequestModerationActions({ requestId }) {
   const act = async (action) => {
     setSubmitting(true);
     try {
-      await fetch(`/api/requests/${requestId}/${action}`, { method: "POST" });
+      const res = await fetch(`/api/requests/${requestId}/${action}`, { method: "POST" });
+      if (!res.ok) {
+        const data = await res.json();
+        toast.error(data.error ?? "İşlem başarısız, tekrar dene.");
+        return;
+      }
       router.refresh();
+    } catch {
+      toast.error("Bir bağlantı sorunu oluştu, lütfen tekrar dene.");
     } finally {
       setSubmitting(false);
     }

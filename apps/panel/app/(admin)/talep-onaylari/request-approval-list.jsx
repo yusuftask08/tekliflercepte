@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import { RequestModerationActions } from "../../request-moderation-actions";
 
 export function RequestApprovalList({ requests, apiOrigin }) {
@@ -21,11 +22,17 @@ export function RequestApprovalList({ requests, apiOrigin }) {
   const bulkAct = async (action) => {
     setBulkSubmitting(true);
     try {
-      await Promise.all(
+      const results = await Promise.all(
         Array.from(selected).map((id) => fetch(`/api/requests/${id}/${action}`, { method: "POST" }))
       );
+      const failed = results.filter((r) => !r.ok).length;
+      if (failed > 0) {
+        toast.error(`${failed} talep işlenemedi, listeyi kontrol et.`);
+      }
       setSelected(new Set());
       router.refresh();
+    } catch {
+      toast.error("Bir bağlantı sorunu oluştu, lütfen tekrar dene.");
     } finally {
       setBulkSubmitting(false);
     }

@@ -63,7 +63,7 @@ export default async function UstaPanelPage() {
       <div className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold sm:text-3xl">Açık İşler</h1>
+            <h1 className="text-2xl font-bold sm:text-3xl">Panelim</h1>
             <Link href="/profil" className="mt-1 inline-block text-sm font-semibold text-primary">
               Profilimi düzenle
             </Link>
