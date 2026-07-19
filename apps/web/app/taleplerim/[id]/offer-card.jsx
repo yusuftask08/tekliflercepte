@@ -32,16 +32,18 @@ export function OfferCard({ offer, requestClosed }) {
   return (
     <div className="rounded-lg border border-border bg-surface p-3 shadow-sm">
       <div className="flex gap-2.5">
-        <Avatar name={name} size="md" />
-        <div className="flex-1">
-          <div className="text-sm font-bold">{name}</div>
-          {profile?.businessName && (
-            <div className="text-[11px] text-text-muted">{profile.businessName}</div>
-          )}
-          <div className="mt-0.5">
-            <StarRating rating={Number(profile?.avgRating ?? 0)} reviewCount={profile?.reviewCount ?? 0} />
+        <Link href={`/usta/${provider.id}`} className="flex flex-1 gap-2.5">
+          <Avatar name={name} size="md" />
+          <div className="flex-1">
+            <div className="text-sm font-bold hover:underline">{name}</div>
+            {profile?.businessName && (
+              <div className="text-[11px] text-text-muted">{profile.businessName}</div>
+            )}
+            <div className="mt-0.5">
+              <StarRating rating={Number(profile?.avgRating ?? 0)} reviewCount={profile?.reviewCount ?? 0} />
+            </div>
           </div>
-        </div>
+        </Link>
         <div className="text-lg font-extrabold text-brand-700">{formatPrice(offer.price)}</div>
       </div>
 

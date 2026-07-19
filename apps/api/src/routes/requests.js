@@ -47,7 +47,7 @@ export default async function requestRoutes(app) {
     if (req.user.role !== "CUSTOMER") {
       return reply.code(403).send({ error: "Usta hesabıyla talep oluşturulamaz" });
     }
-    const { categoryId, city, district, details, answers, photos, preferredDate } = req.body ?? {};
+    const { categoryId, city, district, details, answers, photos, preferredDate, budget } = req.body ?? {};
     if (!categoryId || !city || !details) {
       return reply.code(400).send({ error: "categoryId, city ve details zorunlu" });
     }
@@ -61,6 +61,7 @@ export default async function requestRoutes(app) {
         answers,
         photos: photos ?? [],
         preferredDate: preferredDate ? new Date(preferredDate) : null,
+        budget: budget || null,
       },
     });
 

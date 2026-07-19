@@ -41,7 +41,10 @@ function QuestionField({ question, value, onChange }) {
   if (question.type === "select") {
     return (
       <div>
-        <label className="mb-2 block text-sm font-semibold">{question.label}</label>
+        <label className="mb-2 block text-sm font-semibold">
+        {question.label}
+        {question.required && <span className="text-danger"> *</span>}
+      </label>
         <div className="flex flex-wrap gap-2">
           {question.options.map((option) => (
             <button
@@ -61,7 +64,10 @@ function QuestionField({ question, value, onChange }) {
   }
   return (
     <div>
-      <label className="mb-2 block text-sm font-semibold">{question.label}</label>
+      <label className="mb-2 block text-sm font-semibold">
+        {question.label}
+        {question.required && <span className="text-danger"> *</span>}
+      </label>
       <Input
         type={question.type === "number" ? "number" : "text"}
         maxLength={question.type === "number" ? undefined : 200}
@@ -105,8 +111,11 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
   const [step, setStep] = useState(preselectedLeaf ? 1 : 0);
   const [group, setGroup] = useState(preselectedLeaf?.group ?? preselectedGroup);
   const [category, setCategory] = useState(preselectedLeaf?.leaf ?? null);
+  const [categorySearch, setCategorySearch] = useState("");
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
+  const [preferredDate, setPreferredDate] = useState("");
+  const [locating, setLocating] = useState(false);
   const [details, setDetails] = useState("");
   const [budget, setBudget] = useState("");
   const [answers, setAnswers] = useState({});
@@ -116,11 +125,16 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
   const apiOrigin = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [autoSubmitPending, setAutoSubmitPending] = useState(false);
   // The specific subcategory's own questions take priority — the group's
   // shared default doesn't fit every one of its subcategories (e.g. "kaç
   // oda?" makes no sense for Apartman Temizliği or Kuru Temizleme).
   const questionSet = category?.questions ?? group?.questions ?? [];
 
+  // Restores a draft saved right before a guest was sent to log in (see the
+  // 401 branch in submit()) and finishes the job for them — they filled the
+  // form once, they shouldn't have to do it again just because they had to
+  // create an account first.
   useEffect(() => {
     const saved = sessionStorage.getItem(DRAFT_KEY);
     if (!saved) return;
@@ -132,12 +146,53 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
     setCategory(found?.leaf ?? null);
     setCity(draft.city);
     setDistrict(draft.district);
+    setPreferredDate(draft.preferredDate ?? "");
     setDetails(draft.details);
     setBudget(draft.budget);
     setAnswers(draft.answers ?? {});
     setPhotos(draft.photos ?? []);
+    setAutoSubmitPending(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (!autoSubmitPending) return;
+    setAutoSubmitPending(false);
+    submit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoSubmitPending]);
+
+  const useMyLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Tarayıcın konum özelliğini desteklemiyor.");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const res = await fetch(`/api/locations/reverse-geocode?lat=${latitude}&lon=${longitude}`);
+          const data = await res.json();
+          if (data.city) {
+            setCity(data.city);
+            setDistrict("");
+          } else {
+            toast.error("Konumun bir şehirle eşleştirilemedi.");
+          }
+        } catch {
+          toast.error("Konum alınırken bir sorun oluştu.");
+        } finally {
+          setLocating(false);
+        }
+      },
+      () => {
+        toast.error("Konum izni verilmedi.");
+        setLocating(false);
+      },
+      { timeout: 10000 }
+    );
+  };
 
   const uploadPhoto = async (e) => {
     const file = e.target.files?.[0];
@@ -176,7 +231,9 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
           categoryId: category.id,
           city,
           district: district || undefined,
+          preferredDate: preferredDate || undefined,
           details,
+          budget: budget || undefined,
           answers,
           photos,
         }),
@@ -189,6 +246,7 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
             categoryId: category.id,
             city,
             district,
+            preferredDate,
             details,
             budget,
             answers,
@@ -218,7 +276,8 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
           <div className="text-4xl">🎉</div>
           <div className="text-xl font-bold">Talebin gönderildi!</div>
           <div className="text-sm text-text-muted">
-            Ustalar teklif verdikçe bildirim alacaksın. Teklif vermek onlar için de ücretsiz.
+            Talebin kısa bir incelemeden sonra ustalara gönderilecek. Ustalar teklif verdikçe
+            bildirim alacaksın — teklif vermek onlar için de ücretsiz.
           </div>
           <Button className="w-full" onClick={() => router.push("/")}>
             Ana Sayfaya Dön
@@ -266,6 +325,7 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
                   onClick={() => {
                     setGroup(null);
                     setCategory(null);
+                    setCategorySearch("");
                   }}
                   className="mb-3 flex items-center gap-1 text-sm text-text-muted"
                 >
@@ -274,18 +334,28 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
                   </svg>
                   {group.name}
                 </button>
+                {group.children.length > 6 && (
+                  <Input
+                    value={categorySearch}
+                    onChange={(e) => setCategorySearch(e.target.value)}
+                    placeholder="Hizmet ara..."
+                    className="mb-3"
+                  />
+                )}
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-2.5 lg:grid-cols-3">
-                  {group.children.map((sub) => (
-                    <button
-                      key={sub.id}
-                      onClick={() => setCategory(sub)}
-                      className={`rounded-md border bg-surface px-3 py-3 text-left text-sm shadow-sm ${
-                        category?.id === sub.id ? "border-primary bg-brand-50 font-semibold" : "border-border"
-                      }`}
-                    >
-                      {sub.name}
-                    </button>
-                  ))}
+                  {group.children
+                    .filter((sub) => sub.name.toLocaleLowerCase("tr").includes(categorySearch.toLocaleLowerCase("tr")))
+                    .map((sub) => (
+                      <button
+                        key={sub.id}
+                        onClick={() => setCategory(sub)}
+                        className={`rounded-md border bg-surface px-3 py-3 text-left text-sm shadow-sm ${
+                          category?.id === sub.id ? "border-primary bg-brand-50 font-semibold" : "border-border"
+                        }`}
+                      >
+                        {sub.name}
+                      </button>
+                    ))}
                 </div>
               </div>
             )}
@@ -294,15 +364,29 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
           <div className="flex flex-col gap-4">
             <div>
               <label className="mb-2 block text-sm font-semibold">Şehir</label>
-              <SearchSelect
-                value={city}
-                onChange={(value) => {
-                  setCity(value);
-                  setDistrict("");
-                }}
-                options={TR_LOCATIONS.map((p) => p.name)}
-                placeholder="İl ara..."
-              />
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <SearchSelect
+                    value={city}
+                    onChange={(value) => {
+                      setCity(value);
+                      setDistrict("");
+                    }}
+                    options={TR_LOCATIONS.map((p) => p.name)}
+                    placeholder="İl ara..."
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={useMyLocation}
+                  disabled={locating}
+                  title="Yakınımı Kullan"
+                  aria-label="Yakınımı Kullan"
+                  className="flex-shrink-0 rounded-md border border-border bg-surface px-3.5 text-sm disabled:opacity-50"
+                >
+                  {locating ? "…" : "📍"}
+                </button>
+              </div>
             </div>
             <div>
               <label className="mb-2 block text-sm font-semibold">İlçe (opsiyonel)</label>
@@ -312,6 +396,16 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
                 options={TR_LOCATIONS.find((p) => p.name === city)?.districts ?? []}
                 placeholder={city ? "İlçe ara..." : "Önce il seç"}
                 disabled={!city}
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-semibold">Tercih ettiğin tarih (opsiyonel)</label>
+              <input
+                type="date"
+                value={preferredDate}
+                min={new Date().toISOString().slice(0, 10)}
+                onChange={(e) => setPreferredDate(e.target.value)}
+                className="w-full rounded-md border border-border bg-bg px-3.5 py-2.5 text-sm"
               />
             </div>
           </div>
@@ -463,7 +557,12 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
           </Button>
         )}
         {step === 2 && (
-          <Button className="w-full" size="lg" disabled={!details} onClick={() => setStep(3)}>
+          <Button
+            className="w-full"
+            size="lg"
+            disabled={!details || questionSet.some((q) => q.required && !answers[q.id])}
+            onClick={() => setStep(3)}
+          >
             Devam Et
           </Button>
         )}

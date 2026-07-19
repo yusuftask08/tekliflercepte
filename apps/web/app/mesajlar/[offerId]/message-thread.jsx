@@ -87,7 +87,10 @@ export function MessageThread({ offerId, initialMessages, customerId, viewerId }
       if (!res.ok) return;
       const older = await res.json();
       setHasMoreOlder(older.length === PAGE_SIZE);
-      setMessages((prev) => [...older, ...prev]);
+      setMessages((prev) => {
+        const ids = new Set(prev.map((m) => m.id));
+        return [...older.filter((m) => !ids.has(m.id)), ...prev];
+      });
     } finally {
       setLoadingOlder(false);
     }
@@ -203,7 +206,11 @@ export function MessageThread({ offerId, initialMessages, customerId, viewerId }
         toast.error(data.error ?? "Mesaj gönderilemedi, tekrar dene.");
         return;
       }
-      setMessages((prev) => [...prev, data]);
+      // The server broadcasts this over SSE the moment it's created, before
+      // this fetch even resolves — our own EventSource (subscribed to this
+      // same thread) can easily append it first. Dedupe the same way the
+      // SSE handler does, or a fast round-trip renders this message twice.
+      setMessages((prev) => (prev.some((m) => m.id === data.id) ? prev : [...prev, data]));
       setDraft("");
       setPendingImageUrl(null);
     } catch {

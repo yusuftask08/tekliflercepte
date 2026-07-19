@@ -38,17 +38,17 @@ async function getRequests(status) {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
-    if (!res.ok) return [];
-    return res.json();
+    if (!res.ok) return { requests: [], error: true };
+    return { requests: await res.json(), error: false };
   } catch {
-    return [];
+    return { requests: [], error: true };
   }
 }
 
 export default async function PanelHome({ searchParams }) {
   const params = await searchParams;
   const activeStatus = params?.durum ?? null;
-  const requests = await getRequests(activeStatus);
+  const { requests, error } = await getRequests(activeStatus);
 
   return (
     <div>
@@ -75,6 +75,12 @@ export default async function PanelHome({ searchParams }) {
           })}
         </div>
       </div>
+
+      {error && (
+        <div className="mb-4 rounded-lg border border-danger/30 bg-danger/10 px-5 py-4 text-sm text-danger">
+          Veriler yüklenemedi, tekrar dene.
+        </div>
+      )}
 
       <div className="overflow-hidden rounded-lg border border-border bg-surface shadow-sm">
         <div className="grid grid-cols-[1fr_1.6fr_1.4fr_1.2fr_1fr_1fr_0.6fr] border-b border-border px-5 py-3 text-xs font-bold uppercase tracking-wide text-text-muted">

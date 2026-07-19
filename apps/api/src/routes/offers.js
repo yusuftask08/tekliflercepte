@@ -3,7 +3,7 @@ import { requireAuth } from "../lib/auth.js";
 import { safeUserSelect, publicUserSelect } from "../lib/selects.js";
 import { sendEmail, escapeHtml } from "../lib/mailer.js";
 import { isBlocked } from "../lib/blocks.js";
-import { createNotification } from "../lib/notifications.js";
+import { createNotification, createNotifications } from "../lib/notifications.js";
 
 const DAILY_FREE_OFFER_LIMIT = 3;
 const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:3002";
@@ -124,6 +124,13 @@ export default async function offerRoutes(app) {
       return reply.code(403).send({ error: "Bu talebin sahibi değilsin" });
     }
 
+    // Fetched before the transaction rejects them — need their info to
+    // notify them afterward, updateMany doesn't return affected rows.
+    const otherOffers = await prisma.offer.findMany({
+      where: { serviceRequestId: offer.serviceRequestId, id: { not: id }, status: "PENDING" },
+      include: { provider: { select: { id: true, firstName: true, email: true } } },
+    });
+
     const [, selected] = await prisma.$transaction([
       prisma.offer.updateMany({
         where: { serviceRequestId: offer.serviceRequestId, id: { not: id } },
@@ -158,6 +165,25 @@ export default async function offerRoutes(app) {
       subject: `Teklifin kabul edildi — ${offer.serviceRequest.category.name}`,
       html: `<p>Merhaba ${escapeHtml(offer.provider.firstName)},</p><p>"${escapeHtml(offer.serviceRequest.category.name)}" talebine verdiğin teklif kabul edildi.</p><p><a href="${WEB_ORIGIN}/mesajlar/${id}">Mesajlaş</a></p>`,
     });
+
+    // The rejected providers only ever found out by re-opening their panel
+    // and noticing the badge — now they actually get told.
+    await createNotifications(
+      otherOffers.map((o) => ({
+        userId: o.provider.id,
+        type: "OFFER_REJECTED",
+        title: "Teklifin bu sefer seçilmedi",
+        body: `"${offer.serviceRequest.category.name}" talebi için başka bir teklif seçildi.`,
+        link: "/usta/panel",
+      }))
+    );
+    for (const o of otherOffers) {
+      sendEmail({
+        to: o.provider.email,
+        subject: `Teklifin bu sefer seçilmedi — ${offer.serviceRequest.category.name}`,
+        html: `<p>Merhaba ${escapeHtml(o.provider.firstName)},</p><p>"${escapeHtml(offer.serviceRequest.category.name)}" talebi için müşteri başka bir teklifi seçti.</p><p><a href="${WEB_ORIGIN}/usta/panel">Panele git</a></p>`,
+      });
+    }
 
     return selected;
   });

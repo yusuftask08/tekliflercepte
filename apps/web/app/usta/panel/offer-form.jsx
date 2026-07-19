@@ -27,7 +27,11 @@ export function OfferForm({ requestId }) {
       }
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.error ?? "Teklif gönderilemedi, lütfen tekrar dene.");
+        if (data.limitReached) {
+          toast.error("Bugünkü ücretsiz teklif hakkın doldu, yarın tekrar deneyebilirsin.");
+        } else {
+          toast.error(data.error ?? "Teklif gönderilemedi, lütfen tekrar dene.");
+        }
         return;
       }
       router.push(`/mesajlar/${data.id}`);

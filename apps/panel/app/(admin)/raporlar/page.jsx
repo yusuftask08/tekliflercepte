@@ -1,5 +1,6 @@
+import { redirect } from "next/navigation";
 import { apiUrl } from "@/lib/api";
-import { getSessionToken } from "@/lib/session";
+import { getSessionUser, getSessionToken } from "@/lib/session";
 
 async function getStats() {
   const token = await getSessionToken();
@@ -28,17 +29,24 @@ function StatCard({ label, value }) {
 }
 
 export default async function RaporlarPage() {
+  const user = await getSessionUser();
+  if (user.role !== "ADMIN") redirect("/");
+
   const stats = await getStats();
 
   if (!stats) {
-    return <div className="text-sm text-text-muted">İstatistikler yüklenemedi.</div>;
+    return (
+      <div className="rounded-lg border border-danger/30 bg-danger/10 px-5 py-4 text-sm text-danger">
+        İstatistikler yüklenemedi, tekrar dene.
+      </div>
+    );
   }
 
   const totalRequests = Object.values(stats.requestsByStatus).reduce((a, b) => a + b, 0);
 
   return (
     <div>
-      <div className="mb-5 text-xl font-bold">Raporlar</div>
+      <div className="mb-5 text-xl font-bold">İstatistikler</div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <StatCard label="Müşteri" value={stats.customerCount} />

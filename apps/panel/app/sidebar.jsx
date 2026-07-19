@@ -5,24 +5,29 @@ import Link from "next/link";
 import { LogoutButton } from "./logout-button";
 
 const NAV_ITEMS = [
-  { href: "/", label: "Talepler" },
-  { href: "/talep-onaylari", label: "Talep Onayları", badgeKey: "pendingCount" },
+  { href: "/", label: "Talepler", staff: true },
+  { href: "/talep-onaylari", label: "Talep Onayları", badgeKey: "pendingCount", staff: true },
+  { href: "/sikayetler", label: "Şikayetler", badgeKey: "openComplaintCount", staff: true },
   { href: "/kullanicilar", label: "Kullanıcılar" },
   { href: "/ustalar", label: "Ustalar" },
   { href: "/kategoriler", label: "Kategoriler" },
-  { href: "/sikayetler", label: "Şikayetler" },
-  { href: "/raporlar", label: "Raporlar" },
+  { href: "/audit-log", label: "İşlem Geçmişi" },
+  { href: "/raporlar", label: "İstatistikler" },
 ];
 
-export function Sidebar({ pendingCount = 0 }) {
+// MODERATOR only sees the items it's actually allowed to act on
+// (mirrors requireStaff vs requireAdmin on the API side) — everything
+// else (`staff` unset) is ADMIN-only.
+export function Sidebar({ pendingCount = 0, openComplaintCount = 0, role }) {
   const pathname = usePathname();
-  const badgeValues = { pendingCount };
+  const badgeValues = { pendingCount, openComplaintCount };
+  const items = role === "MODERATOR" ? NAV_ITEMS.filter((item) => item.staff) : NAV_ITEMS;
 
   return (
     <aside className="flex w-[220px] flex-shrink-0 flex-col border-r border-border bg-surface py-4">
       <div className="mb-5 px-4 text-lg font-extrabold">Teklifler Cepte</div>
       <nav className="flex flex-col gap-0.5 px-3">
-        {NAV_ITEMS.map((item) => {
+        {items.map((item) => {
           const isActive = pathname === item.href;
           const badgeValue = item.badgeKey ? badgeValues[item.badgeKey] : 0;
           return (

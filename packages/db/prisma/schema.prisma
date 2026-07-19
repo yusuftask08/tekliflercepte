@@ -11,6 +11,10 @@ enum UserRole {
   CUSTOMER
   PROVIDER
   ADMIN
+  /// Limited admin: request approval/rejection + report resolution only.
+  /// Sensitive ops (password reset, premium toggle, category CRUD, user/
+  /// provider lists) stay ADMIN-only — see requireStaff vs requireAdmin.
+  MODERATOR
 }
 
 enum RequestStatus {
@@ -74,6 +78,7 @@ enum NotificationType {
   NEW_MATCHING_REQUEST
   NEW_OFFER
   NEW_MESSAGE
+  OFFER_REJECTED
 }
 
 model Notification {
@@ -247,6 +252,9 @@ model ServiceRequest {
   answers       Json?
   photos        String[] @default([])
   preferredDate DateTime?
+  /// Free-text, customer-entered ("Örn: 1.500 ₺") — shown only to
+  /// providers who can offer on this request, never a structured amount.
+  budget        String?
   status        RequestStatus  @default(PENDING_REVIEW)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -306,4 +314,18 @@ model Review {
   createdAt        DateTime       @default(now())
 
   @@map("reviews")
+}
+
+/// Who did what, when — admin.js has no accountability trail today; every
+/// state-changing admin/moderator action writes one row here.
+model AdminAuditLog {
+  id         String   @id @default(cuid())
+  adminId    String
+  action     String
+  targetId   String?
+  targetType String?
+  createdAt  DateTime @default(now())
+
+  @@index([adminId, createdAt])
+  @@map("admin_audit_logs")
 }

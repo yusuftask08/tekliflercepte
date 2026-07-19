@@ -26,6 +26,11 @@ const TYPE_ICON = {
       <path d="M4 5h16v11H8l-4 4V5Z" stroke="currentColor" strokeWidth="2" />
     </svg>
   ),
+  OFFER_REJECTED: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  ),
 };
 
 const TYPE_TONE = {
@@ -33,6 +38,7 @@ const TYPE_TONE = {
   NEW_MATCHING_REQUEST: "bg-brand-100 text-brand-600",
   NEW_OFFER: "bg-brand-100 text-brand-600",
   NEW_MESSAGE: "bg-info/10 text-info",
+  OFFER_REJECTED: "bg-text-muted/10 text-text-muted",
 };
 
 async function getNotifications(token) {

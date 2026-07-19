@@ -20,7 +20,7 @@ export function middleware(request) {
     }
   }
 
-  if (!user || user.role !== "ADMIN") {
+  if (!user || (user.role !== "ADMIN" && user.role !== "MODERATOR")) {
     return NextResponse.redirect(new URL("/giris", request.url));
   }
 

@@ -14,11 +14,13 @@ async function getCategories() {
 }
 
 export default async function TalepOlusturPage({ searchParams }) {
+  // No guest guard here on purpose — filling the form is the whole point of
+  // this page, and forcing login first just loses guests before they've
+  // seen any value. Auth is only required at actual submit time
+  // (RequestWizard's 401 handling below saves the draft and sends them to
+  // login, then resumes and auto-submits when they land back here).
   const user = await getSessionUser();
-  if (!user) {
-    redirect("/giris?next=/talep-olustur");
-  }
-  if (user.role === "PROVIDER") {
+  if (user?.role === "PROVIDER") {
     redirect("/usta/panel");
   }
 

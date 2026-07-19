@@ -9,6 +9,7 @@ import { SORT_OPTIONS } from "./sort-options";
 
 function sortOffers(offers, sortKey) {
   const sorted = [...offers];
+  if (sortKey === "yeni") return sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   if (sortKey === "fiyat-artan") return sorted.sort((a, b) => Number(a.price) - Number(b.price));
   if (sortKey === "fiyat-azalan") return sorted.sort((a, b) => Number(b.price) - Number(a.price));
   if (sortKey === "puan") {

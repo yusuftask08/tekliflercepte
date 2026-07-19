@@ -121,6 +121,9 @@ export default async function UstaPanelPage() {
                     )}
 
                     <p className="mt-2 text-sm">{request.details}</p>
+                    {request.budget && (
+                      <p className="mt-1 text-xs text-text-muted">Bütçe: {request.budget}</p>
+                    )}
 
                     {request.photos?.length > 0 && (
                       <div className="mt-3 flex gap-2">

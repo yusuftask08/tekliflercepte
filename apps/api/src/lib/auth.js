@@ -58,3 +58,17 @@ export function requireAdmin(req, reply, done) {
     done();
   });
 }
+
+/** ADMIN or MODERATOR — for the subset of admin actions moderators are
+ *  allowed to do (request approval, report resolution). Sensitive ops
+ *  (password reset, premium toggle, category CRUD, user/provider lists)
+ *  stay behind requireAdmin. */
+export function requireStaff(req, reply, done) {
+  requireAuth(req, reply, () => {
+    if (req.user.role !== "ADMIN" && req.user.role !== "MODERATOR") {
+      reply.code(403).send({ error: "Bu işlem için yetkin yok" });
+      return;
+    }
+    done();
+  });
+}
