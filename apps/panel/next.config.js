@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ["@tekliflercepte/ui"],
+  // Self-contained server build (server.js + only the deps it needs) — the
+  // Docker image copies just this output instead of the full node_modules.
+  output: "standalone",
   async headers() {
     return [
       {

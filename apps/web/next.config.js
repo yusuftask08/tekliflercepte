@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ["@tekliflercepte/ui"],
+  // Self-contained server build (server.js + only the deps it needs) — the
+  // Docker image copies just this output instead of the full node_modules.
+  output: "standalone",
   // Dev-only indicator otherwise sits bottom-left and collides with the
   // mobile bottom nav — moved out of the way, nothing else lives up there.
   devIndicators: { position: "top-right" },
