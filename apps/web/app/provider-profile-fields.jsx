@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { Button, Checkbox, Input, Textarea } from "@tekliflercepte/ui";
+import { Button, Checkbox, Input, SelectableCard, Textarea } from "@tekliflercepte/ui";
 import { SearchSelect } from "./search-select";
 import { TR_LOCATIONS } from "@/lib/turkey-locations";
 
@@ -21,26 +21,22 @@ export function BusinessTypeField({ businessType, setBusinessType, businessName,
       <div>
         <label className="mb-2 block text-sm font-semibold">Bir şirketiniz var mı?</label>
         <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
+          <SelectableCard
+            selected={businessType === "SAHIS"}
             onClick={() => setBusinessType("SAHIS")}
-            className={`rounded-md border px-4 py-4 text-left ${
-              businessType === "SAHIS" ? "border-primary bg-brand-50" : "border-border"
-            }`}
+            className="rounded-md px-4 py-4"
           >
             <div className="font-semibold">Şahıs</div>
             <div className="text-xs text-text-muted">Bireysel olarak hizmet veriyorum</div>
-          </button>
-          <button
-            type="button"
+          </SelectableCard>
+          <SelectableCard
+            selected={businessType === "SIRKET"}
             onClick={() => setBusinessType("SIRKET")}
-            className={`rounded-md border px-4 py-4 text-left ${
-              businessType === "SIRKET" ? "border-primary bg-brand-50" : "border-border"
-            }`}
+            className="rounded-md px-4 py-4"
           >
             <div className="font-semibold">Şirket</div>
             <div className="text-xs text-text-muted">Bir şirket adına hizmet veriyorum</div>
-          </button>
+          </SelectableCard>
         </div>
       </div>
 
@@ -214,16 +210,14 @@ export function CategoriesField({ categories, selected, setSelected, experienceY
               <div className="mb-2 text-sm font-bold">{group.name}</div>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {group.children.map((sub) => (
-                  <button
+                  <SelectableCard
                     key={sub.id}
-                    type="button"
+                    selected={selected.has(sub.id)}
                     onClick={() => toggleCategory(sub.id)}
-                    className={`rounded-md border px-3 py-2 text-left text-sm ${
-                      selected.has(sub.id) ? "border-primary bg-brand-50 font-semibold" : "border-border"
-                    }`}
+                    className="rounded-md px-3 py-2 text-sm"
                   >
                     {sub.name}
-                  </button>
+                  </SelectableCard>
                 ))}
               </div>
             </div>

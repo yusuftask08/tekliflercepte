@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { Button, Input, Textarea } from "@tekliflercepte/ui";
+import { Button, Input, SelectableCard, Textarea } from "@tekliflercepte/ui";
 import { CategoryIcon } from "../category-icon";
 import { SearchSelect } from "../search-select";
 import { TR_LOCATIONS } from "@/lib/turkey-locations";
@@ -42,21 +42,19 @@ function QuestionField({ question, value, onChange }) {
     return (
       <div>
         <label className="mb-2 block text-sm font-semibold">
-        {question.label}
-        {question.required && <span className="text-danger"> *</span>}
-      </label>
+          {question.label}
+          {question.required && <span className="text-danger"> *</span>}
+        </label>
         <div className="flex flex-wrap gap-2">
           {question.options.map((option) => (
-            <button
+            <SelectableCard
               key={option}
-              type="button"
+              selected={value === option}
               onClick={() => onChange(option)}
-              className={`rounded-full border px-3.5 py-2 text-sm ${
-                value === option ? "border-primary bg-brand-50 font-semibold" : "border-border"
-              }`}
+              className="rounded-full px-3.5 py-2 text-sm"
             >
               {option}
-            </button>
+            </SelectableCard>
           ))}
         </div>
       </div>
@@ -303,7 +301,7 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
 
           <div className="flex-1 overflow-auto px-4 sm:px-6 lg:px-10">
             {step === 0 && !group && (
-              <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
+              <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:gap-4">
                 {categories.map((c) => (
                   <button
                     key={c.id}
@@ -342,19 +340,18 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
                     className="mb-3"
                   />
                 )}
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-2.5 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-2.5 md:grid-cols-3">
                   {group.children
                     .filter((sub) => sub.name.toLocaleLowerCase("tr").includes(categorySearch.toLocaleLowerCase("tr")))
                     .map((sub) => (
-                      <button
+                      <SelectableCard
                         key={sub.id}
+                        selected={category?.id === sub.id}
                         onClick={() => setCategory(sub)}
-                        className={`rounded-md border bg-surface px-3 py-3 text-left text-sm shadow-sm ${
-                          category?.id === sub.id ? "border-primary bg-brand-50 font-semibold" : "border-border"
-                        }`}
+                        className="rounded-md bg-surface px-3 py-3 text-sm shadow-sm"
                       >
                         {sub.name}
-                      </button>
+                      </SelectableCard>
                     ))}
                 </div>
               </div>

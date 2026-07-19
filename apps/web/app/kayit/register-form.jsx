@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button, Checkbox, Input } from "@tekliflercepte/ui";
+import { Button, Checkbox, Input, SelectableCard } from "@tekliflercepte/ui";
 import { normalizePhone } from "@/lib/phone";
 
 export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
@@ -114,26 +114,22 @@ export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
       <div>
         <label className="mb-2 block text-sm font-semibold">Hesap türü</label>
         <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
+          <SelectableCard
+            selected={role === "CUSTOMER"}
             onClick={() => setRole("CUSTOMER")}
-            className={`rounded-md border px-3 py-3 text-left text-sm ${
-              role === "CUSTOMER" ? "border-primary bg-brand-50" : "border-border"
-            }`}
+            className="rounded-md px-3 py-3 text-sm"
           >
             <div className="font-semibold">Hizmet Almak İstiyorum</div>
             <div className="text-xs text-text-muted">Talep oluştur, teklif al</div>
-          </button>
-          <button
-            type="button"
+          </SelectableCard>
+          <SelectableCard
+            selected={role === "PROVIDER"}
             onClick={() => setRole("PROVIDER")}
-            className={`rounded-md border px-3 py-3 text-left text-sm ${
-              role === "PROVIDER" ? "border-primary bg-brand-50" : "border-border"
-            }`}
+            className="rounded-md px-3 py-3 text-sm"
           >
             <div className="font-semibold">Hizmet Vermek İstiyorum</div>
             <div className="text-xs text-text-muted">Ücretsiz teklif ver</div>
-          </button>
+          </SelectableCard>
         </div>
       </div>
 

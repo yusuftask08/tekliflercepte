@@ -71,7 +71,7 @@ export function Filters({ city, kategori, q, sirala, minPuan, fiyat, categories 
   return (
     <fieldset
       disabled={isPending}
-      className={`grid grid-cols-1 gap-3 border-0 p-0 sm:grid-cols-2 lg:grid-cols-3 ${
+      className={`grid grid-cols-1 gap-3 border-0 p-0 sm:grid-cols-2 md:grid-cols-3 ${
         isPending ? "opacity-60" : ""
       }`}
     >
