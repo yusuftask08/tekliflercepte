@@ -1,0 +1,12 @@
+# Teklifler Cepte
+
+> Türkiye'nin ücretsiz teklif pazaryeri — ev ve iş hizmetleri (temizlik, tadilat, nakliyat, tamir, özel ders, organizasyon ve daha fazlası) arayan müşterileri, o hizmeti veren ustalarla buluşturur.
+
+Teklifler Cepte'de teklif vermek ustalar için tamamen ücretsizdir, komisyon alınmaz — ödeme müşteri ile usta arasında doğrudan yapılır. Her talep, ustalara görünmeden önce moderasyon ekibi tarafından incelenir. Ustaların telefon numaraları doğrulanır. Değerlendirmeler yalnızca tamamlanmış işler için yapılabilir.
+
+## Ana Sayfalar
+
+- [Ana Sayfa](https://tekliflercepte.com/): Genel platform tanıtımı, kategori listesi, nasıl çalıştığı.
+- [Usta Ara](https://tekliflercepte.com/ustalar): Şehir ve kategoriye göre usta arama.
+- [Kategoriler](https://tekliflercepte.com/kategoriler): Tüm hizmet kategorileri (Temizlik, Tadilat, Nakliyat, Tamir, Özel Ders, Organizasyon, Diğer).
+- [Hizmet Ver](https://tekliflercepte.com/hizmet-ver): Usta olarak ücretsiz kayıt.

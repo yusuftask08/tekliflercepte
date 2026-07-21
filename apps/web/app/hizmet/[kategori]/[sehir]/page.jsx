@@ -4,7 +4,9 @@ import { EmptyState } from "@tekliflercepte/ui";
 import { SiteFooter } from "../../../site-footer";
 import { EmptyIcon } from "../../../empty-icons";
 import { ProviderCard } from "../../../provider-card";
-import { findCityBySlug } from "../../../../lib/turkey-locations";
+import { findCityBySlug, slugifyTr } from "../../../../lib/turkey-locations";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tekliflercepte.com";
 
 async function getCategories() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
@@ -57,6 +59,7 @@ export async function generateMetadata({ params }) {
   return {
     title,
     description,
+    alternates: { canonical: `/hizmet/${category.slug}/${slugifyTr(city.name)}` },
     robots: providers.length > 0 ? undefined : { index: false, follow: true },
   };
 }
@@ -67,8 +70,38 @@ export default async function HizmetSehirPage({ params }) {
 
   const { providers, total } = await getProviders(city.name, category.slug);
 
+  // Static, server-controlled fields only (category/city names come from our
+  // own taxonomy + a fixed city list, never free-text user input) — safe to
+  // interpolate directly.
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Kategoriler", item: `${SITE_URL}/kategoriler` },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: category.name,
+            item: `${SITE_URL}/ustalar?kategori=${category.slug}`,
+          },
+          { "@type": "ListItem", position: 3, name: city.name },
+        ],
+      },
+      {
+        "@type": "Service",
+        serviceType: category.name,
+        areaServed: { "@type": "City", name: city.name },
+        provider: { "@type": "Organization", name: "Teklifler Cepte" },
+        url: `${SITE_URL}/hizmet/${category.slug}/${slugifyTr(city.name)}`,
+      },
+    ],
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-bg">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
         <nav className="mb-4 text-xs text-text-muted">
           <Link href="/kategoriler" className="hover:text-primary">
