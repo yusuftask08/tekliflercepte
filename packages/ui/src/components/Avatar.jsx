@@ -1,7 +1,9 @@
+import Image from "next/image";
+
 const SIZES = {
-  sm: "h-9 w-9 text-xs",
-  md: "h-12 w-12 text-sm",
-  lg: "h-[72px] w-[72px] text-xl border-4 border-bg",
+  sm: { className: "h-9 w-9 text-xs", px: 36 },
+  md: { className: "h-12 w-12 text-sm", px: 48 },
+  lg: { className: "h-[72px] w-[72px] text-xl border-4 border-bg", px: 72 },
 };
 
 function initialsOf(name = "") {
@@ -15,13 +17,14 @@ function initialsOf(name = "") {
 }
 
 export function Avatar({ name, src, size = "md", className = "" }) {
-  const sizeClasses = SIZES[size] ?? SIZES.md;
+  const { className: sizeClasses, px } = SIZES[size] ?? SIZES.md;
   if (src) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
+      <Image
         src={src}
         alt={name ?? ""}
+        width={px}
+        height={px}
         className={`flex-shrink-0 rounded-full object-cover ${sizeClasses} ${className}`}
       />
     );

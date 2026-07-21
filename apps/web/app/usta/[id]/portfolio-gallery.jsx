@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Lightbox } from "@tekliflercepte/ui";
 
 export function PortfolioGallery({ photoUrls }) {
@@ -16,10 +17,15 @@ export function PortfolioGallery({ photoUrls }) {
             type="button"
             onClick={() => setOpenIndex(i)}
             aria-label="Fotoğrafı büyüt"
-            className="aspect-square w-full overflow-hidden rounded-md"
+            className="relative aspect-square w-full overflow-hidden rounded-md"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={url} alt="" className="h-full w-full object-cover transition hover:scale-105" />
+            <Image
+              src={url}
+              alt=""
+              fill
+              sizes="(min-width: 640px) 25vw, 33vw"
+              className="object-cover transition hover:scale-105"
+            />
           </button>
         ))}
       </div>

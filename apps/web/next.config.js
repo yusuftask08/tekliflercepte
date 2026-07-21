@@ -7,6 +7,15 @@ const nextConfig = {
   // Dev-only indicator otherwise sits bottom-left and collides with the
   // mobile bottom nav — moved out of the way, nothing else lives up there.
   devIndicators: { position: "top-right" },
+  // Uploaded photos are served from the API's own origin (localhost:4000 in
+  // dev, api.tekliflercepte.com in prod) — next/image needs it allowlisted
+  // to optimize/serve them.
+  images: {
+    remotePatterns: [
+      { protocol: "http", hostname: "localhost", port: "4000" },
+      { protocol: "https", hostname: "api.tekliflercepte.com" },
+    ],
+  },
   async headers() {
     return [
       {

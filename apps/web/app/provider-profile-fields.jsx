@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { toast } from "react-toastify";
 import { Button, Checkbox, Input, SelectableCard, Textarea } from "@tekliflercepte/ui";
 import { SearchSelect } from "./search-select";
@@ -316,9 +317,8 @@ export function PortfolioField({ portfolioPhotos, setPortfolioPhotos, loginRedir
       </p>
       <div className="flex flex-wrap gap-2.5">
         {portfolioPhotos.map((url) => (
-          // eslint-disable-next-line @next/next/no-img-element
           <div key={url} className="relative h-20 w-20">
-            <img src={`${apiOrigin}${url}`} alt="" className="h-20 w-20 rounded-md object-cover" />
+            <Image src={`${apiOrigin}${url}`} alt="" fill sizes="80px" className="rounded-md object-cover" />
             <button
               type="button"
               onClick={() => setPortfolioPhotos((prev) => prev.filter((p) => p !== url))}

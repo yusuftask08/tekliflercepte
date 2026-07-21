@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { toast } from "react-toastify";
 import { Button, Input, SelectableCard, Textarea } from "@tekliflercepte/ui";
 import { CategoryIcon } from "../category-icon";
@@ -460,12 +461,13 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
               <label className="mb-2 block text-sm font-semibold">Fotoğraf ekle (opsiyonel)</label>
               <div className="flex gap-2.5">
                 {photos.map((url) => (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <div key={url} className="relative h-16 w-16">
-                    <img
+                    <Image
                       src={`${apiOrigin}${url}`}
                       alt=""
-                      className="h-16 w-16 rounded-md object-cover"
+                      fill
+                      sizes="64px"
+                      className="rounded-md object-cover"
                     />
                     <button
                       type="button"
@@ -546,13 +548,9 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
                   <div className="mb-1 text-xs font-semibold uppercase text-text-muted">Fotoğraflar</div>
                   <div className="flex gap-2">
                     {photos.map((url) => (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        key={url}
-                        src={`${apiOrigin}${url}`}
-                        alt=""
-                        className="h-14 w-14 rounded-md object-cover"
-                      />
+                      <div key={url} className="relative h-14 w-14">
+                        <Image src={`${apiOrigin}${url}`} alt="" fill sizes="56px" className="rounded-md object-cover" />
+                      </div>
                     ))}
                   </div>
                 </>

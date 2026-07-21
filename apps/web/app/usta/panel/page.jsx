@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Badge, EmptyState } from "@tekliflercepte/ui";
 import { EmptyIcon } from "../../empty-icons";
 import { apiUrl } from "@/lib/api";
@@ -128,13 +129,15 @@ export default async function UstaPanelPage() {
                     {request.photos?.length > 0 && (
                       <div className="mt-3 flex gap-2">
                         {request.photos.map((url) => (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            key={url}
-                            src={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}${url}`}
-                            alt=""
-                            className="h-16 w-16 rounded-md object-cover"
-                          />
+                          <div key={url} className="relative h-16 w-16">
+                            <Image
+                              src={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"}${url}`}
+                              alt=""
+                              fill
+                              sizes="64px"
+                              className="rounded-md object-cover"
+                            />
+                          </div>
                         ))}
                       </div>
                     )}
