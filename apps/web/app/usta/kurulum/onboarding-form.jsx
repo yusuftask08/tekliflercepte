@@ -230,7 +230,7 @@ export function OnboardingForm({ categories, initialProfile }) {
           <div style={{ animation: "mascot-bounce 1.4s ease-in-out infinite" }}>
             <MascotIcon size={96} waving />
           </div>
-          <h1 className="text-2xl font-extrabold sm:text-3xl">Teklifler Cepte&apos;ye Hoş Geldin! 🎉</h1>
+          <h1 className="text-2xl font-extrabold sm:text-3xl">Teklifler Cepte&apos;ye Hoş Geldin!</h1>
           <p className="max-w-sm text-sm text-text-muted">
             Profilin hazır. Artık sana uygun talepleri görüp ücretsiz teklif vermeye başlayabilirsin.
           </p>

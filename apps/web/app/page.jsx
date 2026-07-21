@@ -191,8 +191,13 @@ export default async function HomePage() {
                   <div className="mt-1 text-xs text-text-muted sm:text-sm">tamamlanan iş</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-extrabold text-primary sm:text-3xl">
-                    {stats.avgRating ? `${stats.avgRating.toFixed(1)} ★` : "—"}
+                  <div className="flex items-center justify-center gap-1 text-2xl font-extrabold text-primary sm:text-3xl">
+                    {stats.avgRating ? stats.avgRating.toFixed(1) : "—"}
+                    {stats.avgRating && (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="sm:h-6 sm:w-6">
+                        <path d="M12 2.5l2.9 6.2 6.6.7-5 4.6 1.4 6.6L12 17.4l-5.9 3.2 1.4-6.6-5-4.6 6.6-.7L12 2.5Z" />
+                      </svg>
+                    )}
                   </div>
                   <div className="mt-1 text-xs text-text-muted sm:text-sm">ortalama puan</div>
                 </div>

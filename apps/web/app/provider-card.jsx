@@ -18,7 +18,11 @@ export function ProviderCard({ provider }) {
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             <span className="truncate font-bold">{name}</span>
-            {profile?.isPremium && <Badge tone="warning">⭐ Öne Çıkan</Badge>}
+            {profile?.isPremium && (
+              <Badge tone="warning" icon="star">
+                Öne Çıkan
+              </Badge>
+            )}
             {profile?.identityVerifiedAt && (
               <Badge tone="success" icon="check">
                 Doğrulandı

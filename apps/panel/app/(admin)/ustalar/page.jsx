@@ -82,8 +82,17 @@ export default async function UstalarPage({ searchParams }) {
                     ? `${provider.providerProfile.city}${provider.providerProfile.district ? " / " + provider.providerProfile.district : ""}`
                     : "—"}
                 </div>
-                <div>
-                  {provider.providerProfile ? `${Number(provider.providerProfile.avgRating)} ★` : "—"}
+                <div className="flex items-center gap-1">
+                  {provider.providerProfile ? (
+                    <>
+                      {Number(provider.providerProfile.avgRating)}
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="text-warning">
+                        <path d="M12 2.5l2.9 6.2 6.6.7-5 4.6 1.4 6.6L12 17.4l-5.9 3.2 1.4-6.6-5-4.6 6.6-.7L12 2.5Z" />
+                      </svg>
+                    </>
+                  ) : (
+                    "—"
+                  )}
                 </div>
                 <div>{provider._count.offers}</div>
                 <div className="flex flex-wrap gap-1">

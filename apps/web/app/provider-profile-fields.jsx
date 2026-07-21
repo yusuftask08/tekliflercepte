@@ -147,7 +147,9 @@ export function LocationField({
                 onClick={() => setServiceCities((prev) => prev.filter((x) => x !== c))}
                 aria-label={`${c} şehrini kaldır`}
               >
-                ✕
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                  <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                </svg>
               </button>
             </span>
           ))}
@@ -323,7 +325,9 @@ export function PortfolioField({ portfolioPhotos, setPortfolioPhotos, loginRedir
               aria-label="Fotoğrafı kaldır"
               className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-danger text-xs text-white"
             >
-              ✕
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
             </button>
           </div>
         ))}

@@ -12,7 +12,7 @@ export function ChatWidget({ categories, onClose }) {
   const [screen, setScreen] = useState("start");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSub, setSelectedSub] = useState(null);
-  const [history, setHistory] = useState([{ from: "bot", text: "Merhaba! 👋 Sana nasıl yardımcı olabilirim?" }]);
+  const [history, setHistory] = useState([{ from: "bot", text: "Merhaba! Sana nasıl yardımcı olabilirim?" }]);
 
   const say = (text) => setHistory((h) => [...h, { from: "bot", text }]);
   const choose = (label) => setHistory((h) => [...h, { from: "user", text: label }]);
@@ -38,13 +38,13 @@ export function ChatWidget({ categories, onClose }) {
 
   const pickSubcategory = (sub) => {
     choose(sub.name);
-    say(`Süper, hemen "${sub.name}" için ücretsiz teklif almaya başlayalım 🎉`);
+    say(`Süper, hemen "${sub.name}" için ücretsiz teklif almaya başlayalım`);
     setSelectedSub(sub);
     setScreen("done");
   };
 
   const restart = () => {
-    setHistory([{ from: "bot", text: "Merhaba! 👋 Sana nasıl yardımcı olabilirim?" }]);
+    setHistory([{ from: "bot", text: "Merhaba! Sana nasıl yardımcı olabilirim?" }]);
     setSelectedCategory(null);
     setSelectedSub(null);
     setScreen("start");
@@ -66,7 +66,9 @@ export function ChatWidget({ categories, onClose }) {
           className="flex h-7 w-7 items-center justify-center rounded-full text-text-muted hover:bg-surface-raised"
           aria-label="Kapat"
         >
-          ✕
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
         </button>
       </div>
 

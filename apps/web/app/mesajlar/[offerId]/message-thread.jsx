@@ -292,7 +292,10 @@ export function MessageThread({ offerId, initialMessages, customerId, viewerId }
         </div>
       )}
 
-      <div className="flex items-center gap-2 border-t border-border bg-surface px-4 py-3">
+      <div
+        className="flex items-center gap-2 border-t border-border bg-surface px-4 pt-3"
+        style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+      >
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
@@ -300,7 +303,19 @@ export function MessageThread({ offerId, initialMessages, customerId, viewerId }
           aria-label="Fotoğraf ekle"
           className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-text-muted hover:bg-surface-raised disabled:opacity-50"
         >
-          {uploading ? "…" : "📎"}
+          {uploading ? (
+            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-text-muted/40 border-t-text-muted" />
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M8 12.5V7a4 4 0 1 1 8 0v8a6 6 0 1 1-12 0V9"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
         </button>
         <input
           ref={fileInputRef}

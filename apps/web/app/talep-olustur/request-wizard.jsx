@@ -83,9 +83,12 @@ function CategoryChip({ category, onRemove }) {
       <button
         onClick={onRemove}
         aria-label={`${category.name} kategorisini değiştir`}
-        className="rounded-full bg-brand-100 px-3 py-1.5 text-xs font-semibold text-brand-700"
+        className="flex items-center gap-1.5 rounded-full bg-brand-100 px-3 py-1.5 text-xs font-semibold text-brand-700"
       >
-        {category.name} ✕
+        {category.name}
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
       </button>
     </div>
   );
@@ -271,7 +274,11 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
     return (
       <div className="flex min-h-screen flex-col bg-bg">
         <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
-          <div className="text-4xl">🎉</div>
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success/10 text-success">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+              <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
           <div className="text-xl font-bold">Talebin gönderildi!</div>
           <div className="text-sm text-text-muted">
             Talebin kısa bir incelemeden sonra ustalara gönderilecek. Ustalar teklif verdikçe
@@ -379,9 +386,20 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
                   disabled={locating}
                   title="Yakınımı Kullan"
                   aria-label="Yakınımı Kullan"
-                  className="flex-shrink-0 rounded-md border border-border bg-surface px-3.5 text-sm disabled:opacity-50"
+                  className="flex flex-shrink-0 items-center justify-center rounded-md border border-border bg-surface px-3.5 text-sm disabled:opacity-50"
                 >
-                  {locating ? "…" : "📍"}
+                  {locating ? (
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M12 22s7-6.2 7-12A7 7 0 1 0 5 10c0 5.8 7 12 7 12Z"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      />
+                      <circle cx="12" cy="10" r="2.5" stroke="currentColor" strokeWidth="2" />
+                    </svg>
+                  )}
                 </button>
               </div>
             </div>
@@ -455,7 +473,9 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
                       aria-label="Fotoğrafı kaldır"
                       className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-danger text-xs text-white"
                     >
-                      ✕
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                      </svg>
                     </button>
                   </div>
                 ))}

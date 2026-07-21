@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { Button } from "@tekliflercepte/ui";
+import { Button, StarPicker, Textarea } from "@tekliflercepte/ui";
 
 export function ReviewForm({ requestId }) {
   const router = useRouter();
@@ -40,25 +40,16 @@ export function ReviewForm({ requestId }) {
   return (
     <form onSubmit={submit} className="rounded-lg border border-border bg-surface p-4 shadow-sm">
       <div className="font-semibold">İş tamamlandı mı? Ustanı değerlendir</div>
-      <div className="mt-3 flex gap-1">
-        {[1, 2, 3, 4, 5].map((n) => (
-          <button
-            key={n}
-            type="button"
-            onClick={() => setRating(n)}
-            className={`text-2xl ${n <= rating ? "text-warning" : "text-border"}`}
-            aria-label={`${n} yıldız`}
-          >
-            ★
-          </button>
-        ))}
+      <div className="mt-3">
+        <StarPicker value={rating} onChange={setRating} />
       </div>
-      <textarea
+      <Textarea
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         rows={2}
+        maxLength={500}
         placeholder="Deneyimini kısaca anlat (opsiyonel)"
-        className="mt-3 w-full rounded-md border border-border bg-bg px-3.5 py-2.5 text-sm"
+        className="mt-3 bg-bg"
       />
       <Button type="submit" size="md" className="mt-3" disabled={submitting}>
         {submitting ? "Gönderiliyor..." : "Değerlendirmeyi Gönder"}

@@ -5,8 +5,8 @@ import { MascotIcon } from "./mascot-icon";
 import { ChatWidget } from "./chat-widget";
 
 const TEASERS = [
-  "Hadi bir talep oluştur, teklif almaya başla! 🎉",
-  "Usta mısın? Hadi teklif ver, ücretsiz! 👷",
+  "Hadi bir talep oluştur, teklif almaya başla!",
+  "Usta mısın? Hadi teklif ver, ücretsiz!",
 ];
 
 export function HomeFab({ categories }) {
@@ -45,7 +45,9 @@ export function HomeFab({ categories }) {
               className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-text text-[10px] text-bg"
               aria-label="Kapat"
             >
-              ✕
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none">
+                <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
             </button>
             <button onClick={() => setChatOpen(true)} className="text-left">
               {TEASERS[index]}

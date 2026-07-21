@@ -168,7 +168,11 @@ export default async function ProviderProfilePage({ params, searchParams }) {
           />
           <div className="mt-2.5 flex items-center gap-1.5 text-xl font-bold">
             {name}
-            {profile?.isPremium && <Badge tone="warning">⭐ Öne Çıkan</Badge>}
+            {profile?.isPremium && (
+              <Badge tone="warning" icon="star">
+                Öne Çıkan
+              </Badge>
+            )}
           </div>
           {profile?.businessName && (
             <div className="text-sm text-text-muted">{profile.businessName}</div>

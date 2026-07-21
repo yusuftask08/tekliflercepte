@@ -90,9 +90,16 @@ export function Filters({ city, kategori, q, sirala, minPuan, fiyat, categories 
           disabled={locating}
           title="Yakınımı Kullan"
           aria-label="Yakınımı Kullan"
-          className="flex-shrink-0 rounded-md border border-border bg-surface px-3.5 text-sm disabled:opacity-50"
+          className="flex flex-shrink-0 items-center justify-center rounded-md border border-border bg-surface px-3.5 text-sm disabled:opacity-50"
         >
-          {locating ? "…" : "📍"}
+          {locating ? (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M12 22s7-6.2 7-12A7 7 0 1 0 5 10c0 5.8 7 12 7 12Z" stroke="currentColor" strokeWidth="2" />
+              <circle cx="12" cy="10" r="2.5" stroke="currentColor" strokeWidth="2" />
+            </svg>
+          )}
         </button>
       </div>
 
