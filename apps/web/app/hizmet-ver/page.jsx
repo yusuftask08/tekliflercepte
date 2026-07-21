@@ -57,8 +57,8 @@ export default async function HizmetVerPage() {
   return (
     <div className="flex min-h-screen flex-col bg-bg">
 
-      <section className="px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-8 text-center lg:flex-row lg:text-left">
+      <section className="py-10 sm:py-16 lg:py-24">
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-8 px-4 text-center sm:px-6 lg:flex-row lg:px-8 lg:text-left">
           <div className="lg:max-w-xl">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-brand-100 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-brand-700">
               Ustalar için
@@ -107,8 +107,8 @@ export default async function HizmetVerPage() {
         </div>
       </section>
 
-      <section className="border-t border-border bg-surface px-4 py-14 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
+      <section className="border-t border-border bg-surface py-14">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-center text-2xl font-bold sm:text-3xl">Nasıl Çalışır?</h2>
           <div className="relative mt-12 grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8">
             <div
@@ -133,8 +133,8 @@ export default async function HizmetVerPage() {
         </div>
       </section>
 
-      <section className="px-4 py-14 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
+      <section className="py-14">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-center text-2xl font-bold sm:text-3xl">Neden Teklifler Cepte?</h2>
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
             {BENEFITS.map((item) => (

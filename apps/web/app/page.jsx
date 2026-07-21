@@ -146,8 +146,8 @@ export default async function HomePage() {
       />
 
       {/* Hero */}
-      <section className="px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-10 text-center lg:flex-row lg:items-stretch lg:gap-14 lg:text-left">
+      <section className="py-10 sm:py-16 lg:py-20">
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-10 px-4 text-center sm:px-6 lg:flex-row lg:items-stretch lg:gap-14 lg:px-8 lg:text-left">
           <div className="lg:max-w-xl lg:py-4">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-brand-100 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-brand-700">
               Türkiye&apos;nin ücretsiz teklif pazaryeri
@@ -238,8 +238,8 @@ export default async function HomePage() {
       </section>
 
       {/* Değer önerileri */}
-      <section className="border-y border-border bg-surface px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="border-y border-border bg-surface py-10">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
           {VALUE_PROPS.map((item) => (
             <div key={item.title} className="text-center sm:text-left">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-100 text-brand-600 sm:mx-0">
@@ -253,8 +253,8 @@ export default async function HomePage() {
       </section>
 
       {/* Nasıl Çalışır */}
-      <section id="nasil-calisir" className="px-4 py-14 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
+      <section id="nasil-calisir" className="py-14">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-center text-2xl font-bold sm:text-3xl">Nasıl Çalışır?</h2>
           <div className="relative mt-12 grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8">
             <div
@@ -280,8 +280,8 @@ export default async function HomePage() {
       </section>
 
       {/* Kategoriler */}
-      <section id="kategoriler" className="border-t border-border bg-surface px-4 py-14 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
+      <section id="kategoriler" className="border-t border-border bg-surface py-14">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 className="text-2xl font-bold sm:text-3xl">Popüler Kategoriler</h2>
@@ -350,27 +350,29 @@ export default async function HomePage() {
 
       {/* Hizmet veren olarak katıl */}
       {showProviderCta && (
-        <section className="px-4 py-14 sm:px-6 lg:px-8">
-          <div className="mx-auto flex max-w-7xl flex-col items-center gap-8 overflow-hidden rounded-lg bg-gradient-to-br from-primary to-primary-strong p-8 text-center text-text-on-brand sm:p-12 lg:flex-row lg:justify-between lg:text-left">
-            <div className="lg:max-w-lg">
-              <h2 className="text-2xl font-extrabold sm:text-3xl">Hizmet veren olarak katıl</h2>
-              <p className="mt-3 text-sm leading-relaxed opacity-90 sm:text-base">
-                Bölgende açılan taleplere ücretsiz teklif ver, komisyon ödemeden iş kazan. Kayıt
-                olmak bir dakika sürer.
-              </p>
+        <section className="py-14">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col items-center gap-8 overflow-hidden rounded-lg bg-gradient-to-br from-primary to-primary-strong p-8 text-center text-text-on-brand sm:p-12 lg:flex-row lg:justify-between lg:text-left">
+              <div className="lg:max-w-lg">
+                <h2 className="text-2xl font-extrabold sm:text-3xl">Hizmet veren olarak katıl</h2>
+                <p className="mt-3 text-sm leading-relaxed opacity-90 sm:text-base">
+                  Bölgende açılan taleplere ücretsiz teklif ver, komisyon ödemeden iş kazan. Kayıt
+                  olmak bir dakika sürer.
+                </p>
+              </div>
+              <Link href="/hizmet-ver" className="flex-shrink-0">
+                <Button size="lg" className="w-full bg-surface !text-primary shadow-md hover:opacity-90 sm:w-auto">
+                  Ücretsiz üye ol →
+                </Button>
+              </Link>
             </div>
-            <Link href="/hizmet-ver" className="flex-shrink-0">
-              <Button size="lg" className="w-full bg-surface !text-primary shadow-md hover:opacity-90 sm:w-auto">
-                Ücretsiz üye ol →
-              </Button>
-            </Link>
           </div>
         </section>
       )}
 
       {/* Güven & Şeffaflık */}
-      <section className="border-t border-border bg-surface px-4 py-14 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
+      <section className="border-t border-border bg-surface py-14">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-2xl font-bold sm:text-3xl">Güven & Şeffaflık</h2>
             <p className="mx-auto mt-2 max-w-2xl text-sm text-text-muted sm:text-base">

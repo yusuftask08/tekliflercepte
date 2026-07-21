@@ -32,8 +32,8 @@ export async function SiteFooter() {
   const COLUMNS = getColumns(Boolean(user));
 
   return (
-    <footer className="mt-auto border-t border-border px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
+    <footer className="mt-auto border-t border-border py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
           <div className="col-span-2 sm:col-span-1">
             <div className="text-lg font-extrabold">Teklifler Cepte</div>
