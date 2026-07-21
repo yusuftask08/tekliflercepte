@@ -34,6 +34,7 @@ const ICONS = {
       <path d="M8 11V7a4 4 0 0 1 8 0v4" />
     </>
   ),
+  star: <path d="M12 2.5l2.9 6.2 6.6.7-5 4.6 1.4 6.6L12 17.4l-5.9 3.2 1.4-6.6-5-4.6 6.6-.7L12 2.5Z" />,
 };
 
 export function TrustIcon({ name, size = 22 }) {

@@ -95,9 +95,9 @@ const TRUST_SIGNALS = [
     body: "Her talep, ustalara görünmeden önce ekibimiz tarafından incelenir ve onaylanır.",
   },
   {
-    icon: "lock",
-    title: "KVKK Uyumlu",
-    body: "Verilerin yalnızca rızan dahilinde işlenir; aydınlatma metnimizi dilediğin zaman okuyabilirsin.",
+    icon: "star",
+    title: "Gerçek Değerlendirmeler",
+    body: "Sadece işi tamamlanan müşteriler değerlendirme yapabilir — sahte yorum yok.",
   },
   {
     icon: "shield",
@@ -223,7 +223,7 @@ export default async function HomePage() {
               </div>
             )}
             <div className="mt-5 flex flex-col gap-3 text-left">
-              {["Telefonu doğrulanmış ustalar", "Talepler onaydan geçmeden yayınlanmaz", "KVKK uyumlu veri işleme"].map(
+              {["Telefonu doğrulanmış ustalar", "Talepler onaydan geçmeden yayınlanmaz"].map(
                 (text) => (
                   <div key={text} className="flex items-center gap-2.5 text-sm">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 text-success">
