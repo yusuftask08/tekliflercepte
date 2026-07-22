@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button, Input } from "@tekliflercepte/ui";
+import { Button } from "@tekliflercepte/ui";
+import { AuthInput } from "../auth-input";
 import { normalizePhone } from "@/lib/phone";
 
 export function LoginForm({ next }) {
@@ -40,7 +41,8 @@ export function LoginForm({ next }) {
     <form onSubmit={submit} className="flex flex-col gap-4">
       <div>
         <label className="mb-2 block text-sm font-semibold">Telefon veya E-posta</label>
-        <Input
+        <AuthInput
+          icon="user"
           required
           maxLength={254}
           placeholder="05XX XXX XX XX veya email"
@@ -56,7 +58,8 @@ export function LoginForm({ next }) {
             Şifremi unuttum
           </Link>
         </div>
-        <Input
+        <AuthInput
+          icon="lock"
           required
           type="password"
           maxLength={72}

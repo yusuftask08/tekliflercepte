@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button, Checkbox, Input, SelectableCard } from "@tekliflercepte/ui";
+import { AuthInput } from "../auth-input";
 import { normalizePhone } from "@/lib/phone";
 
 export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
@@ -73,7 +74,8 @@ export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
 
       <div>
         <label className="mb-2 block text-sm font-semibold">Telefon</label>
-        <Input
+        <AuthInput
+          icon="phone"
           required
           type="tel"
           inputMode="numeric"
@@ -86,7 +88,8 @@ export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
 
       <div>
         <label className="mb-2 block text-sm font-semibold">E-posta</label>
-        <Input
+        <AuthInput
+          icon="mail"
           required
           type="email"
           maxLength={254}
@@ -101,7 +104,8 @@ export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
 
       <div>
         <label className="mb-2 block text-sm font-semibold">Şifre</label>
-        <Input
+        <AuthInput
+          icon="lock"
           required
           type="password"
           minLength={6}

@@ -12,6 +12,7 @@ export default async function SifremiSifirlaPage({ searchParams }) {
 
   return (
     <AuthShell
+      icon="lock"
       title="Yeni Şifre Belirle"
       footer={
         <Link href="/giris" className="font-semibold text-primary">

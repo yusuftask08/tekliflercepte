@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Input } from "@tekliflercepte/ui";
+import { Button } from "@tekliflercepte/ui";
+import { AuthInput } from "../auth-input";
 
 export function ResetPasswordForm({ token }) {
   const router = useRouter();
@@ -45,7 +46,8 @@ export function ResetPasswordForm({ token }) {
     <form onSubmit={submit} className="flex flex-col gap-4">
       <div>
         <label className="mb-2 block text-sm font-semibold">Yeni Şifre</label>
-        <Input
+        <AuthInput
+          icon="lock"
           required
           type="password"
           minLength={6}

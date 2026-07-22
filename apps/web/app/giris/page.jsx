@@ -13,6 +13,7 @@ export default async function GirisPage({ searchParams }) {
 
   return (
     <AuthShell
+      icon="lock"
       title="Giriş Yap"
       footer={
         <span className="flex items-center justify-center gap-1.5 text-xs">

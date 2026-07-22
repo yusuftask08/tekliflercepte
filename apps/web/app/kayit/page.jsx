@@ -14,6 +14,7 @@ export default async function KayitPage({ searchParams }) {
 
   return (
     <AuthShell
+      icon="user"
       title="Kayıt Ol"
       footer={
         <span className="flex items-center justify-center gap-1.5 text-xs">
