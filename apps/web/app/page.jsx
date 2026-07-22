@@ -147,7 +147,7 @@ export default async function HomePage() {
 
       {/* Hero */}
       <section className="py-10 sm:py-16 lg:py-20">
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-10 px-4 text-center sm:px-6 lg:flex-row lg:items-stretch lg:gap-14 lg:px-8 lg:text-left">
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-10 px-4 text-center sm:px-6 lg:flex-row lg:items-center lg:gap-14 lg:px-8 lg:text-left">
           <div className="lg:max-w-xl lg:py-4">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-brand-100 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-brand-700">
               Türkiye&apos;nin ücretsiz teklif pazaryeri
@@ -183,7 +183,7 @@ export default async function HomePage() {
                 completed work to be genuinely impressive, this flips itself
                 over to the real stats automatically. */}
             {stats?.completedJobsCount >= 20 ? (
-              <div className="grid grid-cols-3 gap-4 border-b border-border pb-6 text-center">
+              <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
                   <div className="text-2xl font-extrabold text-primary sm:text-3xl">
                     {stats.completedJobsCount}+
@@ -207,7 +207,7 @@ export default async function HomePage() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-3 border-b border-border pb-6 text-center">
+              <div className="grid grid-cols-3 gap-3 text-center">
                 <div>
                   <div className="text-xl font-extrabold text-primary sm:text-2xl">Ücretsiz</div>
                   <div className="mt-1 text-xs text-text-muted sm:text-sm">teklif almak</div>
@@ -222,17 +222,6 @@ export default async function HomePage() {
                 </div>
               </div>
             )}
-            <div className="mt-5 grid grid-cols-2 gap-x-3 gap-y-2.5 text-left">
-              {["Doğrulanmış ustalar", "Onaylı talepler", "Sahte yorum yok", "Engelle & raporla"].map((text) => (
-                <div key={text} className="flex items-center gap-1.5 text-xs sm:text-sm">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 text-success">
-                    <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.15" />
-                    <path d="M8 12.5l2.5 2.5L16 9.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  <span className="text-text-muted">{text}</span>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </section>

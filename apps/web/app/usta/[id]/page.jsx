@@ -217,10 +217,12 @@ export default async function ProviderProfilePage({ params, searchParams }) {
               <div className="text-base font-bold">{provider.completedJobsCount}</div>
               <div className="text-[10px] text-text-muted">iş tamamlandı</div>
             </div>
-            <div className="text-center">
-              <div className="text-base font-bold">{profile?.experienceYears ?? "-"} yıl</div>
-              <div className="text-[10px] text-text-muted">deneyim</div>
-            </div>
+            {profile?.experienceYears != null && (
+              <div className="text-center">
+                <div className="text-base font-bold">{profile.experienceYears} yıl</div>
+                <div className="text-[10px] text-text-muted">deneyim</div>
+              </div>
+            )}
             <div className="text-center">
               <div className="text-base font-bold">{memberSinceYear ?? "-"}</div>
               <div className="text-[10px] text-text-muted">üye</div>
@@ -273,7 +275,7 @@ export default async function ProviderProfilePage({ params, searchParams }) {
 
           <Link href={requestHref} className="hidden lg:block">
             <Button className="w-full" size="lg">
-              Bu Ustaya Teklif İste
+              Bu ustaya teklif iste
             </Button>
           </Link>
         </aside>
@@ -349,7 +351,7 @@ export default async function ProviderProfilePage({ params, searchParams }) {
         )}
         <Link href={requestHref} className="flex-1">
           <Button className="w-full" size="lg">
-            Bu Ustaya Teklif İste
+            Bu ustaya teklif iste
           </Button>
         </Link>
       </div>

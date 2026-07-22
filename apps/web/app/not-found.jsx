@@ -11,7 +11,7 @@ export default function NotFound() {
           Aradığın sayfa taşınmış ya da hiç var olmamış olabilir.
         </p>
         <Link href="/" className="mt-3">
-          <Button size="md">Ana Sayfaya Dön</Button>
+          <Button size="md">Ana sayfaya dön</Button>
         </Link>
       </div>
     </div>

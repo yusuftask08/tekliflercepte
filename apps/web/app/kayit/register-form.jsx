@@ -123,7 +123,7 @@ export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
             onClick={() => setRole("CUSTOMER")}
             className="rounded-md px-3 py-3 text-sm"
           >
-            <div className="font-semibold">Hizmet Almak İstiyorum</div>
+            <div className="font-semibold">Hizmet almak istiyorum</div>
             <div className="text-xs text-text-muted">Talep oluştur, teklif al</div>
           </SelectableCard>
           <SelectableCard
@@ -131,7 +131,7 @@ export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
             onClick={() => setRole("PROVIDER")}
             className="rounded-md px-3 py-3 text-sm"
           >
-            <div className="font-semibold">Hizmet Vermek İstiyorum</div>
+            <div className="font-semibold">Hizmet vermek istiyorum</div>
             <div className="text-xs text-text-muted">Ücretsiz teklif ver</div>
           </SelectableCard>
         </div>

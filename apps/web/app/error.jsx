@@ -21,7 +21,7 @@ export default function ErrorPage({ error, reset }) {
           Tekrar Dene
         </Button>
         <Link href="/">
-          <Button size="md">Ana Sayfaya Dön</Button>
+          <Button size="md">Ana sayfaya dön</Button>
         </Link>
       </div>
     </div>

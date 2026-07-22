@@ -73,7 +73,7 @@ export default async function HizmetVerPage() {
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
               <Link href="/kayit?rol=usta">
                 <Button size="lg" className="w-full shadow-lg sm:w-auto">
-                  Ücretsiz Kayıt Ol
+                  Ücretsiz kayıt ol
                 </Button>
               </Link>
             </div>
@@ -159,7 +159,7 @@ export default async function HizmetVerPage() {
           Kayıt olmak bir dakikadan az sürer, hiçbir ücret ödemezsin.
         </p>
         <Link href="/kayit?rol=usta" className="mt-6 inline-block">
-          <Button size="lg">Ücretsiz Kayıt Ol</Button>
+          <Button size="lg">Ücretsiz kayıt ol</Button>
         </Link>
       </section>
 
