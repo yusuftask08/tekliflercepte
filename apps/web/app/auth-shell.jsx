@@ -13,16 +13,18 @@ export function AuthShell({ icon = "lock", title, subtitle, children, footer }) 
         className="pointer-events-none absolute -top-32 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-brand-100 opacity-60 blur-3xl"
       />
 
-      <div className="relative mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-10 sm:py-16">
+      <div className="relative mx-auto flex w-full max-w-xl flex-1 flex-col justify-center px-4 py-10 sm:py-16">
         <Link href="/" className="mb-6 text-center text-lg font-extrabold">
           Teklifler Cepte
         </Link>
 
-        <div className="rounded-lg border border-border bg-surface p-6 shadow-md sm:p-8">
+        <div className="rounded-lg border border-border bg-surface p-6 shadow-md sm:p-10">
           <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-full bg-brand-100 text-brand-600">
             <TrustIcon name={icon} size={20} />
           </div>
-          <h1 className={subtitle ? "mb-2 text-2xl font-bold" : "mb-6 text-2xl font-bold"}>{title}</h1>
+          <h1 className={subtitle ? "mb-2 text-2xl font-bold sm:text-3xl" : "mb-6 text-2xl font-bold sm:text-3xl"}>
+            {title}
+          </h1>
           {subtitle && <p className="mb-6 text-sm text-text-muted">{subtitle}</p>}
           {children}
         </div>
