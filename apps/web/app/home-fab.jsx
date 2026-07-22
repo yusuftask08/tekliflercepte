@@ -15,9 +15,21 @@ export function HomeFab({ categories }) {
   const [dismissed, setDismissed] = useState(false);
   const [pop, setPop] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  // Fixed bottom-right positioning sits directly over the hero trust card on
+  // short mobile viewports at scrollY 0 — hold off on mounting the widget at
+  // all until the visitor has scrolled past the hero, instead of popping a
+  // teaser bubble on top of it the instant the page loads.
+  const [scrolledPastHero, setScrolledPastHero] = useState(false);
 
   useEffect(() => {
-    if (chatOpen) return;
+    const onScroll = () => setScrolledPastHero(window.scrollY > 320);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (chatOpen || !scrolledPastHero) return;
     const interval = setInterval(() => {
       setIndex((i) => (i + 1) % TEASERS.length);
       setTeaserOpen(true);
@@ -25,9 +37,9 @@ export function HomeFab({ categories }) {
       setTimeout(() => setPop(false), 300);
     }, 6000);
     return () => clearInterval(interval);
-  }, [chatOpen]);
+  }, [chatOpen, scrolledPastHero]);
 
-  if (dismissed && !chatOpen) return null;
+  if ((dismissed || !scrolledPastHero) && !chatOpen) return null;
 
   return (
     <div className="fixed bottom-24 right-5 z-fab flex flex-col items-end gap-2 lg:bottom-5">
