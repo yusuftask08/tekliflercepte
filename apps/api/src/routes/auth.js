@@ -9,6 +9,7 @@ import {
 } from "../lib/auth.js";
 import { normalizePhone } from "../lib/phone.js";
 import { sendEmail, escapeHtml } from "../lib/mailer.js";
+import { isValidEmail } from "../lib/validation.js";
 
 const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:3002";
 
@@ -23,7 +24,7 @@ export default async function authRoutes(app) {
     if (!termsAccepted) {
       return reply.code(400).send({ error: "Kullanıcı Sözleşmesi ve KVKK Aydınlatma Metni'ni kabul etmelisin" });
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!isValidEmail(email)) {
       return reply.code(400).send({ error: "Geçerli bir email adresi gir" });
     }
     const existing = await prisma.user.findFirst({ where: { OR: [{ phone }, { email }] } });

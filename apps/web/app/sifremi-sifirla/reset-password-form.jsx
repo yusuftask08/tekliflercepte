@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@tekliflercepte/ui";
 import { AuthInput } from "../auth-input";
+import { validate, rules } from "@/lib/validation";
 
 export function ResetPasswordForm({ token }) {
   const router = useRouter();
@@ -11,11 +12,18 @@ export function ResetPasswordForm({ token }) {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const submit = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
     setError(null);
+    const errors = validate([
+      { field: "newPassword", value: newPassword, rules: [rules.required("Şifre gerekli"), rules.minLength(6)] },
+    ]);
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
+    setSubmitting(true);
     try {
       const res = await fetch("/api/auth/reset-password", {
         method: "POST",
@@ -45,7 +53,9 @@ export function ResetPasswordForm({ token }) {
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
       <div>
-        <label className="mb-2 block text-sm font-semibold">Yeni Şifre</label>
+        <label className="mb-2 block text-sm font-semibold">
+          Yeni Şifre<span className="text-danger"> *</span>
+        </label>
         <AuthInput
           icon="lock"
           required
@@ -55,6 +65,7 @@ export function ResetPasswordForm({ token }) {
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
         />
+        {fieldErrors.newPassword && <p className="mt-1 text-xs text-danger">{fieldErrors.newPassword}</p>}
       </div>
 
       {error && <div className="text-sm text-danger">{error}</div>}

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button, Checkbox, Input, SelectableCard } from "@tekliflercepte/ui";
 import { AuthInput } from "../auth-input";
 import { normalizePhone } from "@/lib/phone";
+import { validate, rules } from "@/lib/validation";
 
 export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
   const router = useRouter();
@@ -17,12 +18,23 @@ export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
   const [role, setRole] = useState(defaultRole);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
   const submit = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
     setError(null);
+    const errors = validate([
+      { field: "firstName", value: firstName, rules: [rules.required("Ad gerekli")] },
+      { field: "lastName", value: lastName, rules: [rules.required("Soyad gerekli")] },
+      { field: "phone", value: normalizePhone(phone), rules: [rules.required("Telefon gerekli"), rules.phone()] },
+      { field: "email", value: email, rules: [rules.required("Email gerekli"), rules.email()] },
+      { field: "password", value: password, rules: [rules.required("Şifre gerekli"), rules.minLength(6)] },
+    ]);
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
+    setSubmitting(true);
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
@@ -53,27 +65,35 @@ export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
     <form onSubmit={submit} className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="mb-2 block text-sm font-semibold">Ad</label>
+          <label className="mb-2 block text-sm font-semibold">
+            Ad<span className="text-danger"> *</span>
+          </label>
           <Input
             required
             maxLength={50}
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
           />
+          {fieldErrors.firstName && <p className="mt-1 text-xs text-danger">{fieldErrors.firstName}</p>}
         </div>
         <div>
-          <label className="mb-2 block text-sm font-semibold">Soyad</label>
+          <label className="mb-2 block text-sm font-semibold">
+            Soyad<span className="text-danger"> *</span>
+          </label>
           <Input
             required
             maxLength={50}
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
           />
+          {fieldErrors.lastName && <p className="mt-1 text-xs text-danger">{fieldErrors.lastName}</p>}
         </div>
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-semibold">Telefon</label>
+        <label className="mb-2 block text-sm font-semibold">
+          Telefon<span className="text-danger"> *</span>
+        </label>
         <AuthInput
           icon="phone"
           required
@@ -84,10 +104,13 @@ export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
           value={phone}
           onChange={(e) => setPhone(e.target.value.replace(/[^\d\s]/g, ""))}
         />
+        {fieldErrors.phone && <p className="mt-1 text-xs text-danger">{fieldErrors.phone}</p>}
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-semibold">E-posta</label>
+        <label className="mb-2 block text-sm font-semibold">
+          E-posta<span className="text-danger"> *</span>
+        </label>
         <AuthInput
           icon="mail"
           required
@@ -97,13 +120,19 @@ export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <p className="mt-1 text-xs text-text-muted">
-          Teklif/mesaj bildirimleri ve şifre sıfırlama için kullanılır.
-        </p>
+        {fieldErrors.email ? (
+          <p className="mt-1 text-xs text-danger">{fieldErrors.email}</p>
+        ) : (
+          <p className="mt-1 text-xs text-text-muted">
+            Teklif/mesaj bildirimleri ve şifre sıfırlama için kullanılır.
+          </p>
+        )}
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-semibold">Şifre</label>
+        <label className="mb-2 block text-sm font-semibold">
+          Şifre<span className="text-danger"> *</span>
+        </label>
         <AuthInput
           icon="lock"
           required
@@ -113,6 +142,7 @@ export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        {fieldErrors.password && <p className="mt-1 text-xs text-danger">{fieldErrors.password}</p>}
       </div>
 
       <div>

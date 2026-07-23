@@ -2,13 +2,14 @@ import { prisma } from "@tekliflercepte/db";
 import { requireAuth, hashPassword, verifyPassword, signToken } from "../lib/auth.js";
 import { safeUserSelect } from "../lib/selects.js";
 import { normalizePhone } from "../lib/phone.js";
+import { isValidEmail } from "../lib/validation.js";
 
 export default async function meRoutes(app) {
   app.patch("/me", { preHandler: requireAuth }, async (req, reply) => {
     const { firstName, lastName, avatarUrl } = req.body ?? {};
     const phone = req.body?.phone ? normalizePhone(req.body.phone) : null;
     const email = req.body?.email?.trim().toLowerCase() || null;
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (email && !isValidEmail(email)) {
       return reply.code(400).send({ error: "Geçerli bir email adresi gir" });
     }
     if (phone || email) {

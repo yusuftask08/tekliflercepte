@@ -3,17 +3,25 @@
 import { useState } from "react";
 import { Button } from "@tekliflercepte/ui";
 import { AuthInput } from "../auth-input";
+import { validate, rules } from "@/lib/validation";
 
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const submit = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
     setError(null);
+    const errors = validate([
+      { field: "email", value: email, rules: [rules.required("Email gerekli"), rules.email()] },
+    ]);
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
+    setSubmitting(true);
     try {
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
@@ -43,7 +51,9 @@ export function ForgotPasswordForm() {
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
       <div>
-        <label className="mb-2 block text-sm font-semibold">E-posta</label>
+        <label className="mb-2 block text-sm font-semibold">
+          E-posta<span className="text-danger"> *</span>
+        </label>
         <AuthInput
           icon="mail"
           required
@@ -53,6 +63,7 @@ export function ForgotPasswordForm() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="ornek@email.com"
         />
+        {fieldErrors.email && <p className="mt-1 text-xs text-danger">{fieldErrors.email}</p>}
       </div>
 
       {error && <div className="text-sm text-danger">{error}</div>}

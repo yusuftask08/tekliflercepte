@@ -8,6 +8,13 @@ import { Button, Input, SelectableCard, Textarea } from "@tekliflercepte/ui";
 import { CategoryIcon } from "../category-icon";
 import { SearchSelect } from "../search-select";
 import { TR_LOCATIONS } from "@/lib/turkey-locations";
+import { getDetailsPlaceholder } from "./detail-placeholders";
+
+function isoDateOffset(days) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
 
 const STEP_LABELS = ["Kategori", "Konum", "Detay", "Gönder"];
 const DRAFT_KEY = "tekliflercepte-request-draft";
@@ -61,6 +68,7 @@ function QuestionField({ question, value, onChange }) {
       </div>
     );
   }
+  const isNumber = question.type === "number";
   return (
     <div>
       <label className="mb-2 block text-sm font-semibold">
@@ -68,10 +76,15 @@ function QuestionField({ question, value, onChange }) {
         {question.required && <span className="text-danger"> *</span>}
       </label>
       <Input
-        type={question.type === "number" ? "number" : "text"}
-        maxLength={question.type === "number" ? undefined : 200}
+        type={isNumber ? "number" : "text"}
+        inputMode={isNumber ? "numeric" : undefined}
+        maxLength={isNumber ? undefined : 200}
+        max={isNumber ? 9999 : undefined}
         value={value ?? ""}
-        onChange={(e) => onChange(e.target.value)}
+        // Number inputs ignore maxLength in every browser, so a value like
+        // "1231231231231231231231231" is otherwise perfectly typeable —
+        // clamp to 4 digits (0-9999), plenty for any real oda/m²/adet count.
+        onChange={(e) => onChange(isNumber ? e.target.value.slice(0, 4) : e.target.value)}
       />
     </div>
   );
@@ -103,7 +116,7 @@ function findLeafBy(categories, key, value) {
   return null;
 }
 
-export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug }) {
+export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug, isProvider }) {
   const router = useRouter();
   const preselectedGroup = categories.find((c) => c.slug === preselectedSlug) ?? null;
   const preselectedLeaf = preselectedLeafSlug
@@ -139,6 +152,24 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
   // create an account first.
   useEffect(() => {
     const saved = sessionStorage.getItem(DRAFT_KEY);
+    if (isProvider) {
+      // Provider accounts can't submit requests (API rejects it too) — if
+      // this is where a guest landed after logging into a provider account
+      // mid-flow, their draft would otherwise vanish with zero explanation
+      // instead of just quietly re-showing their empty panel.
+      sessionStorage.removeItem(DRAFT_KEY);
+      toast.error(
+        saved
+          ? "Bu talep bir usta hesabıyla gönderilemez. Müşteri hesabınla giriş yapıp tekrar dene."
+          : "Usta hesapları talep oluşturamaz."
+      );
+      // router.replace() was observed to silently no-op right after the
+      // login-page redirect lands back here (App Router soft-nav timing) —
+      // a real navigation is more important than a soft one for a redirect
+      // that only fires on this one edge case.
+      window.location.replace("/usta/panel");
+      return;
+    }
     if (!saved) return;
     sessionStorage.removeItem(DRAFT_KEY);
     const draft = JSON.parse(saved);
@@ -293,6 +324,11 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
     );
   }
 
+  // Redirect fires from the effect above — render nothing in the meantime
+  // instead of flashing the full wizard for a provider account that can't
+  // actually submit it.
+  if (isProvider) return null;
+
   return (
     <div className="flex min-h-screen flex-col bg-bg">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col sm:max-w-xl sm:py-8 lg:max-w-3xl lg:py-14">
@@ -368,7 +404,9 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
         {step === 1 && (
           <div className="flex flex-col gap-4">
             <div>
-              <label className="mb-2 block text-sm font-semibold">Şehir</label>
+              <label className="mb-2 block text-sm font-semibold">
+                Şehir<span className="text-danger"> *</span>
+              </label>
               <div className="flex gap-2">
                 <div className="flex-1">
                   <SearchSelect
@@ -416,10 +454,25 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
             </div>
             <div>
               <label className="mb-2 block text-sm font-semibold">Tercih ettiğin tarih (opsiyonel)</label>
+              <div className="mb-2 flex gap-2">
+                {[
+                  { label: "Bugün", date: isoDateOffset(0) },
+                  { label: "Yarın", date: isoDateOffset(1) },
+                ].map((option) => (
+                  <SelectableCard
+                    key={option.label}
+                    selected={preferredDate === option.date}
+                    onClick={() => setPreferredDate(option.date)}
+                    className="rounded-full px-3.5 py-1.5 text-sm"
+                  >
+                    {option.label}
+                  </SelectableCard>
+                ))}
+              </div>
               <input
                 type="date"
                 value={preferredDate}
-                min={new Date().toISOString().slice(0, 10)}
+                min={isoDateOffset(0)}
                 onChange={(e) => setPreferredDate(e.target.value)}
                 className="w-full rounded-md border border-border bg-bg px-3.5 py-2.5 text-sm"
               />
@@ -438,11 +491,13 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
               />
             ))}
             <div>
-              <label className="mb-2 block text-sm font-semibold">İşin detaylarını anlat</label>
+              <label className="mb-2 block text-sm font-semibold">
+                İşin detaylarını anlat<span className="text-danger"> *</span>
+              </label>
               <Textarea
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
-                placeholder="Örn: 3+1 daire, genel temizlik, pencere dahil..."
+                placeholder={getDetailsPlaceholder(group, category)}
                 rows={4}
                 maxLength={1000}
               />
