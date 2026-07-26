@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { Button } from "@tekliflercepte/ui";
+import { Button, Spinner } from "@tekliflercepte/ui";
 import { MascotIcon } from "../../mascot-icon";
 import {
   BusinessTypeField,
@@ -308,7 +308,7 @@ export function OnboardingForm({ categories, initialProfile }) {
                     className="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-text-on-brand shadow-md disabled:opacity-50"
                   >
                     {avatarUploading ? (
-                      <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                      <Spinner size="sm" tone="onBrand" />
                     ) : (
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <path

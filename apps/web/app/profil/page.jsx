@@ -51,7 +51,7 @@ export default async function ProfilPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
-      <div className="mx-auto w-full max-w-md flex-1 px-4 py-8 sm:max-w-2xl sm:py-12 lg:max-w-5xl lg:py-16">
+      <div className="mx-auto w-full max-w-md flex-1 px-4 py-8 sm:max-w-2xl sm:px-6 sm:py-12 lg:max-w-5xl lg:px-8 lg:py-16">
         <div className="text-sm font-semibold uppercase tracking-wide text-text-muted">
           {ROLE_LABEL[user.role] ?? user.role}
         </div>

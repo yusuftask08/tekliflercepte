@@ -24,7 +24,7 @@ export default async function MesajlarimPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
-      <div className="mx-auto w-full max-w-2xl flex-1 px-4 py-8 sm:px-6 sm:py-12 lg:max-w-4xl">
+      <div className="mx-auto w-full max-w-2xl flex-1 px-4 py-8 sm:px-6 sm:py-12 lg:max-w-4xl lg:px-8">
         <h1 className="text-2xl font-bold sm:text-3xl">Mesajlarım</h1>
 
         {conversations.length === 0 ? (

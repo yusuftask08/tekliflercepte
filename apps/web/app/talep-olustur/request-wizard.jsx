@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { toast } from "react-toastify";
-import { Button, Input, SelectableCard, Textarea } from "@tekliflercepte/ui";
+import { Button, Input, SelectableCard, Spinner, Textarea } from "@tekliflercepte/ui";
 import { CategoryIcon } from "../category-icon";
 import { SearchSelect } from "../search-select";
 import { TR_LOCATIONS } from "@/lib/turkey-locations";
@@ -428,7 +428,7 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
                   className="flex flex-shrink-0 items-center justify-center rounded-md border border-border bg-surface px-3.5 text-sm disabled:opacity-50"
                 >
                   {locating ? (
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
+                    <Spinner />
                   ) : (
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                       <path

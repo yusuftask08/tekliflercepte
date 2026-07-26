@@ -41,7 +41,7 @@ export default async function UstaAyarlarPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
-      <div className="mx-auto w-full max-w-xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
+      <div className="mx-auto w-full max-w-xl flex-1 px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <h1 className="mb-6 text-2xl font-bold">Ayarlar</h1>
 
         <div className="mb-3 text-xs font-bold uppercase tracking-wide text-text-muted">Profil</div>

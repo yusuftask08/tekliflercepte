@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { Lightbox } from "@tekliflercepte/ui";
+import { Lightbox, Spinner } from "@tekliflercepte/ui";
 import { useBlocked } from "./message-panel";
 
 const PAGE_SIZE = 30;
@@ -304,7 +304,7 @@ export function MessageThread({ offerId, initialMessages, customerId, viewerId }
           className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-text-muted hover:bg-surface-raised disabled:opacity-50"
         >
           {uploading ? (
-            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-text-muted/40 border-t-text-muted" />
+            <Spinner size="sm" tone="muted" />
           ) : (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
               <path

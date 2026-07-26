@@ -61,7 +61,7 @@ export default async function UstaPanelPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
-      <div className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
+      <div className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold sm:text-3xl">Panelim</h1>
