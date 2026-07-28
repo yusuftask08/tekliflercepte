@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Button, EmptyState } from "@tekliflercepte/ui";
+import { Avatar, Button, EmptyState } from "@tekliflercepte/ui";
 import { apiUrl } from "@/lib/api";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import { EmptyIcon } from "../empty-icons";
@@ -21,6 +21,7 @@ export default async function MesajlarimPage() {
   const token = await getSessionToken();
   const conversations = await getConversations(token);
   const isProvider = user.role === "PROVIDER";
+  const apiOrigin = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
@@ -50,9 +51,14 @@ export default async function MesajlarimPage() {
               <Link
                 key={conversation.offerId}
                 href={`/mesajlar/${conversation.offerId}`}
-                className="flex items-center justify-between rounded-md border border-border bg-surface px-4 py-3.5 shadow-sm"
+                className="flex items-center gap-3 rounded-md border border-border bg-surface px-4 py-3.5 shadow-sm"
               >
-                <div>
+                <Avatar
+                  name={conversation.otherPartyName}
+                  src={conversation.otherPartyAvatarUrl ? `${apiOrigin}${conversation.otherPartyAvatarUrl}` : null}
+                  size="sm"
+                />
+                <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 text-sm font-semibold">
                     {conversation.otherPartyName}
                     {conversation.unreadCount > 0 && (
@@ -64,7 +70,7 @@ export default async function MesajlarimPage() {
                   <div className="text-xs text-text-muted">{conversation.category}</div>
                 </div>
                 {conversation.lastMessage && (
-                  <div className="max-w-[50%] truncate text-xs text-text-muted">
+                  <div className="max-w-[40%] flex-shrink-0 truncate text-xs text-text-muted">
                     {conversation.lastMessage}
                   </div>
                 )}

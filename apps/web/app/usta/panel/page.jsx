@@ -72,6 +72,23 @@ export default async function UstaPanelPage() {
           <AvailabilityToggle isAvailable={profile.isAvailable} />
         </div>
 
+        <div className="mt-6 grid grid-cols-3 gap-3 rounded-lg border border-border bg-surface p-4 shadow-sm sm:gap-6 sm:p-5">
+          <div className="text-center">
+            <div className="text-xl font-extrabold text-primary sm:text-2xl">{matchingRequests.length}</div>
+            <div className="mt-1 text-xs text-text-muted">uygun açık talep</div>
+          </div>
+          <div className="text-center">
+            <div className="text-xl font-extrabold text-primary sm:text-2xl">{myOffers.length}</div>
+            <div className="mt-1 text-xs text-text-muted">toplam teklif</div>
+          </div>
+          <div className="text-center">
+            <div className="text-xl font-extrabold text-primary sm:text-2xl">
+              {myOffers.filter((o) => o.status === "SELECTED").length}
+            </div>
+            <div className="mt-1 text-xs text-text-muted">kazanılan iş</div>
+          </div>
+        </div>
+
         <section className="mt-8">
           <h2 className="text-lg font-bold">Sana Uygun Açık Talepler</h2>
           {!profile.isAvailable ? (

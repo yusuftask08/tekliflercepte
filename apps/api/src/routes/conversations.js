@@ -37,6 +37,7 @@ export default async function conversationRoutes(app) {
         offerId: offer.id,
         category: offer.serviceRequest.category?.name,
         otherPartyName: lastInitial ? `${otherParty.firstName} ${lastInitial}.` : otherParty.firstName,
+        otherPartyAvatarUrl: otherParty.avatarUrl,
         lastMessage: offer.messages[0]?.body ?? null,
         lastMessageAt: offer.messages[0]?.createdAt ?? offer.createdAt,
         unreadCount: unreadByOffer.get(offer.id) ?? 0,
