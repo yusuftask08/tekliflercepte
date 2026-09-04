@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, EmptyState } from "@tekliflercepte/ui";
+import { Badge, EmptyState, StarRating } from "@tekliflercepte/ui";
 import { EmptyIcon } from "../../empty-icons";
 import { OfferCard } from "./offer-card";
 import { ReviewForm } from "./review-form";
@@ -106,9 +106,8 @@ export default async function OffersInboxPage({ params, searchParams }) {
         {request.status === "CLOSED" && request.review && (
           <div className="mt-6 rounded-lg border border-border bg-surface p-4 shadow-sm">
             <div className="font-semibold">Değerlendirmen</div>
-            <div className="mt-1 text-sm text-amber-500" aria-label={`${request.review.rating} / 5 yıldız`}>
-              {"★".repeat(request.review.rating)}
-              {"☆".repeat(5 - request.review.rating)}
+            <div className="mt-1">
+              <StarRating rating={request.review.rating} />
             </div>
             {request.review.comment && (
               <p className="mt-2 text-sm text-text-muted">{request.review.comment}</p>
