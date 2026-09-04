@@ -50,8 +50,8 @@ Ne müşteri ne usta tarafında promosyon kodu veya "arkadaşını davet et" bon
 ### 3.5 Canlı destek / ticket sistemi yok
 `/iletisim` statik bir iletişim sayfası — canlı sohbet, destek talebi (ticket) takibi yok. Armut şikayetlerinin en büyük tekrar eden temalarından biri zaten "şablon/ilgisiz destek" olduğu için burada minimal bile olsa gerçek bir ticket kaydı (ör. panelde görünen "Destek Talepleri" listesi) fark yaratabilir.
 
-### 3.6 Değerlendirmelere fotoğraf eklenemiyor
-`reviews.js` route'u sadece `rating` + `comment` alıyor, fotoğraf yok. Armut'ta "iş öncesi/sonrası" fotoğraflı yorumlar güven sinyali olarak öne çıkıyor.
+### 3.6 ✅ Kapandı — Değerlendirmelere fotoğraf ekleme (2026-08-20)
+`Review.photos String[]` eklendi, `POST /requests/:id/review` en fazla 3 fotoğraf kabul ediyor. Wizard'ın fotoğraf seçici UI'ı `PhotoPicker` bileşenine çıkarılıp değerlendirme formunda da kullanıldı (kopya kod yok); fotoğraflar hem talep sahibinin kendi değerlendirmesinde hem usta profilindeki değerlendirme listesinde küçük thumbnail + lightbox olarak görünüyor. Uçtan uca doğrulandı.
 
 ### 3.7 B2B / kurumsal hesap yok
 `UserRole` sadece `CUSTOMER / PROVIDER / ADMIN / MODERATOR`. Site yönetimi, apartman yönetimi gibi kurumsal/toplu talep oluşturan hesap tipi yok. Şu an için önceliksiz olabilir ama büyüme planına girerse not düşülsün.
@@ -89,4 +89,6 @@ Bunlar "eksik" değil, ürün pozisyonlaması gereği farklı tercih:
 
 ## 7. Önerilen sıradaki adım
 
-Etki/efor dengesine göre öncelik sırası: ~~(1) iş tamamlama onayı (2.2)~~ ✅ kapandı; ~~(2) telefon OTP doğrulama (2.1)~~ ✅ kapandı (kod tarafı — SMS sağlayıcı hesabı ayrı, iş sahibine ait); ~~(3) Resend API key'in gerçekten set edilmesi (2.4)~~ kod zaten hazırdı, doğrulandı — kalan tek şey hesap açma; **sıradaki: (4) değerlendirmelere fotoğraf (3.6)** — düşük efor, mevcut upload altyapısı zaten var.
+Etki/efor dengesine göre öncelik sırası: ~~(1) iş tamamlama onayı (2.2)~~ ✅ kapandı; ~~(2) telefon OTP doğrulama (2.1)~~ ✅ kapandı (kod tarafı — SMS sağlayıcı hesabı ayrı, iş sahibine ait); ~~(3) Resend API key'in gerçekten set edilmesi (2.4)~~ kod zaten hazırdı, doğrulandı — kalan tek şey hesap açma; ~~(4) değerlendirmelere fotoğraf (3.6)~~ ✅ kapandı.
+
+Bölüm 2'deki kritik eksiklerin hepsi kapandı (2.3 uyuşmazlık akışı hariç — o daha büyük bir ürün kararı gerektiriyor). Sıradaki en düşük efor/en somut madde **3.8 CSP header'ı** — daha önce JSON-LD `dangerouslySetInnerHTML` incelemesi gerektiği için ertelenmişti, şimdi o incelemeyi yapıp kapatmak mantıklı. Diğer orta öncelikli maddeler (3.1-3.5, 3.7) daha büyük ürün/tasarım kararları gerektiriyor, tek oturumda kod yazıp kapatılacak türden değil.
