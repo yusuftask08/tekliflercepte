@@ -8,6 +8,7 @@ import { formatResponseTime } from "@/lib/trust";
 import { formatPrice } from "@/lib/price";
 import { displayName } from "@/lib/name";
 import { ReviewPhotos } from "../../review-photos";
+import { getNonce } from "@/lib/nonce";
 
 const REVIEW_SORTS = [
   { value: "", label: "En Yeni" },
@@ -81,9 +82,10 @@ export default async function ProviderProfilePage({ params, searchParams }) {
   const search = await searchParams;
   const reviewSayfa = Number(search?.reviewSayfa) || 1;
   const reviewSirala = search?.reviewSirala ?? "";
-  const [provider, sessionUser] = await Promise.all([
+  const [provider, sessionUser, nonce] = await Promise.all([
     getProvider(id, { reviewSayfa, reviewSirala }),
     getSessionUser(),
+    getNonce(),
   ]);
   const isFavorited = sessionUser && sessionUser.id !== id ? await getIsFavorited(id) : false;
 
@@ -153,6 +155,7 @@ export default async function ProviderProfilePage({ params, searchParams }) {
     <div className="flex min-h-screen flex-col bg-bg">
       <script
         type="application/ld+json"
+        nonce={nonce}
         // Unlike app/page.jsx's static JSON_LD, this embeds user-authored
         // text (bio, review comments) — escape "<" so a bio/comment
         // containing "</script>" can't break out of the tag.

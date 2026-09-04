@@ -5,6 +5,7 @@ import { SiteFooter } from "../../../site-footer";
 import { EmptyIcon } from "../../../empty-icons";
 import { ProviderCard } from "../../../provider-card";
 import { findCityBySlug, slugifyTr } from "../../../../lib/turkey-locations";
+import { getNonce } from "../../../../lib/nonce";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tekliflercepte.com";
 
@@ -68,7 +69,10 @@ export default async function HizmetSehirPage({ params }) {
   const { city, category } = await resolveParams(params);
   if (!city || !category) notFound();
 
-  const { providers, total } = await getProviders(city.name, category.slug);
+  const [{ providers, total }, nonce] = await Promise.all([
+    getProviders(city.name, category.slug),
+    getNonce(),
+  ]);
 
   // Static, server-controlled fields only (category/city names come from our
   // own taxonomy + a fixed city list, never free-text user input) — safe to
@@ -101,7 +105,7 @@ export default async function HizmetSehirPage({ params }) {
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" nonce={nonce} dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
         <nav className="mb-4 text-xs text-text-muted">
           <Link href="/kategoriler" className="hover:text-primary">

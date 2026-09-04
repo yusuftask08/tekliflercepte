@@ -8,6 +8,7 @@ import { HomeFab } from "./home-fab";
 import { HeroSearch } from "./hero-search";
 import { SiteFooter } from "./site-footer";
 import { getSessionUser } from "@/lib/session";
+import { getNonce } from "@/lib/nonce";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tekliflercepte.com";
 
@@ -129,10 +130,11 @@ async function getPublicStats() {
 }
 
 export default async function HomePage() {
-  const [categories, stats, user] = await Promise.all([
+  const [categories, stats, user, nonce] = await Promise.all([
     getCategories(),
     getPublicStats(),
     getSessionUser(),
+    getNonce(),
   ]);
   const showProviderCta = !user || user.role !== "PROVIDER";
 
@@ -140,6 +142,7 @@ export default async function HomePage() {
     <div className="flex min-h-screen flex-col bg-bg">
       <script
         type="application/ld+json"
+        nonce={nonce}
         // Static, server-controlled JSON only — no user input is ever
         // interpolated here, so this dangerouslySetInnerHTML is safe.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
