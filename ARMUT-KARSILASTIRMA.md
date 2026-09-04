@@ -1,6 +1,6 @@
 # Armut Karşılaştırması — Eksikler ve Öneriler
 
-_Son güncelleme: 2026-07-28. Kod tabanı taranarak (Prisma schema, apps/api/src/routes, apps/web/app, apps/panel/app) doğrulanmıştır — varsayım değil, gerçek kontrol._
+_Son güncelleme: 2026-08-20. Kod tabanı taranarak (Prisma schema, apps/api/src/routes, apps/web/app, apps/panel/app) doğrulanmıştır — varsayım değil, gerçek kontrol._
 
 Bu dosya periyodik olarak güncellenmeli: her "eksik bul" turundan sonra buradaki maddeler ya kapatılmalı ya da yeni maddeler eklenmelidir.
 
@@ -21,10 +21,9 @@ Aşağıdaki liste bunların **üzerine** — gerçekten eksik olan veya yarım 
 **Etki:** Sahte ilan/hesap şikayetleri (Armut'un en çok şikayet edilen noktalarından biri) bizde de aynı riski taşıyor, üstelik "doğrulanmış" görünüp aslında doğrulanmamış bir alan var — bu yarım bırakılmış hali güven açısından tam boş olmasından daha kötü olabilir.
 **Öneri:** Netgsm/İleti Merkezi gibi bir SMS sağlayıcıyla gerçek OTP akışı, ya da alan tamamen kaldırılıp "yakında" denene kadar rozet hiç gösterilmesin.
 
-### 2.2 İş tamamlama onayı yok — `RequestStatus.CLOSED` hiç kullanılmıyor
-Şemada `CLOSED` durumu tanımlı ama kodda (`requests.js`, `admin.js`, `offers.js`) hiçbir yerde bir talebi `CLOSED`'a geçiren kod yok — sadece "zaten CLOSED ise şunu yapma" kontrolleri var. Değerlendirme formu ("İş tamamlandı mı? Ustanı değerlendir" — `taleplerim/[id]/review-form.jsx`) sadece bir `Review` kaydı oluşturuyor, talebi kapatmıyor. Yani bir teklif seçildikten sonra talep sonsuza dek `OFFER_SELECTED` durumunda kalıyor.
-**Etki:** `stats.js`'teki `completedJobsCount` aslında "seçilen teklif sayısı" — işin gerçekten bitip bitmediğini bilmiyoruz. İş yarıda kalsa, usta gelmese bile "tamamlanan iş" sayısına dahil oluyor. Armut'ta net bir "işi tamamladım / onaylıyorum" akışı var.
-**Öneri:** Müşteri değerlendirme yaptığında (veya ayrı bir "İşi Tamamla" butonuyla) talebi `CLOSED`'a çek; usta tarafında da "işi bitirdim" işaretleme eklenebilir (iki taraflı onay Armut'takine daha yakın olur).
+### 2.2 ✅ Kapandı — İş tamamlama onayı (2026-08-20)
+`POST /requests/:id/complete` eklendi (müşteri, `OFFER_SELECTED` durumundaki kendi talebini `CLOSED`'a çekebiliyor); değerlendirme gönderimi de artık transaction içinde talebi `CLOSED` yapıyor. `stats.js`'teki `completedJobsCount` artık gerçek `CLOSED` talep sayısından geliyor. Talep detay sayfasında durum rozeti ve kapalı taleplerde geçmiş değerlendirme gösterimi var. Uçtan uca API testleriyle doğrulandı (tamamlama, değerlendirme üzerinden kapatma, sahiplik/durum guard'ları, stats sayacı).
+Kalan not: usta tarafında ayrı bir "işi bitirdim" işaretleme (iki taraflı onay) hâlâ yok — istenirse ayrı bir madde olarak eklenebilir, şu an tek taraflı (müşteri) onay yeterli görüldü.
 
 ### 2.3 Uyuşmazlık / iptal sonrası çözüm akışı yok
 Müşteri bir talebi iptal edebiliyor (`cancel-button.jsx` → `CANCELLED`), admin da panelden iptal edebiliyor — ama bir teklif seçildikten SONRA ortaya çıkan anlaşmazlıklarda (usta gelmedi, fiyat üstüne para istendi, iş yarım bırakıldı) ne müşterinin ne ustanın başvurabileceği bir "itiraz/uyuşmazlık" mekanizması yok. Sadece genel `Report`/`Block` var, bunlar iş akışına bağlı değil.
@@ -92,4 +91,4 @@ Bunlar "eksik" değil, ürün pozisyonlaması gereği farklı tercih:
 
 ## 7. Önerilen sıradaki adım
 
-Etki/efor dengesine göre öncelik sırası: **(1) iş tamamlama onayı (2.2)** — çok düşük efor, mevcut `CLOSED` durumunu gerçekten kullanmaya başlamak; **(2) telefon OTP doğrulama (2.1)** — orta efor, güven açısından yüksek etki; **(3) Resend API key'in gerçekten set edilmesi (2.4)** — sıfır kod, sadece hesap açma; **(4) değerlendirmelere fotoğraf (3.6)** — düşük efor, mevcut upload altyapısı zaten var.
+Etki/efor dengesine göre öncelik sırası: ~~(1) iş tamamlama onayı (2.2)~~ ✅ kapandı; **(2) telefon OTP doğrulama (2.1)** — orta efor, güven açısından yüksek etki; **(3) Resend API key'in gerçekten set edilmesi (2.4)** — sıfır kod, sadece hesap açma; **(4) değerlendirmelere fotoğraf (3.6)** — düşük efor, mevcut upload altyapısı zaten var.
