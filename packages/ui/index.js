@@ -11,3 +11,4 @@ export { EmptyState } from "./src/components/EmptyState.jsx";
 export { Lightbox } from "./src/components/Lightbox.jsx";
 export { SelectableCard } from "./src/components/SelectableCard.jsx";
 export { Spinner } from "./src/components/Spinner.jsx";
+export { PhotoPicker } from "./src/components/PhotoPicker.jsx";

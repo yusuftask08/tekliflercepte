@@ -3,14 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { Button, StarPicker, Textarea } from "@tekliflercepte/ui";
+import { Button, PhotoPicker, StarPicker, Textarea } from "@tekliflercepte/ui";
 
 export function ReviewForm({ requestId }) {
   const router = useRouter();
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
+  const [photos, setPhotos] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [skipping, setSkipping] = useState(false);
+  const apiOrigin = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
   const submit = async (e) => {
     e.preventDefault();
@@ -19,7 +21,7 @@ export function ReviewForm({ requestId }) {
       const res = await fetch(`/api/requests/${requestId}/review`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rating, comment: comment || undefined }),
+        body: JSON.stringify({ rating, comment: comment || undefined, photos }),
       });
       if (res.status === 401) {
         router.push(`/giris?next=/taleplerim/${requestId}`);
@@ -73,6 +75,14 @@ export function ReviewForm({ requestId }) {
         placeholder="Deneyimini kısaca anlat (opsiyonel)"
         className="mt-3 bg-bg"
       />
+      <div className="mt-3">
+        <PhotoPicker
+          photos={photos}
+          onChange={setPhotos}
+          apiOrigin={apiOrigin}
+          onUnauthorized={() => router.push(`/giris?next=/taleplerim/${requestId}`)}
+        />
+      </div>
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <Button type="submit" size="md" disabled={submitting || skipping}>
           {submitting ? "Gönderiliyor..." : "Değerlendirmeyi Gönder"}

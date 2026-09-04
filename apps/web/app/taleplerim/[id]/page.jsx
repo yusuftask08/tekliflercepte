@@ -7,6 +7,7 @@ import { CancelButton } from "./cancel-button";
 import { SortSelect } from "./sort-select";
 import { SORT_OPTIONS } from "./sort-options";
 import { STATUS_LABEL, STATUS_TONE } from "../status-labels";
+import { ReviewPhotos } from "../../review-photos";
 
 function sortOffers(offers, sortKey) {
   const sorted = [...offers];
@@ -35,6 +36,7 @@ export default async function OffersInboxPage({ params, searchParams }) {
   const search = await searchParams;
   const sortKey = SORT_OPTIONS.some((o) => o.key === search?.sirala) ? search.sirala : "yeni";
   const request = await getRequest(id);
+  const apiOrigin = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
   if (!request) {
     return (
@@ -112,6 +114,7 @@ export default async function OffersInboxPage({ params, searchParams }) {
             {request.review.comment && (
               <p className="mt-2 text-sm text-text-muted">{request.review.comment}</p>
             )}
+            <ReviewPhotos photos={request.review.photos} apiOrigin={apiOrigin} size="lg" />
           </div>
         )}
       </div>

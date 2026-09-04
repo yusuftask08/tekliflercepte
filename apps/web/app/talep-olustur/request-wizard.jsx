@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { toast } from "react-toastify";
-import { Button, Input, SelectableCard, Spinner, Textarea } from "@tekliflercepte/ui";
+import { Button, Input, PhotoPicker, SelectableCard, Spinner, Textarea } from "@tekliflercepte/ui";
 import { CategoryIcon } from "../category-icon";
 import { SearchSelect } from "../search-select";
 import { TR_LOCATIONS } from "@/lib/turkey-locations";
@@ -135,8 +135,6 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
   const [budget, setBudget] = useState("");
   const [answers, setAnswers] = useState({});
   const [photos, setPhotos] = useState([]);
-  const [uploadingPhoto, setUploadingPhoto] = useState(false);
-  const fileInputRef = useRef(null);
   const apiOrigin = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -225,28 +223,6 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
       },
       { timeout: 10000 }
     );
-  };
-
-  const uploadPhoto = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploadingPhoto(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await fetch("/api/uploads", { method: "POST", body: formData });
-      if (res.status === 401) {
-        router.push("/giris?next=/talep-olustur");
-        return;
-      }
-      if (res.ok) {
-        const data = await res.json();
-        setPhotos((prev) => [...prev, data.url]);
-      }
-    } finally {
-      setUploadingPhoto(false);
-      e.target.value = "";
-    }
   };
 
   const goBack = () => {
@@ -514,56 +490,11 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
             </div>
             <div>
               <label className="mb-2 block text-sm font-semibold">Fotoğraf ekle (opsiyonel)</label>
-              <div className="flex gap-2.5">
-                {photos.map((url) => (
-                  <div key={url} className="relative h-16 w-16">
-                    <Image
-                      src={`${apiOrigin}${url}`}
-                      alt=""
-                      fill
-                      sizes="64px"
-                      className="rounded-md object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setPhotos((prev) => prev.filter((p) => p !== url))}
-                      aria-label="Fotoğrafı kaldır"
-                      className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-danger text-xs text-white"
-                    >
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-                      </svg>
-                    </button>
-                  </div>
-                ))}
-                {photos.length < 3 && (
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploadingPhoto}
-                    className="flex h-16 w-16 items-center justify-center rounded-md border-2 border-dashed border-border text-text-muted disabled:opacity-50"
-                  >
-                    {uploadingPhoto ? (
-                      <span className="text-xs">...</span>
-                    ) : (
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path
-                          d="M12 5v14M5 12h14"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    )}
-                  </button>
-                )}
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="hidden"
-                onChange={uploadPhoto}
+              <PhotoPicker
+                photos={photos}
+                onChange={setPhotos}
+                apiOrigin={apiOrigin}
+                onUnauthorized={() => router.push("/giris?next=/talep-olustur")}
               />
             </div>
             <div className="text-xs text-text-muted">

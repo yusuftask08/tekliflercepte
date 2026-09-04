@@ -7,6 +7,7 @@ import { PortfolioGallery } from "./portfolio-gallery";
 import { formatResponseTime } from "@/lib/trust";
 import { formatPrice } from "@/lib/price";
 import { displayName } from "@/lib/name";
+import { ReviewPhotos } from "../../review-photos";
 
 const REVIEW_SORTS = [
   { value: "", label: "En Yeni" },
@@ -315,6 +316,7 @@ export default async function ProviderProfilePage({ params, searchParams }) {
                 {review.comment && (
                   <div className="mt-1 text-xs text-text-muted">{review.comment}</div>
                 )}
+                <ReviewPhotos photos={review.photos} apiOrigin={apiOrigin} />
               </div>
             ))}
           </div>

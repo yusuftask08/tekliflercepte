@@ -3,9 +3,12 @@ import { requireAuth } from "../lib/auth.js";
 
 export default async function reviewRoutes(app) {
   app.post("/requests/:id/review", { preHandler: requireAuth }, async (req, reply) => {
-    const { rating, comment } = req.body ?? {};
+    const { rating, comment, photos } = req.body ?? {};
     if (!rating || rating < 1 || rating > 5) {
       return reply.code(400).send({ error: "rating 1-5 arasında olmalı" });
+    }
+    if (photos !== undefined && (!Array.isArray(photos) || photos.length > 3 || photos.some((p) => typeof p !== "string"))) {
+      return reply.code(400).send({ error: "photos en fazla 3 fotoğraf URL'si içeren bir dizi olmalı" });
     }
 
     const request = await prisma.serviceRequest.findUnique({
@@ -30,6 +33,7 @@ export default async function reviewRoutes(app) {
           targetId: selectedOffer.providerId,
           rating,
           comment,
+          photos: photos ?? [],
         },
       }),
       prisma.serviceRequest.update({ where: { id: request.id }, data: { status: "CLOSED" } }),
