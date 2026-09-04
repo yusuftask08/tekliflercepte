@@ -10,6 +10,8 @@ import {
 import { normalizePhone } from "../lib/phone.js";
 import { sendEmail, escapeHtml } from "../lib/mailer.js";
 import { isValidEmail } from "../lib/validation.js";
+import { generateOtpCode, hashOtpCode, otpExpiryDate } from "../lib/otp.js";
+import { sendSms } from "../lib/sms.js";
 
 const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:3002";
 
@@ -48,6 +50,23 @@ export default async function authRoutes(app) {
         termsAcceptedAt: new Date(),
       },
     });
+
+    // Best-effort — a code-send failure shouldn't fail registration itself,
+    // same reasoning as sendEmail elsewhere. User can always request a new
+    // code from /profil if this one never arrives.
+    const code = generateOtpCode();
+    await prisma.user
+      .update({
+        where: { id: user.id },
+        data: { phoneVerificationCodeHash: hashOtpCode(code), phoneVerificationExpiresAt: otpExpiryDate() },
+      })
+      .then(() =>
+        sendSms({
+          to: user.phone,
+          body: `Teklifler Cepte doğrulama kodun: ${code}. Kod 10 dakika geçerlidir.`,
+        })
+      )
+      .catch((err) => console.error("[auth/register] OTP gönderim hatası:", err.message));
 
     return reply.code(201).send({ token: signToken(user), user: publicUser(user) });
   });
@@ -127,6 +146,7 @@ function publicUser(user) {
     firstName: user.firstName,
     lastName: user.lastName,
     phone: user.phone,
+    phoneVerifiedAt: user.phoneVerifiedAt,
     email: user.email,
     role: user.role,
     avatarUrl: user.avatarUrl,

@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Avatar, Button, Input } from "@tekliflercepte/ui";
 import { normalizePhone } from "@/lib/phone";
+import { PhoneVerify } from "./phone-verify";
 
 export function AccountForm({ user }) {
   const router = useRouter();
@@ -110,6 +111,7 @@ export function AccountForm({ user }) {
           value={phone}
           onChange={(e) => setPhone(e.target.value.replace(/[^\d\s]/g, ""))}
         />
+        <PhoneVerify verified={!!user.phoneVerifiedAt} />
       </div>
 
       <div>

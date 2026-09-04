@@ -46,6 +46,14 @@ model User {
   lastName     String
   phone        String   @unique
   phoneVerifiedAt DateTime?
+  /// SHA-256 hash of the current pending SMS OTP code — never store the
+  /// plaintext code. Cleared (set null) once verified or once a new code
+  /// is requested/expires.
+  phoneVerificationCodeHash String?
+  phoneVerificationExpiresAt DateTime?
+  /// Wrong-code attempts against the current pending code — code is
+  /// invalidated after 5, forcing a fresh "kodu gönder".
+  phoneVerificationAttempts Int @default(0)
   email        String?  @unique
   passwordHash String
   avatarUrl    String?
