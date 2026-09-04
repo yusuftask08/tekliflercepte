@@ -16,10 +16,9 @@ Aşağıdaki liste bunların **üzerine** — gerçekten eksik olan veya yarım 
 
 ## 2. Kritik eksikler (güven / dönüşüm / gelir üzerinde doğrudan etkisi var)
 
-### 2.1 Telefon doğrulama (OTP/SMS) yok
-`User.phoneVerifiedAt` alanı şemada var ama hiçbir route bunu set etmiyor — kod içinde sadece görüntüleme amaçlı okunuyor (`apps/api/src/lib/selects.js`, profil sayfaları). Yani "telefon doğrulandı" rozetini gösterecek bir mekanizma yok, çünkü bu alan hiç dolmuyor. Armut'ta kayıt sırasında SMS kodu zorunlu — bizde şu an sahte hesap açmak tamamen serbest.
-**Etki:** Sahte ilan/hesap şikayetleri (Armut'un en çok şikayet edilen noktalarından biri) bizde de aynı riski taşıyor, üstelik "doğrulanmış" görünüp aslında doğrulanmamış bir alan var — bu yarım bırakılmış hali güven açısından tam boş olmasından daha kötü olabilir.
-**Öneri:** Netgsm/İleti Merkezi gibi bir SMS sağlayıcıyla gerçek OTP akışı, ya da alan tamamen kaldırılıp "yakında" denene kadar rozet hiç gösterilmesin.
+### 2.1 ✅ Kapandı — Telefon doğrulama (OTP/SMS) (2026-08-20)
+`POST /me/phone/send-code` + `POST /me/phone/verify-code` eklendi; kayıt olunca kod otomatik gönderiliyor (best-effort). 6 haneli kod, 10 dakika geçerli, 5 yanlış denemede kilit, 60sn tekrar-gönderim koruması. Telefon numarası `PATCH /me` ile değişirse doğrulama sıfırlanıyor. `usta/[id]` sayfasındaki "Telefon Doğrulandı" rozeti zaten koda bağlıydı — artık gerçek veriyle doluyor. Profil sayfasına doğrulama widget'ı eklendi.
+**Kalan operasyonel adım (kod değil, hesap açma):** `apps/api/src/lib/sms.js` gerçek bir SMS sağlayıcıya (Netgsm/İleti Merkezi vb.) bağlı değil — generic bir HTTP POST placeholder. Sağlayıcı key'i yokken kodlar konsola loglanıyor (mailer.js'teki email deseniyle aynı). Hesap açılıp `SMS_PROVIDER_API_KEY`/`SMS_PROVIDER_URL` set edildiğinde, sms.js'in gövdesi o sağlayıcının gerçek API şemasına göre güncellenmeli (şu an mailer.js'teki gibi "gerçek SDK çağrısı" değil, tahmini bir istek gövdesi).
 
 ### 2.2 ✅ Kapandı — İş tamamlama onayı (2026-08-20)
 `POST /requests/:id/complete` eklendi (müşteri, `OFFER_SELECTED` durumundaki kendi talebini `CLOSED`'a çekebiliyor); değerlendirme gönderimi de artık transaction içinde talebi `CLOSED` yapıyor. `stats.js`'teki `completedJobsCount` artık gerçek `CLOSED` talep sayısından geliyor. Talep detay sayfasında durum rozeti ve kapalı taleplerde geçmiş değerlendirme gösterimi var. Uçtan uca API testleriyle doğrulandı (tamamlama, değerlendirme üzerinden kapatma, sahiplik/durum guard'ları, stats sayacı).
@@ -29,9 +28,8 @@ Kalan not: usta tarafında ayrı bir "işi bitirdim" işaretleme (iki taraflı o
 Müşteri bir talebi iptal edebiliyor (`cancel-button.jsx` → `CANCELLED`), admin da panelden iptal edebiliyor — ama bir teklif seçildikten SONRA ortaya çıkan anlaşmazlıklarda (usta gelmedi, fiyat üstüne para istendi, iş yarım bırakıldı) ne müşterinin ne ustanın başvurabileceği bir "itiraz/uyuşmazlık" mekanizması yok. Sadece genel `Report`/`Block` var, bunlar iş akışına bağlı değil.
 **Öneri:** MVP için ağır bir sistem gerekmez — en azından `Report` modelini `serviceRequestId`'ye de bağlayıp panelde "bu talep hakkında açılan şikayetler" görünür kılmak yeterli olur.
 
-### 2.4 Gerçek e-posta gönderimi henüz aktif değil
-`project_infra_and_trust_round` notuna göre `mailer.js` kod olarak hazır ama `RESEND_API_KEY` hâlâ set edilmemiş — yani şu an hiçbir bildirim e-postası gerçekten gitmiyor (best-effort, sessizce loglanıyor). Bu bir kod eksiği değil ama canlıya çıkmadan önce mutlaka kapatılması gereken operasyonel bir boşluk.
-**Öneri:** Resend hesabı açılıp env değişkeni set edilmeli; SMS bildirimi de (en azından teklif geldiğinde) değerlendirilmeli çünkü Türkiye'de kullanıcılar e-postayı SMS kadar sık kontrol etmiyor.
+### 2.4 Gerçek e-posta gönderimi henüz aktif değil — kod tarafı doğrulandı, hesap bekliyor (2026-08-20)
+`mailer.js` kod olarak tam hazır (gerçek Resend SDK çağrısı, `RESEND_API_KEY` set edilince başka hiçbir değişiklik gerekmiyor) ama key hâlâ boş — email'ler best-effort loglanıyor. `.env.example`'da zaten dokümante edilmişti, tekrar doğrulandı. **Bu satırda geliştiriciye kalan iş yok** — tek eksik resend.com hesabı açıp domain doğrulamak (iş sahibine ait, [[project_legal_requirements]] ile aynı kategori).
 
 ---
 
@@ -91,4 +89,4 @@ Bunlar "eksik" değil, ürün pozisyonlaması gereği farklı tercih:
 
 ## 7. Önerilen sıradaki adım
 
-Etki/efor dengesine göre öncelik sırası: ~~(1) iş tamamlama onayı (2.2)~~ ✅ kapandı; **(2) telefon OTP doğrulama (2.1)** — orta efor, güven açısından yüksek etki; **(3) Resend API key'in gerçekten set edilmesi (2.4)** — sıfır kod, sadece hesap açma; **(4) değerlendirmelere fotoğraf (3.6)** — düşük efor, mevcut upload altyapısı zaten var.
+Etki/efor dengesine göre öncelik sırası: ~~(1) iş tamamlama onayı (2.2)~~ ✅ kapandı; ~~(2) telefon OTP doğrulama (2.1)~~ ✅ kapandı (kod tarafı — SMS sağlayıcı hesabı ayrı, iş sahibine ait); ~~(3) Resend API key'in gerçekten set edilmesi (2.4)~~ kod zaten hazırdı, doğrulandı — kalan tek şey hesap açma; **sıradaki: (4) değerlendirmelere fotoğraf (3.6)** — düşük efor, mevcut upload altyapısı zaten var.
