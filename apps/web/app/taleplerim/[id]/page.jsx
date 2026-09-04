@@ -6,6 +6,7 @@ import { ReviewForm } from "./review-form";
 import { CancelButton } from "./cancel-button";
 import { SortSelect } from "./sort-select";
 import { SORT_OPTIONS } from "./sort-options";
+import { STATUS_LABEL, STATUS_TONE } from "../status-labels";
 
 function sortOffers(offers, sortKey) {
   const sorted = [...offers];
@@ -66,6 +67,7 @@ export default async function OffersInboxPage({ params, searchParams }) {
                 {request.district ? ` / ${request.district}` : ""} · {date}
               </span>
               <Badge tone="brand">{request.offers.length} teklif geldi</Badge>
+              <Badge tone={STATUS_TONE[request.status]}>{STATUS_LABEL[request.status]}</Badge>
             </div>
             {request.status === "OPEN" && (
               <div className="mt-3">
@@ -98,6 +100,19 @@ export default async function OffersInboxPage({ params, searchParams }) {
         {request.status === "OFFER_SELECTED" && !request.review && (
           <div className="mt-6">
             <ReviewForm requestId={request.id} />
+          </div>
+        )}
+
+        {request.status === "CLOSED" && request.review && (
+          <div className="mt-6 rounded-lg border border-border bg-surface p-4 shadow-sm">
+            <div className="font-semibold">Değerlendirmen</div>
+            <div className="mt-1 text-sm text-amber-500" aria-label={`${request.review.rating} / 5 yıldız`}>
+              {"★".repeat(request.review.rating)}
+              {"☆".repeat(5 - request.review.rating)}
+            </div>
+            {request.review.comment && (
+              <p className="mt-2 text-sm text-text-muted">{request.review.comment}</p>
+            )}
           </div>
         )}
       </div>

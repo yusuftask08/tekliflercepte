@@ -5,7 +5,7 @@ import { prisma } from "@tekliflercepte/db";
 export default async function statsRoutes(app) {
   app.get("/stats/public", async () => {
     const [completedJobsCount, providerCount, ratingAgg] = await Promise.all([
-      prisma.offer.count({ where: { status: "SELECTED" } }),
+      prisma.serviceRequest.count({ where: { status: "CLOSED" } }),
       prisma.providerProfile.count(),
       prisma.providerProfile.aggregate({
         where: { reviewCount: { gt: 0 } },

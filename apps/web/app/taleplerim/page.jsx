@@ -4,24 +4,7 @@ import { Badge, Button, EmptyState } from "@tekliflercepte/ui";
 import { apiUrl } from "@/lib/api";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import { EmptyIcon } from "../empty-icons";
-
-const STATUS_LABEL = {
-  PENDING_REVIEW: "İnceleniyor",
-  OPEN: "Açık",
-  OFFER_SELECTED: "Teklif Seçildi",
-  CLOSED: "Kapalı",
-  CANCELLED: "İptal",
-  REJECTED: "Reddedildi",
-};
-
-const STATUS_TONE = {
-  PENDING_REVIEW: "warning",
-  OPEN: "info",
-  OFFER_SELECTED: "success",
-  CLOSED: "neutral",
-  CANCELLED: "neutral",
-  REJECTED: "neutral",
-};
+import { STATUS_LABEL, STATUS_TONE } from "./status-labels";
 
 async function getMyRequests(token) {
   const res = await fetch(apiUrl("/me/requests"), {

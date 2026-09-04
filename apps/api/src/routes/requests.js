@@ -99,4 +99,17 @@ export default async function requestRoutes(app) {
     ]);
     return updated;
   });
+
+  app.post("/requests/:id/complete", { preHandler: requireAuth }, async (req, reply) => {
+    const request = await prisma.serviceRequest.findUnique({ where: { id: req.params.id } });
+    if (!request) return reply.code(404).send({ error: "Talep bulunamadı" });
+    if (request.customerId !== req.user.sub) {
+      return reply.code(403).send({ error: "Bu talebin sahibi değilsin" });
+    }
+    if (request.status !== "OFFER_SELECTED") {
+      return reply.code(409).send({ error: "Sadece seçilmiş bir teklifi olan talepler tamamlanabilir" });
+    }
+
+    return prisma.serviceRequest.update({ where: { id: request.id }, data: { status: "CLOSED" } });
+  });
 }

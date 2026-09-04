@@ -22,15 +22,18 @@ export default async function reviewRoutes(app) {
       return reply.code(400).send({ error: "Değerlendirme yapabilmek için seçilmiş bir teklif olmalı" });
     }
 
-    const review = await prisma.review.create({
-      data: {
-        serviceRequestId: request.id,
-        authorId: req.user.sub,
-        targetId: selectedOffer.providerId,
-        rating,
-        comment,
-      },
-    });
+    const [review] = await prisma.$transaction([
+      prisma.review.create({
+        data: {
+          serviceRequestId: request.id,
+          authorId: req.user.sub,
+          targetId: selectedOffer.providerId,
+          rating,
+          comment,
+        },
+      }),
+      prisma.serviceRequest.update({ where: { id: request.id }, data: { status: "CLOSED" } }),
+    ]);
 
     const providerProfile = await prisma.providerProfile.findUnique({
       where: { userId: selectedOffer.providerId },
