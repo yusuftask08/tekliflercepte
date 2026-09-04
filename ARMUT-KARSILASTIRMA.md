@@ -56,8 +56,10 @@ Ne müşteri ne usta tarafında promosyon kodu veya "arkadaşını davet et" bon
 ### 3.7 B2B / kurumsal hesap yok
 `UserRole` sadece `CUSTOMER / PROVIDER / ADMIN / MODERATOR`. Site yönetimi, apartman yönetimi gibi kurumsal/toplu talep oluşturan hesap tipi yok. Şu an için önceliksiz olabilir ama büyüme planına girerse not düşülsün.
 
-### 3.8 CSP (Content-Security-Policy) header'ı yok
-`project_security_headers_round` notunda bilinçli olarak ertelenmiş (JSON-LD `dangerouslySetInnerHTML` incelemesi gerekiyor). Hâlâ açık bir madde.
+### 3.8 ✅ Kapandı — CSP (Content-Security-Policy) header'ı (2026-08-20)
+apps/panel: enforcing CSP eklendi (inline script/harici görsel yok, risksiz). apps/web: nonce tabanlı CSP (middleware.js), homepage/usta/[id]/hizmet/[kategori]/[sehir]'deki JSON-LD script'lerine nonce eklendi — Next'in kendi RSC script'lerine nonce'u otomatik uyguladığı doğrulandı. Production build + prod modda çalıştırılıp header/nonce eşleşmesi curl ile doğrulandı.
+**Kalan adım (kod değil, tarayıcı gözlemi):** web tarafı hâlâ `Content-Security-Policy-Report-Only` — hiçbir şeyi bloklamıyor. Production'a deploy edilince siteyi gerçek tarayıcıda gezip DevTools konsolunda ihlal uyarısı kalmadığını görmek gerekiyor, sonra `middleware.js`'teki `CSP_ENFORCE` true yapılır.
+**Yan bulgu:** bu incelemede `next.config.js`'in `images.remotePatterns`'ının yerel API portunu "4000" olarak hardcode ettiği, oysa gerçek dev portunun 4001 olduğu bulundu — dev'de next/image ile yüklenen tüm görseller (avatar, portfolyo, review fotoğrafları) sessizce kırıktı. Düzeltildi (env'den dinamik okunuyor).
 
 ---
 
@@ -91,4 +93,8 @@ Bunlar "eksik" değil, ürün pozisyonlaması gereği farklı tercih:
 
 Etki/efor dengesine göre öncelik sırası: ~~(1) iş tamamlama onayı (2.2)~~ ✅ kapandı; ~~(2) telefon OTP doğrulama (2.1)~~ ✅ kapandı (kod tarafı — SMS sağlayıcı hesabı ayrı, iş sahibine ait); ~~(3) Resend API key'in gerçekten set edilmesi (2.4)~~ kod zaten hazırdı, doğrulandı — kalan tek şey hesap açma; ~~(4) değerlendirmelere fotoğraf (3.6)~~ ✅ kapandı.
 
-Bölüm 2'deki kritik eksiklerin hepsi kapandı (2.3 uyuşmazlık akışı hariç — o daha büyük bir ürün kararı gerektiriyor). Sıradaki en düşük efor/en somut madde **3.8 CSP header'ı** — daha önce JSON-LD `dangerouslySetInnerHTML` incelemesi gerektiği için ertelenmişti, şimdi o incelemeyi yapıp kapatmak mantıklı. Diğer orta öncelikli maddeler (3.1-3.5, 3.7) daha büyük ürün/tasarım kararları gerektiriyor, tek oturumda kod yazıp kapatılacak türden değil.
+Bölüm 2'deki kritik eksiklerin hepsi kapandı (2.3 uyuşmazlık akışı hariç — o daha büyük bir ürün kararı gerektiriyor). ~~3.8 CSP header'ı~~ ✅ kapandı (web tarafı Report-Only, prod'da tarayıcı kontrolü sonrası enforce edilecek).
+
+**Şu an tek oturumda kod yazıp kapatılacak somut/düşük efor madde kalmadı.** Geriye kalanlar iki kategoride:
+- **Operasyonel, geliştirici işi değil:** SMS sağlayıcı hesabı (2.1), Resend hesabı (2.4), CSP'yi enforce etmeden önceki tarayıcı kontrolü (3.8) — hepsi iş sahibinin/kullanıcının yapacağı adımlar.
+- **Büyük ürün/tasarım kararı gerektiren maddeler** (2.3 uyuşmazlık akışı, 3.1 belge/sigorta rozetleri, 3.2 randevu/takvim, 3.3 tekrarlayan hizmet, 3.4 kupon/referans, 3.5 canlı destek/ticket, 3.7 B2B) — bunlardan biri seçilip kapsamı netleştirilmeden koda başlamak riskli, kullanıcıya sorulmalı.
