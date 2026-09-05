@@ -47,8 +47,9 @@ Haftalık ev temizliği gibi düzenli hizmet talepleri için bir "recurring book
 ### 3.4 Kupon / referans (davet) sistemi yok
 Ne müşteri ne usta tarafında promosyon kodu veya "arkadaşını davet et" bonus mekanizması yok. Büyüme/edinim maliyetini düşürmek için düşük efor, yüksek etkili bir eklenti olabilir.
 
-### 3.5 Canlı destek / ticket sistemi yok
-`/iletisim` statik bir iletişim sayfası — canlı sohbet, destek talebi (ticket) takibi yok. Armut şikayetlerinin en büyük tekrar eden temalarından biri zaten "şablon/ilgisiz destek" olduğu için burada minimal bile olsa gerçek bir ticket kaydı (ör. panelde görünen "Destek Talepleri" listesi) fark yaratabilir.
+### 3.5 ✅ Kapandı — Destek talebi (ticket) sistemi (2026-08-21)
+`SupportTicket` modeli eklendi, `/iletisim` artık gerçek bir form (giriş yapmışsa ad/email otomatik dolduruluyor, çıkış yapmamış ziyaretçi de gönderebiliyor). Panelde "Destek Talepleri" sayfası + sidebar'da açık talep rozeti, resolve akışı Şikayetler'deki desenle aynı. Yeni talep gelince adminlere e-posta gidiyor. Uçtan uca doğrulandı (anonim/oturumlu gönderim, doğrulama, admin listeleme/arama/resolve, rate limit).
+Not: canlı sohbet (gerçek zamanlı) hâlâ yok, bu bilinçli olarak MVP kapsamı dışında bırakıldı — ticket kaydı zaten Armut şikayetlerindeki asıl sorunu (kaybolan/takip edilemeyen destek talepleri) çözüyor.
 
 ### 3.6 ✅ Kapandı — Değerlendirmelere fotoğraf ekleme (2026-08-20)
 `Review.photos String[]` eklendi, `POST /requests/:id/review` en fazla 3 fotoğraf kabul ediyor. Wizard'ın fotoğraf seçici UI'ı `PhotoPicker` bileşenine çıkarılıp değerlendirme formunda da kullanıldı (kopya kod yok); fotoğraflar hem talep sahibinin kendi değerlendirmesinde hem usta profilindeki değerlendirme listesinde küçük thumbnail + lightbox olarak görünüyor. Uçtan uca doğrulandı.
@@ -97,4 +98,4 @@ Bölüm 2'deki kritik eksiklerin hepsi kapandı, ~~2.3 uyuşmazlık akışı~~ d
 
 Geriye kalanlar:
 - **Operasyonel, geliştirici işi değil:** SMS sağlayıcı hesabı (2.1), Resend hesabı (2.4), CSP'yi enforce etmeden önceki tarayıcı kontrolü (3.8).
-- **Kullanıcı "sen karar ver, devam et" dedi (2026-08-21):** artık her maddeyi tek tek onaya sormak yerine kapsamı en dar/somut şekilde tanımlayıp (MVP mantığıyla, 2.3'te yapıldığı gibi) sırayla kapatılıyor. Sıradaki: **3.5 canlı destek/ticket sistemi** — doküman'ın kendi önerisi olan minimal ticket kaydı (panelde "Destek Talepleri" listesi). Sonra: 3.1 belge/sigorta rozetleri, 3.4 kupon/referans. 3.2 randevu/takvim ve 3.3 tekrarlayan hizmet daha büyük veri modeli değişikliği gerektiriyor, en sona bırakıldı. 3.7 B2B zaten önceliksiz.
+- **Kullanıcı "sen karar ver, devam et" dedi (2026-08-21):** artık her maddeyi tek tek onaya sormak yerine kapsamı en dar/somut şekilde tanımlayıp (MVP mantığıyla) sırayla kapatılıyor. ~~3.5 destek/ticket sistemi~~ ✅ kapandı. Sıradaki: **3.1 usta belge/sigorta rozetleri**, sonra **3.4 kupon/referans**. 3.2 randevu/takvim ve 3.3 tekrarlayan hizmet daha büyük veri modeli değişikliği gerektiriyor, en sona bırakıldı. 3.7 B2B zaten önceliksiz.
