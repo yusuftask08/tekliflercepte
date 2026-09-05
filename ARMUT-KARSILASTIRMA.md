@@ -24,9 +24,9 @@ Aşağıdaki liste bunların **üzerine** — gerçekten eksik olan veya yarım 
 `POST /requests/:id/complete` eklendi (müşteri, `OFFER_SELECTED` durumundaki kendi talebini `CLOSED`'a çekebiliyor); değerlendirme gönderimi de artık transaction içinde talebi `CLOSED` yapıyor. `stats.js`'teki `completedJobsCount` artık gerçek `CLOSED` talep sayısından geliyor. Talep detay sayfasında durum rozeti ve kapalı taleplerde geçmiş değerlendirme gösterimi var. Uçtan uca API testleriyle doğrulandı (tamamlama, değerlendirme üzerinden kapatma, sahiplik/durum guard'ları, stats sayacı).
 Kalan not: usta tarafında ayrı bir "işi bitirdim" işaretleme (iki taraflı onay) hâlâ yok — istenirse ayrı bir madde olarak eklenebilir, şu an tek taraflı (müşteri) onay yeterli görüldü.
 
-### 2.3 Uyuşmazlık / iptal sonrası çözüm akışı yok
-Müşteri bir talebi iptal edebiliyor (`cancel-button.jsx` → `CANCELLED`), admin da panelden iptal edebiliyor — ama bir teklif seçildikten SONRA ortaya çıkan anlaşmazlıklarda (usta gelmedi, fiyat üstüne para istendi, iş yarım bırakıldı) ne müşterinin ne ustanın başvurabileceği bir "itiraz/uyuşmazlık" mekanizması yok. Sadece genel `Report`/`Block` var, bunlar iş akışına bağlı değil.
-**Öneri:** MVP için ağır bir sistem gerekmez — en azından `Report` modelini `serviceRequestId`'ye de bağlayıp panelde "bu talep hakkında açılan şikayetler" görünür kılmak yeterli olur.
+### 2.3 ✅ Kapandı — Uyuşmazlık / iptal sonrası çözüm akışı MVP (2026-08-21)
+`Report.offerId` gerçek bir ilişkiye çevrildi (önceden bare scalar'dı, offer.serviceRequest üzerinden hangi talebe ait olduğu artık bulunabiliyor). `GET /admin/requests/:id` her teklifin altında ona açılan şikayetleri de döndürüyor; panelde talep detay sayfasına "Bu talep hakkında açılan şikayetler" bölümü eklendi, mevcut ResolveReportButton ile aynı yerden kapatılabiliyor. Uçtan uca doğrulandı.
+Kalan not: bu hâlâ genel Report/Block altyapısını yeniden kullanan hafif bir MVP — ayrı bir "itiraz" durumu/akışı (ör. talebi otomatik askıya alma) yok, ihtiyaç olursa ayrı madde olarak açılabilir.
 
 ### 2.4 Gerçek e-posta gönderimi henüz aktif değil — kod tarafı doğrulandı, hesap bekliyor (2026-08-20)
 `mailer.js` kod olarak tam hazır (gerçek Resend SDK çağrısı, `RESEND_API_KEY` set edilince başka hiçbir değişiklik gerekmiyor) ama key hâlâ boş — email'ler best-effort loglanıyor. `.env.example`'da zaten dokümante edilmişti, tekrar doğrulandı. **Bu satırda geliştiriciye kalan iş yok** — tek eksik resend.com hesabı açıp domain doğrulamak (iş sahibine ait, [[project_legal_requirements]] ile aynı kategori).
@@ -93,8 +93,8 @@ Bunlar "eksik" değil, ürün pozisyonlaması gereği farklı tercih:
 
 Etki/efor dengesine göre öncelik sırası: ~~(1) iş tamamlama onayı (2.2)~~ ✅ kapandı; ~~(2) telefon OTP doğrulama (2.1)~~ ✅ kapandı (kod tarafı — SMS sağlayıcı hesabı ayrı, iş sahibine ait); ~~(3) Resend API key'in gerçekten set edilmesi (2.4)~~ kod zaten hazırdı, doğrulandı — kalan tek şey hesap açma; ~~(4) değerlendirmelere fotoğraf (3.6)~~ ✅ kapandı.
 
-Bölüm 2'deki kritik eksiklerin hepsi kapandı (2.3 uyuşmazlık akışı hariç — o daha büyük bir ürün kararı gerektiriyor). ~~3.8 CSP header'ı~~ ✅ kapandı (web tarafı Report-Only, prod'da tarayıcı kontrolü sonrası enforce edilecek).
+Bölüm 2'deki kritik eksiklerin hepsi kapandı, ~~2.3 uyuşmazlık akışı~~ dahil (hafif bir MVP olarak — mevcut Report/Block'u talebe bağlamak). ~~3.8 CSP header'ı~~ ✅ kapandı (web tarafı Report-Only, prod'da tarayıcı kontrolü sonrası enforce edilecek).
 
-**Şu an tek oturumda kod yazıp kapatılacak somut/düşük efor madde kalmadı.** Geriye kalanlar iki kategoride:
-- **Operasyonel, geliştirici işi değil:** SMS sağlayıcı hesabı (2.1), Resend hesabı (2.4), CSP'yi enforce etmeden önceki tarayıcı kontrolü (3.8) — hepsi iş sahibinin/kullanıcının yapacağı adımlar.
-- **Büyük ürün/tasarım kararı gerektiren maddeler** (2.3 uyuşmazlık akışı, 3.1 belge/sigorta rozetleri, 3.2 randevu/takvim, 3.3 tekrarlayan hizmet, 3.4 kupon/referans, 3.5 canlı destek/ticket, 3.7 B2B) — bunlardan biri seçilip kapsamı netleştirilmeden koda başlamak riskli, kullanıcıya sorulmalı.
+Geriye kalanlar:
+- **Operasyonel, geliştirici işi değil:** SMS sağlayıcı hesabı (2.1), Resend hesabı (2.4), CSP'yi enforce etmeden önceki tarayıcı kontrolü (3.8).
+- **Kullanıcı "sen karar ver, devam et" dedi (2026-08-21):** artık her maddeyi tek tek onaya sormak yerine kapsamı en dar/somut şekilde tanımlayıp (MVP mantığıyla, 2.3'te yapıldığı gibi) sırayla kapatılıyor. Sıradaki: **3.5 canlı destek/ticket sistemi** — doküman'ın kendi önerisi olan minimal ticket kaydı (panelde "Destek Talepleri" listesi). Sonra: 3.1 belge/sigorta rozetleri, 3.4 kupon/referans. 3.2 randevu/takvim ve 3.3 tekrarlayan hizmet daha büyük veri modeli değişikliği gerektiriyor, en sona bırakıldı. 3.7 B2B zaten önceliksiz.
