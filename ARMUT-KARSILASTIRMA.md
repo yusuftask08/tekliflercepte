@@ -44,8 +44,9 @@ Kalan not: bu hâlâ genel Report/Block altyapısını yeniden kullanan hafif bi
 ### 3.3 Tekrarlayan hizmet / abonelik talebi yok
 Haftalık ev temizliği gibi düzenli hizmet talepleri için bir "recurring booking" kavramı yok — her seferinde yeniden talep oluşturmak gerekiyor.
 
-### 3.4 Kupon / referans (davet) sistemi yok
-Ne müşteri ne usta tarafında promosyon kodu veya "arkadaşını davet et" bonus mekanizması yok. Büyüme/edinim maliyetini düşürmek için düşük efor, yüksek etkili bir eklenti olabilir.
+### 3.4 ✅ Kapandı — Referans (davet) sistemi (2026-08-23)
+Herkes kendi referans linkini (`/kayit?ref=<id>`) paylaşabiliyor, profilde kaç kişiyi davet ettiğini görüyor. Ödül sadece usta→usta zincirinde: referansla katılan bir usta profilini tamamlayınca referrer otomatik `isPremium` kazanıyor (bildirim + email ile). Müşteri referansları sadece sayılıyor, ödül yok — platformda müşteri tarafında ödüllendirilecek bir "premium" kavramı olmadığı için uydurma bir mekanik eklemedim. Uçtan uca doğrulandı (ödül tetiklenmesi + müşteri-referrer'ın ödül almadığı negatif senaryo).
+Not: "kupon" kısmı hiç yapılmadı — platformda ödeme/komisyon olmadığı için parasal bir indirim kodunun karşılığı yok; bu bilinçli bir kapsam daraltması, [[project_armut_differentiation]] ile aynı mantık.
 
 ### 3.5 ✅ Kapandı — Destek talebi (ticket) sistemi (2026-08-21)
 `SupportTicket` modeli eklendi, `/iletisim` artık gerçek bir form (giriş yapmışsa ad/email otomatik dolduruluyor, çıkış yapmamış ziyaretçi de gönderebiliyor). Panelde "Destek Talepleri" sayfası + sidebar'da açık talep rozeti, resolve akışı Şikayetler'deki desenle aynı. Yeni talep gelince adminlere e-posta gidiyor. Uçtan uca doğrulandı (anonim/oturumlu gönderim, doğrulama, admin listeleme/arama/resolve, rate limit).
@@ -98,4 +99,6 @@ Bölüm 2'deki kritik eksiklerin hepsi kapandı, ~~2.3 uyuşmazlık akışı~~ d
 
 Geriye kalanlar:
 - **Operasyonel, geliştirici işi değil:** SMS sağlayıcı hesabı (2.1), Resend hesabı (2.4), CSP'yi enforce etmeden önceki tarayıcı kontrolü (3.8).
-- **Kullanıcı "sen karar ver, devam et" dedi (2026-08-21):** artık her maddeyi tek tek onaya sormak yerine kapsamı en dar/somut şekilde tanımlayıp (MVP mantığıyla) sırayla kapatılıyor. ~~3.5 destek/ticket sistemi~~ ✅ kapandı, ~~3.1 usta belge/sigorta rozetleri~~ ✅ kapandı. Sıradaki: **3.4 kupon/referans sistemi**. 3.2 randevu/takvim ve 3.3 tekrarlayan hizmet daha büyük veri modeli değişikliği gerektiriyor, en sona bırakıldı. 3.7 B2B zaten önceliksiz.
+- **Kullanıcı "sen karar ver, devam et" dedi (2026-08-21):** artık her maddeyi tek tek onaya sormak yerine kapsamı en dar/somut şekilde tanımlayıp (MVP mantığıyla) sırayla kapatılıyor. ~~3.5 destek/ticket sistemi~~, ~~3.1 usta belge/sigorta rozetleri~~, ~~3.4 referans sistemi~~ ✅ hepsi kapandı.
+
+**Geriye sadece 3.2 randevu/takvim ve 3.3 tekrarlayan hizmet kaldı** — ikisi de mevcut veri modelinde büyük bir genişleme gerektiriyor (saat bazlı slot/müsaitlik takvimi, tekrarlayan talep + otomatik yeniden oluşturma mantığı) ve gerçek kullanıcı/talep hacmi olmadan hangi kategorilerde gerçekten gerekli olduğunu tahmin etmek zor — bu ikisi kullanıcıyla kapsam netleştirilmeden koda başlanacak türden değil. 3.7 B2B zaten önceliksiz.
