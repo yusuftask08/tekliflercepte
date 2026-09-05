@@ -23,6 +23,8 @@
     "resend": "^6.17.2"
   },
   "devDependencies": {
+    "@tekliflercepte/config": "workspace:*",
+    "eslint": "^9.17.0",
     "vitest": "^4.1.10"
   }
 }

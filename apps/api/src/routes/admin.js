@@ -26,7 +26,6 @@ async function uniqueSlug(name) {
   const base = slugifyTr(name);
   let slug = base;
   let n = 2;
-  // eslint-disable-next-line no-await-in-loop
   while (await prisma.category.findUnique({ where: { slug } })) {
     slug = `${base}-${n}`;
     n += 1;

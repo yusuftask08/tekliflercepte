@@ -1,6 +1,6 @@
 import { prisma } from "@tekliflercepte/db";
 import { requireAuth } from "../lib/auth.js";
-import { safeUserSelect, publicUserSelect } from "../lib/selects.js";
+import { publicUserSelect } from "../lib/selects.js";
 import { sendEmail, escapeHtml } from "../lib/mailer.js";
 import { isBlocked } from "../lib/blocks.js";
 import { createNotification, createNotifications } from "../lib/notifications.js";
