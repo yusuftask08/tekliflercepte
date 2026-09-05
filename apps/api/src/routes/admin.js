@@ -170,6 +170,36 @@ export default async function adminRoutes(app) {
     return updated;
   });
 
+  app.get("/admin/support-tickets", { preHandler: requireStaff }, async (req) => {
+    const { q, status } = req.query ?? {};
+    return prisma.supportTicket.findMany({
+      where: {
+        ...(status ? { status } : {}),
+        ...(q
+          ? {
+              OR: [
+                { name: { contains: q, mode: "insensitive" } },
+                { email: { contains: q, mode: "insensitive" } },
+                { subject: { contains: q, mode: "insensitive" } },
+              ],
+            }
+          : {}),
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  });
+
+  app.post("/admin/support-tickets/:id/resolve", { preHandler: requireStaff }, async (req, reply) => {
+    const ticket = await prisma.supportTicket.findUnique({ where: { id: req.params.id } });
+    if (!ticket) return reply.code(404).send({ error: "Destek talebi bulunamadı" });
+    const updated = await prisma.supportTicket.update({
+      where: { id: ticket.id },
+      data: { status: "RESOLVED", resolvedAt: new Date() },
+    });
+    logAdminAction({ adminId: req.user.sub, action: "ticket.resolve", targetId: ticket.id, targetType: "SupportTicket" });
+    return updated;
+  });
+
   app.get("/admin/users", { preHandler: requireAdmin }, async (req) => {
     const { q, page } = req.query ?? {};
     const pageNum = Math.max(1, Number(page) || 1);

@@ -31,20 +31,40 @@ async function getOpenComplaintCount(token) {
   }
 }
 
+async function getOpenTicketCount(token) {
+  try {
+    const res = await fetch(`${apiUrl("/admin/support-tickets")}?status=OPEN`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!res.ok) return 0;
+    const tickets = await res.json();
+    return tickets.length;
+  } catch {
+    return 0;
+  }
+}
+
 export default async function AdminLayout({ children }) {
   const user = await getSessionUser();
   if (!user || (user.role !== "ADMIN" && user.role !== "MODERATOR")) {
     redirect("/giris");
   }
   const token = await getSessionToken();
-  const [pendingCount, openComplaintCount] = await Promise.all([
+  const [pendingCount, openComplaintCount, openTicketCount] = await Promise.all([
     getPendingCount(token),
     getOpenComplaintCount(token),
+    getOpenTicketCount(token),
   ]);
 
   return (
     <div className="flex h-screen">
-      <Sidebar pendingCount={pendingCount} openComplaintCount={openComplaintCount} role={user.role} />
+      <Sidebar
+        pendingCount={pendingCount}
+        openComplaintCount={openComplaintCount}
+        openTicketCount={openTicketCount}
+        role={user.role}
+      />
       <main className="flex-1 overflow-auto px-6 py-5">{children}</main>
     </div>
   );

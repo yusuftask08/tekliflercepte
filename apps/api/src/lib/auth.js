@@ -49,6 +49,24 @@ export function requireAuth(req, reply, done) {
   }
 }
 
+/** For endpoints open to anonymous callers that still want to attribute
+ *  the action to a real user when one is logged in (support tickets) — sets
+ *  req.user if a valid Bearer token is present, otherwise leaves it null
+ *  and lets the request through either way. Never trust req.user.sub as
+ *  "authenticated" here without also checking it's non-null. */
+export function optionalAuth(req, reply, done) {
+  const header = req.headers.authorization;
+  const token = header?.startsWith("Bearer ") ? header.slice(7) : null;
+  if (token) {
+    try {
+      req.user = jwt.verify(token, process.env.JWT_SECRET);
+    } catch {
+      req.user = null;
+    }
+  }
+  done();
+}
+
 export function requireAdmin(req, reply, done) {
   requireAuth(req, reply, () => {
     if (req.user.role !== "ADMIN") {

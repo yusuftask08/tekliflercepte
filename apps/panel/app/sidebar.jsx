@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { href: "/", label: "Talepler", staff: true },
   { href: "/talep-onaylari", label: "Talep Onayları", badgeKey: "pendingCount", staff: true },
   { href: "/sikayetler", label: "Şikayetler", badgeKey: "openComplaintCount", staff: true },
+  { href: "/destek-talepleri", label: "Destek Talepleri", badgeKey: "openTicketCount", staff: true },
   { href: "/kullanicilar", label: "Kullanıcılar" },
   { href: "/ustalar", label: "Ustalar" },
   { href: "/kategoriler", label: "Kategoriler" },
@@ -18,9 +19,9 @@ const NAV_ITEMS = [
 // MODERATOR only sees the items it's actually allowed to act on
 // (mirrors requireStaff vs requireAdmin on the API side) — everything
 // else (`staff` unset) is ADMIN-only.
-export function Sidebar({ pendingCount = 0, openComplaintCount = 0, role }) {
+export function Sidebar({ pendingCount = 0, openComplaintCount = 0, openTicketCount = 0, role }) {
   const pathname = usePathname();
-  const badgeValues = { pendingCount, openComplaintCount };
+  const badgeValues = { pendingCount, openComplaintCount, openTicketCount };
   const items = role === "MODERATOR" ? NAV_ITEMS.filter((item) => item.staff) : NAV_ITEMS;
 
   return (

@@ -77,6 +77,7 @@ model User {
   blocksMade       Block[]          @relation("BlockOwner")
   blockedBy        Block[]          @relation("BlockTarget")
   notifications    Notification[]
+  supportTickets   SupportTicket[]
 
   @@map("users")
 }
@@ -135,6 +136,29 @@ model Report {
 
   @@index([offerId])
   @@map("reports")
+}
+
+enum TicketStatus {
+  OPEN
+  RESOLVED
+}
+
+/// /iletisim's contact form — open to logged-out visitors too (userId is
+/// optional), name/email are always stored as free text since an anonymous
+/// sender has no User row to read them from.
+model SupportTicket {
+  id         String       @id @default(cuid())
+  userId     String?
+  user       User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name       String
+  email      String
+  subject    String
+  message    String
+  status     TicketStatus @default(OPEN)
+  createdAt  DateTime     @default(now())
+  resolvedAt DateTime?
+
+  @@map("support_tickets")
 }
 
 model Block {
