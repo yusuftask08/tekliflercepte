@@ -99,7 +99,20 @@ export default async function adminRoutes(app) {
         category: true,
         customer: { select: safeUserSelect },
         offers: {
-          include: { provider: { select: safeUserSelect } },
+          include: {
+            provider: { select: safeUserSelect },
+            // Reports are filed against a (offerId, otherUser) pair from
+            // the message thread — surfacing them here lets staff see every
+            // complaint tied to this request without hunting through the
+            // general Şikayetler list one offer at a time.
+            reports: {
+              include: {
+                reporter: { select: safeUserSelect },
+                reportedUser: { select: safeUserSelect },
+              },
+              orderBy: { createdAt: "desc" },
+            },
+          },
           orderBy: { createdAt: "asc" },
         },
       },

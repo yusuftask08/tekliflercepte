@@ -2,13 +2,7 @@ import { Badge } from "@tekliflercepte/ui";
 import { apiUrl } from "@/lib/api";
 import { getSessionToken } from "@/lib/session";
 import { ResolveReportButton } from "../../resolve-report-button";
-
-const REASON_LABEL = {
-  HARASSMENT: "Taciz",
-  SPAM: "Spam",
-  FRAUD: "Dolandırıcılık",
-  OTHER: "Diğer",
-};
+import { REASON_LABEL } from "../../report-reason-labels";
 
 async function getReports(q) {
   const token = await getSessionToken();

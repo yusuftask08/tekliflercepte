@@ -3,6 +3,8 @@ import { Badge } from "@tekliflercepte/ui";
 import { apiUrl } from "@/lib/api";
 import { getSessionToken } from "@/lib/session";
 import { CancelRequestButton } from "../../../cancel-request-button";
+import { ResolveReportButton } from "../../../resolve-report-button";
+import { REASON_LABEL } from "../../../report-reason-labels";
 
 const STATUS_LABEL = {
   PENDING_REVIEW: "İnceleniyor",
@@ -49,6 +51,9 @@ export default async function TalepDetayPage({ params }) {
   }
 
   const isCancelable = !["CLOSED", "CANCELLED", "REJECTED"].includes(request.status);
+  const reports = request.offers.flatMap((offer) =>
+    offer.reports.map((report) => ({ ...report, offerProviderName: `${offer.provider.firstName} ${offer.provider.lastName}` }))
+  );
 
   return (
     <div>
@@ -126,6 +131,40 @@ export default async function TalepDetayPage({ params }) {
           </div>
         )}
       </div>
+
+      {reports.length > 0 && (
+        <div className="mt-4 rounded-lg border border-danger/30 bg-danger/5 p-5 shadow-sm">
+          <div className="mb-3 text-sm font-bold text-danger">
+            Bu talep hakkında açılan şikayetler ({reports.length})
+          </div>
+          <div className="flex flex-col gap-2">
+            {reports.map((report) => (
+              <div
+                key={report.id}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-surface px-3.5 py-2.5 text-sm"
+              >
+                <div>
+                  <span className="font-medium">
+                    {report.reporter.firstName} {report.reporter.lastName}
+                  </span>
+                  <span className="text-text-muted">
+                    {" "}
+                    → {report.reportedUser.firstName} {report.reportedUser.lastName} · {REASON_LABEL[report.reason]}
+                  </span>
+                  {report.details && <div className="mt-0.5 text-xs text-text-muted">{report.details}</div>}
+                  <div className="mt-0.5 text-xs text-text-muted">Teklif: {report.offerProviderName}</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge tone={report.status === "OPEN" ? "warning" : "success"}>
+                    {report.status === "OPEN" ? "Açık" : "İncelendi"}
+                  </Badge>
+                  {report.status === "OPEN" && <ResolveReportButton reportId={report.id} />}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

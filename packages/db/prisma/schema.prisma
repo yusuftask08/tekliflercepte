@@ -123,11 +123,17 @@ model Report {
   reportedUserId String
   reportedUser   User         @relation("ReportTarget", fields: [reportedUserId], references: [id], onDelete: Cascade)
   offerId        String?
+  /// Was a bare unindexed scalar before — turned into a real relation so a
+  /// report can be traced back to its service request (offer.serviceRequest)
+  /// for the admin panel's "bu talep hakkında açılan şikayetler" view,
+  /// instead of duplicating serviceRequestId as a second, sync-able column.
+  offer          Offer?       @relation(fields: [offerId], references: [id], onDelete: SetNull)
   reason         ReportReason
   details        String?
   status         ReportStatus @default(OPEN)
   createdAt      DateTime     @default(now())
 
+  @@index([offerId])
   @@map("reports")
 }
 
@@ -287,6 +293,7 @@ model Offer {
   updatedAt        DateTime       @updatedAt
 
   messages Message[]
+  reports  Report[]
 
   @@unique([serviceRequestId, providerId])
   @@map("offers")
