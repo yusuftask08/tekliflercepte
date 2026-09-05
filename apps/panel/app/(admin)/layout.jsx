@@ -45,16 +45,31 @@ async function getOpenTicketCount(token) {
   }
 }
 
+async function getPendingDocumentCount(token) {
+  try {
+    const res = await fetch(`${apiUrl("/admin/provider-documents")}?status=PENDING`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!res.ok) return 0;
+    const documents = await res.json();
+    return documents.length;
+  } catch {
+    return 0;
+  }
+}
+
 export default async function AdminLayout({ children }) {
   const user = await getSessionUser();
   if (!user || (user.role !== "ADMIN" && user.role !== "MODERATOR")) {
     redirect("/giris");
   }
   const token = await getSessionToken();
-  const [pendingCount, openComplaintCount, openTicketCount] = await Promise.all([
+  const [pendingCount, openComplaintCount, openTicketCount, pendingDocumentCount] = await Promise.all([
     getPendingCount(token),
     getOpenComplaintCount(token),
     getOpenTicketCount(token),
+    getPendingDocumentCount(token),
   ]);
 
   return (
@@ -63,6 +78,7 @@ export default async function AdminLayout({ children }) {
         pendingCount={pendingCount}
         openComplaintCount={openComplaintCount}
         openTicketCount={openTicketCount}
+        pendingDocumentCount={pendingDocumentCount}
         role={user.role}
       />
       <main className="flex-1 overflow-auto px-6 py-5">{children}</main>

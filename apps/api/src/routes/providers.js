@@ -114,7 +114,13 @@ export default async function providerRoutes(app) {
         select: {
           ...publicUserSelect,
           providerProfile: {
-            include: { categories: { include: { category: true } } },
+            include: {
+              categories: { include: { category: true } },
+              // Only the type, only APPROVED — never expose fileUrl or a
+              // PENDING/REJECTED submission publicly, this is purely for
+              // rendering the "Belgeli Usta"/"Sigortalı Hizmet" badges.
+              documents: { where: { status: "APPROVED" }, select: { type: true } },
+            },
           },
         },
         orderBy: buildProvidersOrderBy(sort),
@@ -177,7 +183,10 @@ export default async function providerRoutes(app) {
       select: {
         ...publicUserSelect,
         providerProfile: {
-          include: { categories: { include: { category: true } } },
+          include: {
+            categories: { include: { category: true } },
+            documents: { where: { status: "APPROVED" }, select: { type: true } },
+          },
         },
         reviewsReceived: {
           include: { author: { select: publicUserSelect } },

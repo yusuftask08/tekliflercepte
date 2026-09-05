@@ -240,8 +240,39 @@ model ProviderProfile {
   dataConsentAt DateTime?
 
   categories ProviderCategory[]
+  documents  ProviderDocument[]
 
   @@map("provider_profiles")
+}
+
+enum ProviderDocumentType {
+  CERTIFICATE
+  INSURANCE
+}
+
+enum ProviderDocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+/// A real uploaded certificate/diploma or insurance policy — admin reviews
+/// the actual file before a "Belgeli Usta"/"Sigortalı Hizmet" badge shows,
+/// unlike identityVerifiedAt above which is an honest no-evidence toggle.
+model ProviderDocument {
+  id                String                 @id @default(cuid())
+  providerProfileId String
+  providerProfile   ProviderProfile        @relation(fields: [providerProfileId], references: [id], onDelete: Cascade)
+  type              ProviderDocumentType
+  fileUrl           String
+  label             String?
+  status            ProviderDocumentStatus @default(PENDING)
+  createdAt         DateTime               @default(now())
+  reviewedAt        DateTime?
+  reviewNote        String?
+
+  @@index([providerProfileId])
+  @@map("provider_documents")
 }
 
 model Category {

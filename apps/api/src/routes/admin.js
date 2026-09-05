@@ -310,6 +310,39 @@ export default async function adminRoutes(app) {
     return updated;
   });
 
+  app.get("/admin/provider-documents", { preHandler: requireStaff }, async (req) => {
+    const { status } = req.query ?? {};
+    return prisma.providerDocument.findMany({
+      where: status ? { status } : undefined,
+      include: {
+        providerProfile: { include: { user: { select: safeUserSelect } } },
+      },
+      orderBy: { createdAt: "asc" },
+    });
+  });
+
+  app.post("/admin/provider-documents/:id/approve", { preHandler: requireStaff }, async (req, reply) => {
+    const doc = await prisma.providerDocument.findUnique({ where: { id: req.params.id } });
+    if (!doc) return reply.code(404).send({ error: "Belge bulunamadı" });
+    const updated = await prisma.providerDocument.update({
+      where: { id: doc.id },
+      data: { status: "APPROVED", reviewedAt: new Date(), reviewNote: null },
+    });
+    logAdminAction({ adminId: req.user.sub, action: "provider-document.approve", targetId: doc.id, targetType: "ProviderDocument" });
+    return updated;
+  });
+
+  app.post("/admin/provider-documents/:id/reject", { preHandler: requireStaff }, async (req, reply) => {
+    const doc = await prisma.providerDocument.findUnique({ where: { id: req.params.id } });
+    if (!doc) return reply.code(404).send({ error: "Belge bulunamadı" });
+    const updated = await prisma.providerDocument.update({
+      where: { id: doc.id },
+      data: { status: "REJECTED", reviewedAt: new Date(), reviewNote: req.body?.note?.trim() || null },
+    });
+    logAdminAction({ adminId: req.user.sub, action: "provider-document.reject", targetId: doc.id, targetType: "ProviderDocument" });
+    return updated;
+  });
+
   app.post("/admin/providers/:id/toggle-premium", { preHandler: requireAdmin }, async (req, reply) => {
     const profile = await prisma.providerProfile.findUnique({ where: { userId: req.params.id } });
     if (!profile) return reply.code(404).send({ error: "Usta profili bulunamadı" });

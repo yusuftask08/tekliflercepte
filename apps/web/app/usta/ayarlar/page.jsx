@@ -54,6 +54,7 @@ export default async function UstaAyarlarPage() {
             </div>
           )}
           <MenuRow href={`/usta/${user.id}`} label="Müşteri Yorumları" />
+          <MenuRow href="/usta/belgeler" label="Belgelerim" />
         </div>
 
         <div className="mb-3 text-xs font-bold uppercase tracking-wide text-text-muted">Diğer</div>

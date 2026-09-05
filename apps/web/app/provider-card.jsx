@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Avatar, Badge, StarRating } from "@tekliflercepte/ui";
 import { formatResponseTime } from "../lib/trust";
 import { displayName } from "../lib/name";
+import { hasApprovedDocument } from "../lib/provider-documents";
 
 export function ProviderCard({ provider }) {
   const profile = provider.providerProfile;
@@ -16,7 +17,7 @@ export function ProviderCard({ provider }) {
       <div className="flex items-start gap-3">
         <Avatar name={name} size="md" />
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             <span className="truncate font-bold">{name}</span>
             {profile?.isPremium && (
               <Badge tone="warning" icon="star">
@@ -26,6 +27,16 @@ export function ProviderCard({ provider }) {
             {profile?.identityVerifiedAt && (
               <Badge tone="success" icon="check">
                 Doğrulandı
+              </Badge>
+            )}
+            {hasApprovedDocument(profile?.documents, "CERTIFICATE") && (
+              <Badge tone="success" icon="check">
+                Belgeli Usta
+              </Badge>
+            )}
+            {hasApprovedDocument(profile?.documents, "INSURANCE") && (
+              <Badge tone="success" icon="check">
+                Sigortalı Hizmet
               </Badge>
             )}
           </div>

@@ -9,6 +9,7 @@ import { formatPrice } from "@/lib/price";
 import { displayName } from "@/lib/name";
 import { ReviewPhotos } from "../../review-photos";
 import { getNonce } from "@/lib/nonce";
+import { hasApprovedDocument } from "@/lib/provider-documents";
 
 const REVIEW_SORTS = [
   { value: "", label: "En Yeni" },
@@ -252,7 +253,10 @@ export default async function ProviderProfilePage({ params, searchParams }) {
             </div>
           )}
 
-          {(provider.phoneVerifiedAt || profile?.identityVerifiedAt) && (
+          {(provider.phoneVerifiedAt ||
+            profile?.identityVerifiedAt ||
+            hasApprovedDocument(profile?.documents, "CERTIFICATE") ||
+            hasApprovedDocument(profile?.documents, "INSURANCE")) && (
             <div className="mb-4 flex flex-wrap gap-1.5">
               {provider.phoneVerifiedAt && (
                 <Badge tone="success" icon="check">
@@ -262,6 +266,16 @@ export default async function ProviderProfilePage({ params, searchParams }) {
               {profile?.identityVerifiedAt && (
                 <Badge tone="success" icon="check">
                   Kimlik Doğrulandı
+                </Badge>
+              )}
+              {hasApprovedDocument(profile?.documents, "CERTIFICATE") && (
+                <Badge tone="success" icon="check">
+                  Belgeli Usta
+                </Badge>
+              )}
+              {hasApprovedDocument(profile?.documents, "INSURANCE") && (
+                <Badge tone="success" icon="check">
+                  Sigortalı Hizmet
                 </Badge>
               )}
             </div>
