@@ -35,8 +35,8 @@ Kalan not: bu hâlâ genel Report/Block altyapısını yeniden kullanan hafif bi
 
 ## 3. Orta öncelikli eksikler
 
-### 3.1 Usta belge/sigorta rozetleri yok
-Armut'ta "Belgeli Usta", "Sigortalı Hizmet" gibi rozetler var. Bizde sadece admin'in manuel açtığı `identityVerifiedAt` var (gerçek bir belge/adli sicil/sigorta yükleme-inceleme akışı yok). Bu bilinçli bir "gerçek olmayan güven sinyali koymayalım" tercihiyle örtüşüyor ama gerçek bir belge yükleme akışı (usta diploma/sertifika/sigorta poliçesi yükler, admin onaylar) eklenebilir — sahte değil, gerçek bir doğrulama katmanı olur.
+### 3.1 ✅ Kapandı — Usta belge/sigorta rozetleri (2026-08-22)
+`ProviderDocument` modeli eklendi (CERTIFICATE/INSURANCE, PENDING/APPROVED/REJECTED) — usta gerçek bir sertifika/sigorta poliçesi dosyası yüklüyor (PDF veya görsel), admin o dosyayı görüp onaylıyor/reddediyor. Sadece APPROVED belgeler public'e "Belgeli Usta"/"Sigortalı Hizmet" rozeti olarak yansıyor (fileUrl asla public endpoint'e sızmıyor). Web'de `/usta/belgeler`, panelde `/belgeler` (durum sekmeleri + onayla/reddet + sidebar rozeti). Uçtan uca doğrulandı: PDF yükleme, onay/red sonrası rozet görünürlüğü, reddedilme sebebini usta görebiliyor, incelenmiş belge silinemiyor.
 
 ### 3.2 Randevu/takvim sistemi yok
 `ServiceRequest.preferredDate` tek bir serbest tarih alanı. Ustanın müsaitlik takvimi, saat bazlı slot seçimi, yeniden planlama (reschedule) yok — sadece `isAvailable` (mola modu) boolean açık/kapalı anahtarı var. Armut bazı kategorilerde (temizlik gibi) tarih/saat seçimini daha yapılandırılmış sunuyor.
@@ -98,4 +98,4 @@ Bölüm 2'deki kritik eksiklerin hepsi kapandı, ~~2.3 uyuşmazlık akışı~~ d
 
 Geriye kalanlar:
 - **Operasyonel, geliştirici işi değil:** SMS sağlayıcı hesabı (2.1), Resend hesabı (2.4), CSP'yi enforce etmeden önceki tarayıcı kontrolü (3.8).
-- **Kullanıcı "sen karar ver, devam et" dedi (2026-08-21):** artık her maddeyi tek tek onaya sormak yerine kapsamı en dar/somut şekilde tanımlayıp (MVP mantığıyla) sırayla kapatılıyor. ~~3.5 destek/ticket sistemi~~ ✅ kapandı. Sıradaki: **3.1 usta belge/sigorta rozetleri**, sonra **3.4 kupon/referans**. 3.2 randevu/takvim ve 3.3 tekrarlayan hizmet daha büyük veri modeli değişikliği gerektiriyor, en sona bırakıldı. 3.7 B2B zaten önceliksiz.
+- **Kullanıcı "sen karar ver, devam et" dedi (2026-08-21):** artık her maddeyi tek tek onaya sormak yerine kapsamı en dar/somut şekilde tanımlayıp (MVP mantığıyla) sırayla kapatılıyor. ~~3.5 destek/ticket sistemi~~ ✅ kapandı, ~~3.1 usta belge/sigorta rozetleri~~ ✅ kapandı. Sıradaki: **3.4 kupon/referans sistemi**. 3.2 randevu/takvim ve 3.3 tekrarlayan hizmet daha büyük veri modeli değişikliği gerektiriyor, en sona bırakıldı. 3.7 B2B zaten önceliksiz.
