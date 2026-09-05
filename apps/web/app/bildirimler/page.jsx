@@ -31,6 +31,11 @@ const TYPE_ICON = {
       <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
   ),
+  REFERRAL_REWARD: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <path d="M12 2.5l2.9 6.2 6.6.7-5 4.6 1.4 6.6L12 17.4l-5.9 3.2 1.4-6.6-5-4.6 6.6-.7L12 2.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    </svg>
+  ),
 };
 
 const TYPE_TONE = {
@@ -39,6 +44,7 @@ const TYPE_TONE = {
   NEW_OFFER: "bg-brand-100 text-brand-600",
   NEW_MESSAGE: "bg-info/10 text-info",
   OFFER_REJECTED: "bg-text-muted/10 text-text-muted",
+  REFERRAL_REWARD: "bg-warning/10 text-warning",
 };
 
 async function getNotifications(token) {

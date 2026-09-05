@@ -1,6 +1,41 @@
 import { prisma } from "@tekliflercepte/db";
 import { requireAuth } from "../lib/auth.js";
 import { safeUserSelect } from "../lib/selects.js";
+import { createNotification } from "../lib/notifications.js";
+import { sendEmail, escapeHtml } from "../lib/mailer.js";
+
+/** Referral reward — only providers have anything to actually win (the
+ *  existing isPremium freemium flag, skip the daily free-offer cap), so a
+ *  referred customer's signup is tracked (GET /me/referrals) but doesn't
+ *  trigger a reward here; there's nothing equivalent to grant them without
+ *  inventing a mechanic the product hasn't decided on. Best-effort: a
+ *  failure here must never fail the profile save that triggered it. */
+async function rewardReferrerIfProvider(newProviderUserId) {
+  const newProvider = await prisma.user.findUnique({
+    where: { id: newProviderUserId },
+    select: { referredById: true, firstName: true, lastName: true },
+  });
+  if (!newProvider?.referredById) return;
+
+  const referrerProfile = await prisma.providerProfile.findUnique({
+    where: { userId: newProvider.referredById },
+    include: { user: { select: { email: true } } },
+  });
+  if (!referrerProfile) return; // referrer isn't a provider — nothing to grant
+
+  await prisma.providerProfile.update({ where: { id: referrerProfile.id }, data: { isPremium: true } });
+
+  const title = "Referansın için premium kazandın!";
+  const body = `${newProvider.firstName} ${newProvider.lastName} senin davetinle katıldı ve usta profilini tamamladı. Artık günlük ücretsiz teklif limitin yok.`;
+  // Awaited even though the caller doesn't await this whole function
+  // (already fire-and-forget from there) — an un-awaited call here would
+  // be a detached promise with nothing watching it, silently dropping any
+  // rejection instead of reaching the caller's .catch.
+  await createNotification({ userId: newProvider.referredById, type: "REFERRAL_REWARD", title, body, link: "/usta/ayarlar" });
+  if (referrerProfile.user.email) {
+    await sendEmail({ to: referrerProfile.user.email, subject: title, html: `<p>${escapeHtml(body)}</p>` });
+  }
+}
 
 export default async function providerProfileRoutes(app) {
   app.get("/me/provider-profile", { preHandler: requireAuth }, async (req) => {
@@ -51,11 +86,18 @@ export default async function providerProfileRoutes(app) {
       ...(portfolioPhotos ? { portfolioPhotos } : {}),
       ...(dataConsent && !existingProfile?.dataConsentAt ? { dataConsentAt: new Date() } : {}),
     };
+    const isFirstTimeConsent = Boolean(dataConsent) && !existingProfile?.dataConsentAt;
     const profile = await prisma.providerProfile.upsert({
       where: { userId: req.user.sub },
       update: data,
       create: { userId: req.user.sub, ...data },
     });
+
+    if (isFirstTimeConsent) {
+      rewardReferrerIfProvider(req.user.sub).catch((err) =>
+        console.error("[provider-profile] referral reward hatası:", err.message)
+      );
+    }
 
     await prisma.providerCategory.deleteMany({ where: { providerId: profile.id } });
     await prisma.providerCategory.createMany({

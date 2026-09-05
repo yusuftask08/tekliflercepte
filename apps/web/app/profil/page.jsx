@@ -6,6 +6,7 @@ import { getSessionToken, getSessionUser } from "@/lib/session";
 import { AccountForm } from "./account-form";
 import { PasswordForm } from "./password-form";
 import { ProviderProfileForm } from "./provider-profile-form";
+import { ReferralCard } from "./referral-card";
 
 const ROLE_LABEL = {
   CUSTOMER: "Müşteri",
@@ -37,6 +38,15 @@ async function getCategories() {
   return res.json();
 }
 
+async function getMyReferrals(token) {
+  const res = await fetch(apiUrl("/me/referrals"), {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
 export default async function ProfilPage() {
   const sessionUser = await getSessionUser();
   if (!sessionUser) redirect("/giris?next=/profil");
@@ -48,6 +58,7 @@ export default async function ProfilPage() {
     user.role === "PROVIDER"
       ? await Promise.all([getMyProviderProfile(token), getCategories()])
       : [null, []];
+  const referrals = await getMyReferrals(token);
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
@@ -110,6 +121,14 @@ export default async function ProfilPage() {
               </Link>
             )}
           </div>
+        )}
+
+        {referrals && (
+          <ReferralCard
+            referralCode={referrals.referralCode}
+            totalReferred={referrals.totalReferred}
+            isProvider={user.role === "PROVIDER"}
+          />
         )}
 
         <div className="mt-8 rounded-lg border border-border bg-surface p-4 shadow-sm">

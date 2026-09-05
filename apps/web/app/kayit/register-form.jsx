@@ -8,7 +8,7 @@ import { AuthInput } from "../auth-input";
 import { normalizePhone } from "@/lib/phone";
 import { validate, rules } from "@/lib/validation";
 
-export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
+export function RegisterForm({ next, defaultRole = "CUSTOMER", referredById }) {
   const router = useRouter();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -47,6 +47,7 @@ export function RegisterForm({ next, defaultRole = "CUSTOMER" }) {
           password,
           role,
           termsAccepted,
+          referredById,
         }),
       });
       const data = await res.json();

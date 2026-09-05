@@ -23,7 +23,7 @@ export default async function KayitPage({ searchParams }) {
         </span>
       }
     >
-      <RegisterForm next={params?.next} defaultRole={defaultRole} />
+      <RegisterForm next={params?.next} defaultRole={defaultRole} referredById={params?.ref} />
     </AuthShell>
   );
 }

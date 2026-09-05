@@ -39,6 +39,12 @@ export default async function authRoutes(app) {
       });
     }
 
+    // Optional ?ref=<userId> from the referral link — silently ignored if
+    // it doesn't resolve to a real user, never blocks registration over it.
+    const referredById = req.body?.referredById
+      ? (await prisma.user.findUnique({ where: { id: req.body.referredById }, select: { id: true } }))?.id ?? null
+      : null;
+
     const user = await prisma.user.create({
       data: {
         firstName,
@@ -48,6 +54,7 @@ export default async function authRoutes(app) {
         passwordHash: await hashPassword(password),
         role: role === "PROVIDER" ? "PROVIDER" : "CUSTOMER",
         termsAcceptedAt: new Date(),
+        referredById,
       },
     });
 

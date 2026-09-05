@@ -61,6 +61,11 @@ model User {
   /// checkbox at registration — the legal text itself is still a draft
   /// pending lawyer review, but the consent-capture mechanism is real.
   termsAcceptedAt DateTime?
+  /// Set once, at registration, from an optional ?ref=<userId> link — never
+  /// changes afterward. Null for the overwhelming majority (organic signup).
+  referredById String?
+  referredBy   User?    @relation("Referral", fields: [referredById], references: [id], onDelete: SetNull)
+  referrals    User[]   @relation("Referral")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -88,6 +93,7 @@ enum NotificationType {
   NEW_OFFER
   NEW_MESSAGE
   OFFER_REJECTED
+  REFERRAL_REWARD
 }
 
 model Notification {

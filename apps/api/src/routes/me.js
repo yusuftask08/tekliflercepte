@@ -150,4 +150,12 @@ export default async function meRoutes(app) {
       return { ok: true };
     }
   );
+
+  app.get("/me/referrals", { preHandler: requireAuth }, async (req) => {
+    // referralCode is just the user's own id — no separate short-code
+    // table, /kayit?ref=<id> is validated against a real User at register
+    // time either way.
+    const totalReferred = await prisma.user.count({ where: { referredById: req.user.sub } });
+    return { referralCode: req.user.sub, totalReferred };
+  });
 }
