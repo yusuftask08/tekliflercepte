@@ -71,7 +71,7 @@ apps/panel: enforcing CSP eklendi (inline script/harici görsel yok, risksiz). a
 - **Blog / içerik pazarlaması yok** — organik SEO için "nasıl yapılır" tarzı içerik bölümü yok. Programatik `hizmet/[kategori]/[sehir]` sayfaları var ama editoryal içerik sıfır.
 - **Push bildirim yok** — sadece e-posta (henüz aktif değil) var; web push veya SMS yok.
 - **Usta eğitim/sertifikasyon içerik akışı yok** — Armut'un ustalara yönelik "nasıl daha çok iş alırsın" eğitim/onboarding içerikleri var, bizde onboarding sadece formdan ibaret.
-- **Fiyat tahmini / anlık fiyatlandırma aracı yok** — Armut bazı kategorilerde "tahmini fiyat aralığı" gösteriyor, bizde her talep serbest teklif üzerinden.
+- ✅ **Kapandı — Fiyat tahmini (2026-09-18):** `GET /categories/:id/price-estimate`, gerçek SELECTED tekliflerden min/max/ortalama (en az 5 veri noktası şartı, azsa "available:false"; şehir verisi yetersizse kategori geneline düşüyor). Talep sihirbazında bütçe alanının üstünde gösteriliyor. 4 testle doğrulandı.
 
 ---
 
@@ -101,4 +101,8 @@ Geriye kalanlar:
 - **Operasyonel, geliştirici işi değil:** SMS sağlayıcı hesabı (2.1), Resend hesabı (2.4), CSP'yi enforce etmeden önceki tarayıcı kontrolü (3.8).
 - **Kullanıcı "sen karar ver, devam et" dedi (2026-08-21):** artık her maddeyi tek tek onaya sormak yerine kapsamı en dar/somut şekilde tanımlayıp (MVP mantığıyla) sırayla kapatılıyor. ~~3.5 destek/ticket sistemi~~, ~~3.1 usta belge/sigorta rozetleri~~, ~~3.4 referans sistemi~~ ✅ hepsi kapandı.
 
+Bölüm 4'ten de ~~fiyat tahmini~~ ✅ kapandı (2026-09-18, gerçek veriden). Kalanlar (native mobil, blog, push bildirim, usta eğitim içeriği) kod değil, ya içerik yazımı ya da gerçek kullanıcı hacmi bekleyen yatırımlar.
+
 **Geriye sadece 3.2 randevu/takvim ve 3.3 tekrarlayan hizmet kaldı** — ikisi de mevcut veri modelinde büyük bir genişleme gerektiriyor (saat bazlı slot/müsaitlik takvimi, tekrarlayan talep + otomatik yeniden oluşturma mantığı) ve gerçek kullanıcı/talep hacmi olmadan hangi kategorilerde gerçekten gerekli olduğunu tahmin etmek zor — bu ikisi kullanıcıyla kapsam netleştirilmeden koda başlanacak türden değil. 3.7 B2B zaten önceliksiz.
+
+**Ayrıca (2026-09-18):** bu turda eklenen özelliklerin hiçbirinin otomatik test kapsamı yoktu (OTP, destek talepleri, usta belgeleri, referans, iş tamamlama, şikayet-talep bağlantısı, fiyat tahmini) — 12 testlik suite 48'e çıkarıldı. `apps/api`'nin lint'i de meğerse hiç çalışmıyormuş (config/bağımlılık eksikti), o da düzeltildi.
