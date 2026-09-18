@@ -9,6 +9,7 @@ import { CategoryIcon } from "../category-icon";
 import { SearchSelect } from "../search-select";
 import { TR_LOCATIONS } from "@/lib/turkey-locations";
 import { getDetailsPlaceholder } from "./detail-placeholders";
+import { formatPrice } from "@/lib/price";
 
 function isoDateOffset(days) {
   const d = new Date();
@@ -135,6 +136,7 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
   const [budget, setBudget] = useState("");
   const [answers, setAnswers] = useState({});
   const [photos, setPhotos] = useState([]);
+  const [priceEstimate, setPriceEstimate] = useState(null);
   const apiOrigin = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -192,6 +194,29 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
     submit();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoSubmitPending]);
+
+  // Real accepted-offer prices for this category (+ city once picked) —
+  // API returns { available: false } instead of a number when there isn't
+  // enough real data yet, never a guessed range.
+  useEffect(() => {
+    if (!category) {
+      setPriceEstimate(null);
+      return;
+    }
+    let cancelled = false;
+    const qs = city ? `?city=${encodeURIComponent(city)}` : "";
+    fetch(`/api/categories/${category.id}/price-estimate${qs}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled) setPriceEstimate(data);
+      })
+      .catch(() => {
+        if (!cancelled) setPriceEstimate(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [category, city]);
 
   const useMyLocation = () => {
     if (!navigator.geolocation) {
@@ -478,6 +503,12 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
                 maxLength={1000}
               />
             </div>
+            {priceEstimate?.available && (
+              <div className="rounded-md bg-brand-50 px-3.5 py-2.5 text-sm text-brand-700">
+                Bu kategoride {priceEstimate.scope === "city" ? `${city}'de ` : ""}geçmiş kabul edilen teklifler
+                ortalama <strong>{formatPrice(priceEstimate.min)} - {formatPrice(priceEstimate.max)}</strong> arasında.
+              </div>
+            )}
             <div>
               <label className="mb-2 block text-sm font-semibold">Bu iş için bütçen ne kadar?</label>
               <p className="mb-2 text-xs text-text-muted">Opsiyonel — paylaşmak istemezsen boş bırakabilirsin.</p>
