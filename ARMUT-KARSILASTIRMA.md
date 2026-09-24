@@ -38,11 +38,11 @@ Kalan not: bu hâlâ genel Report/Block altyapısını yeniden kullanan hafif bi
 ### 3.1 ✅ Kapandı — Usta belge/sigorta rozetleri (2026-08-22)
 `ProviderDocument` modeli eklendi (CERTIFICATE/INSURANCE, PENDING/APPROVED/REJECTED) — usta gerçek bir sertifika/sigorta poliçesi dosyası yüklüyor (PDF veya görsel), admin o dosyayı görüp onaylıyor/reddediyor. Sadece APPROVED belgeler public'e "Belgeli Usta"/"Sigortalı Hizmet" rozeti olarak yansıyor (fileUrl asla public endpoint'e sızmıyor). Web'de `/usta/belgeler`, panelde `/belgeler` (durum sekmeleri + onayla/reddet + sidebar rozeti). Uçtan uca doğrulandı: PDF yükleme, onay/red sonrası rozet görünürlüğü, reddedilme sebebini usta görebiliyor, incelenmiş belge silinemiyor.
 
-### 3.2 Randevu/takvim sistemi yok
-`ServiceRequest.preferredDate` tek bir serbest tarih alanı. Ustanın müsaitlik takvimi, saat bazlı slot seçimi, yeniden planlama (reschedule) yok — sadece `isAvailable` (mola modu) boolean açık/kapalı anahtarı var. Armut bazı kategorilerde (temizlik gibi) tarih/saat seçimini daha yapılandırılmış sunuyor.
+### 3.2 ✅ Kısmen kapandı — Saat tercihi (2026-09-24)
+`preferredTimeSlot` (Sabah/Öğlen/Akşam) eklendi — tam takvim/slot sistemi değil, ama tarih üstüne kaba bir zaman tercihi. Usta müsaitlik takvimi/reschedule hâlâ yok (büyük kapsam, ayrı karar gerektirir).
 
-### 3.3 Tekrarlayan hizmet / abonelik talebi yok
-Haftalık ev temizliği gibi düzenli hizmet talepleri için bir "recurring booking" kavramı yok — her seferinde yeniden talep oluşturmak gerekiyor.
+### 3.3 ✅ Kapandı — Tekrarlayan hizmet (2026-09-24)
+`isRecurring`/`recurrenceInterval` eklendi. Talep tamamlanınca (`lib/recurrence.js`) bir sonraki dönem için otomatik PENDING_REVIEW bir kopya oluşuyor — normal moderasyon akışından geçiyor, bypass yok. Sihirbazda toggle, taleplerim'de rozet. 3 testle doğrulandı.
 
 ### 3.4 ✅ Kapandı — Referans (davet) sistemi (2026-08-23)
 Herkes kendi referans linkini (`/kayit?ref=<id>`) paylaşabiliyor, profilde kaç kişiyi davet ettiğini görüyor. Ödül sadece usta→usta zincirinde: referansla katılan bir usta profilini tamamlayınca referrer otomatik `isPremium` kazanıyor (bildirim + email ile). Müşteri referansları sadece sayılıyor, ödül yok — platformda müşteri tarafında ödüllendirilecek bir "premium" kavramı olmadığı için uydurma bir mekanik eklemedim. Uçtan uca doğrulandı (ödül tetiklenmesi + müşteri-referrer'ın ödül almadığı negatif senaryo).
