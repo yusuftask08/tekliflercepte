@@ -337,6 +337,7 @@ model ServiceRequest {
   answers       Json?
   photos        String[] @default([])
   preferredDate DateTime?
+  preferredTimeSlot TimeSlot?
   /// Free-text, customer-entered ("Örn: 1.500 ₺") — shown only to
   /// providers who can offer on this request, never a structured amount.
   budget        String?
@@ -344,11 +345,33 @@ model ServiceRequest {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
+  /// When set, completing this request (POST /complete or a review) clones
+  /// it into a fresh PENDING_REVIEW request for the next cycle — same
+  /// moderation gate as a manually-created one, no bypass just because it's
+  /// automatic. recurrenceParentId chains a clone back to the request that
+  /// spawned it (not necessarily the very first one).
+  isRecurring         Boolean            @default(false)
+  recurrenceInterval  RecurrenceInterval?
+  recurrenceParentId  String?
+  recurrenceParent    ServiceRequest?    @relation("Recurrence", fields: [recurrenceParentId], references: [id], onDelete: SetNull)
+  recurrenceChildren  ServiceRequest[]   @relation("Recurrence")
+
   offers   Offer[]
   review   Review?
 
   @@index([categoryId, city])
   @@map("service_requests")
+}
+
+enum TimeSlot {
+  SABAH
+  OGLEN
+  AKSAM
+}
+
+enum RecurrenceInterval {
+  WEEKLY
+  MONTHLY
 }
 
 model Offer {

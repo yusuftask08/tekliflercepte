@@ -1,5 +1,6 @@
 import { prisma } from "@tekliflercepte/db";
 import { requireAuth } from "../lib/auth.js";
+import { maybeCreateNextRecurrence } from "../lib/recurrence.js";
 
 export default async function reviewRoutes(app) {
   app.post("/requests/:id/review", { preHandler: requireAuth }, async (req, reply) => {
@@ -53,6 +54,10 @@ export default async function reviewRoutes(app) {
         data: { avgRating: agg._avg.rating ?? 0, reviewCount: agg._count },
       });
     }
+
+    await maybeCreateNextRecurrence(request).catch((err) =>
+      console.error("[reviews] recurrence hatası:", err.message)
+    );
 
     return reply.code(201).send(review);
   });

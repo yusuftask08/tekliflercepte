@@ -49,7 +49,12 @@ export default async function TaleplerimPage() {
                 className="flex items-center justify-between rounded-lg border border-border bg-surface p-4 shadow-sm transition-shadow hover:shadow-md"
               >
                 <div>
-                  <div className="font-semibold">{request.category?.name}</div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-semibold">{request.category?.name}</span>
+                    {request.isRecurring && (
+                      <Badge tone="info">{request.recurrenceInterval === "WEEKLY" ? "Haftalık" : "Aylık"}</Badge>
+                    )}
+                  </div>
                   <div className="mt-0.5 text-sm text-text-muted">
                     {request.city}
                     {request.district ? ` / ${request.district}` : ""} ·{" "}

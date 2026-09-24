@@ -2,6 +2,10 @@ import { prisma } from "@tekliflercepte/db";
 import { requireAuth, requireAdmin } from "../lib/auth.js";
 import { safeUserSelect, publicUserSelect } from "../lib/selects.js";
 import { sendEmail, escapeHtml } from "../lib/mailer.js";
+import { maybeCreateNextRecurrence } from "../lib/recurrence.js";
+
+const VALID_TIME_SLOTS = new Set(["SABAH", "OGLEN", "AKSAM"]);
+const VALID_RECURRENCE = new Set(["WEEKLY", "MONTHLY"]);
 
 const PANEL_ORIGIN = process.env.PANEL_ORIGIN ?? "http://localhost:3001";
 
@@ -47,9 +51,27 @@ export default async function requestRoutes(app) {
     if (req.user.role !== "CUSTOMER") {
       return reply.code(403).send({ error: "Usta hesabıyla talep oluşturulamaz" });
     }
-    const { categoryId, city, district, details, answers, photos, preferredDate, budget } = req.body ?? {};
+    const {
+      categoryId,
+      city,
+      district,
+      details,
+      answers,
+      photos,
+      preferredDate,
+      preferredTimeSlot,
+      budget,
+      isRecurring,
+      recurrenceInterval,
+    } = req.body ?? {};
     if (!categoryId || !city || !details) {
       return reply.code(400).send({ error: "categoryId, city ve details zorunlu" });
+    }
+    if (preferredTimeSlot && !VALID_TIME_SLOTS.has(preferredTimeSlot)) {
+      return reply.code(400).send({ error: "Geçersiz preferredTimeSlot" });
+    }
+    if (isRecurring && !VALID_RECURRENCE.has(recurrenceInterval)) {
+      return reply.code(400).send({ error: "Tekrarlayan talep için geçerli bir recurrenceInterval gerekli" });
     }
     const created = await prisma.serviceRequest.create({
       data: {
@@ -61,7 +83,10 @@ export default async function requestRoutes(app) {
         answers,
         photos: photos ?? [],
         preferredDate: preferredDate ? new Date(preferredDate) : null,
+        preferredTimeSlot: preferredTimeSlot || null,
         budget: budget || null,
+        isRecurring: Boolean(isRecurring),
+        recurrenceInterval: isRecurring ? recurrenceInterval : null,
       },
     });
 
@@ -110,6 +135,10 @@ export default async function requestRoutes(app) {
       return reply.code(409).send({ error: "Sadece seçilmiş bir teklifi olan talepler tamamlanabilir" });
     }
 
-    return prisma.serviceRequest.update({ where: { id: request.id }, data: { status: "CLOSED" } });
+    const updated = await prisma.serviceRequest.update({ where: { id: request.id }, data: { status: "CLOSED" } });
+    await maybeCreateNextRecurrence(updated).catch((err) =>
+      console.error("[requests/complete] recurrence hatası:", err.message)
+    );
+    return updated;
   });
 }

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { toast } from "react-toastify";
-import { Button, Input, PhotoPicker, SelectableCard, Spinner, Textarea } from "@tekliflercepte/ui";
+import { Button, Checkbox, Input, PhotoPicker, SelectableCard, Spinner, Textarea } from "@tekliflercepte/ui";
 import { CategoryIcon } from "../category-icon";
 import { SearchSelect } from "../search-select";
 import { TR_LOCATIONS } from "@/lib/turkey-locations";
@@ -131,6 +131,9 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
   const [preferredDate, setPreferredDate] = useState("");
+  const [preferredTimeSlot, setPreferredTimeSlot] = useState("");
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurrenceInterval, setRecurrenceInterval] = useState("WEEKLY");
   const [locating, setLocating] = useState(false);
   const [details, setDetails] = useState("");
   const [budget, setBudget] = useState("");
@@ -266,10 +269,13 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
           city,
           district: district || undefined,
           preferredDate: preferredDate || undefined,
+          preferredTimeSlot: preferredTimeSlot || undefined,
           details,
           budget: budget || undefined,
           answers,
           photos,
+          isRecurring,
+          recurrenceInterval: isRecurring ? recurrenceInterval : undefined,
         }),
       });
       if (res.status === 401) {
@@ -520,6 +526,62 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
               />
             </div>
             <div>
+              <label className="mb-2 block text-sm font-semibold">Tercih ettiğin saat aralığı (opsiyonel)</label>
+              <div className="flex gap-2">
+                {[
+                  { value: "SABAH", label: "Sabah" },
+                  { value: "OGLEN", label: "Öğlen" },
+                  { value: "AKSAM", label: "Akşam" },
+                ].map((slot) => (
+                  <button
+                    key={slot.value}
+                    type="button"
+                    onClick={() => setPreferredTimeSlot(preferredTimeSlot === slot.value ? "" : slot.value)}
+                    className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium ${
+                      preferredTimeSlot === slot.value
+                        ? "border-primary bg-brand-50 text-primary"
+                        : "border-border text-text-muted"
+                    }`}
+                  >
+                    {slot.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="flex items-center gap-2 text-sm font-semibold">
+                <Checkbox checked={isRecurring} onChange={(e) => setIsRecurring(e.target.checked)} />
+                Bu düzenli tekrar eden bir hizmet (ör. haftalık temizlik)
+              </label>
+              {isRecurring && (
+                <div className="mt-2 flex gap-2">
+                  {[
+                    { value: "WEEKLY", label: "Haftalık" },
+                    { value: "MONTHLY", label: "Aylık" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setRecurrenceInterval(opt.value)}
+                      className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium ${
+                        recurrenceInterval === opt.value
+                          ? "border-primary bg-brand-50 text-primary"
+                          : "border-border text-text-muted"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {isRecurring && (
+                <p className="mt-2 text-xs text-text-muted">
+                  İş tamamlandığında bir sonraki dönem için otomatik yeni bir talep oluşturulur (o da admin
+                  onayından geçer).
+                </p>
+              )}
+            </div>
+            <div>
               <label className="mb-2 block text-sm font-semibold">Fotoğraf ekle (opsiyonel)</label>
               <PhotoPicker
                 photos={photos}
@@ -558,6 +620,22 @@ export function RequestWizard({ categories, preselectedSlug, preselectedLeafSlug
                 <>
                   <div className="mb-1 text-xs font-semibold uppercase text-text-muted">Bütçe</div>
                   <div className="mb-3 text-sm font-medium">{budget}</div>
+                </>
+              )}
+              {preferredTimeSlot && (
+                <>
+                  <div className="mb-1 text-xs font-semibold uppercase text-text-muted">Saat Tercihi</div>
+                  <div className="mb-3 text-sm font-medium">
+                    {{ SABAH: "Sabah", OGLEN: "Öğlen", AKSAM: "Akşam" }[preferredTimeSlot]}
+                  </div>
+                </>
+              )}
+              {isRecurring && (
+                <>
+                  <div className="mb-1 text-xs font-semibold uppercase text-text-muted">Tekrar</div>
+                  <div className="mb-3 text-sm font-medium">
+                    {recurrenceInterval === "WEEKLY" ? "Haftalık" : "Aylık"} tekrar eden hizmet
+                  </div>
                 </>
               )}
               {photos.length > 0 && (
