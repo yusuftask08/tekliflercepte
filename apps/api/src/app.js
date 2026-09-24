@@ -30,7 +30,21 @@ import providerDocumentRoutes from "./routes/provider-documents.js";
 /** Builds the Fastify app without starting a listener — used by server.js
  *  for the real process, and directly by tests via app.inject(). */
 export async function buildApp({ logger = true } = {}) {
-  const app = Fastify({ logger });
+  // Deployed behind Coolify's Traefik reverse proxy (docker-compose.yml) —
+  // without this, every request's socket address is Traefik's own internal
+  // IP, so @fastify/rate-limit's default per-IP keying collapses ALL real
+  // users into one shared bucket: one busy user exhausting it 429s
+  // everyone else too. trustProxy makes Fastify read X-Forwarded-For (which
+  // Traefik sets) so req.ip is the actual client again.
+  // Trade-off: `true` trusts that header unconditionally, so a client that
+  // reaches this process directly (bypassing Traefik — shouldn't be
+  // reachable, but the compose file does map the port on the host) could
+  // spoof X-Forwarded-For to dodge its own rate limit. Low severity here
+  // (no payments, worst case is a bit more abuse room for that one client,
+  // not a shared-bucket outage for everyone) — if the port is ever
+  // confirmed unreachable except via Traefik, this can be tightened to a
+  // hop count (e.g. `trustProxy: 1`) instead.
+  const app = Fastify({ logger, trustProxy: true });
 
   await app.register(cors, {
     origin: [process.env.WEB_ORIGIN, process.env.PANEL_ORIGIN].filter(Boolean),
