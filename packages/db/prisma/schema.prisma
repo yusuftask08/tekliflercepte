@@ -248,6 +248,16 @@ model ProviderProfile {
   categories ProviderCategory[]
   documents  ProviderDocument[]
 
+  // GET /providers//ustalar filters on all four of these (isAvailable is
+  // nearly every query's baseline condition, city/avgRating/avgPrice are
+  // the optional filters+sort keys) — no index existed on any of them
+  // before, meaning every search did a sequential scan. Harmless at
+  // today's provider count, would stop being harmless well before this
+  // product's growth targets, so added now while it's a one-line fix
+  // instead of a production slowdown to debug later.
+  @@index([isAvailable, city])
+  @@index([avgRating])
+  @@index([avgPrice])
   @@map("provider_profiles")
 }
 
