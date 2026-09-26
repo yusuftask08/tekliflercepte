@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { Button } from "@tekliflercepte/ui";
 import { HowItWorksIcon } from "../how-it-works-icon";
 import { TrustIcon } from "../trust-icon";
-import { SiteFooter } from "../site-footer";
 import { getSessionUser } from "@/lib/session";
 
 export const metadata = {
@@ -163,7 +162,6 @@ export default async function HizmetVerPage() {
         </Link>
       </section>
 
-      <SiteFooter />
     </div>
   );
 }

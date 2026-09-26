@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { SiteFooter } from "../site-footer";
 
 export const metadata = {
   title: "Tüm Kategoriler — Teklifler Cepte",
@@ -55,7 +54,6 @@ export default async function KategorilerPage() {
           ))}
         </div>
       </div>
-      <SiteFooter />
     </div>
   );
 }

@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import { Badge, EmptyState } from "@tekliflercepte/ui";
 import { EmptyIcon } from "../../empty-icons";
@@ -9,6 +8,7 @@ import { formatPrice } from "@/lib/price";
 import { OfferForm } from "./offer-form";
 import { WithdrawButton } from "./withdraw-button";
 import { AvailabilityToggle } from "./availability-toggle";
+import { AccountShell } from "../../account-shell";
 
 const OFFER_STATUS_LABEL = {
   PENDING: "Beklemede",
@@ -60,19 +60,14 @@ export default async function UstaPanelPage() {
   const questionLookup = buildQuestionLookup(categories ?? []);
 
   return (
-    <div className="flex min-h-screen flex-col bg-bg">
-      <div className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold sm:text-3xl">Panelim</h1>
-            <Link href="/profil" className="mt-1 inline-block text-sm font-semibold text-primary">
-              Profilimi düzenle
-            </Link>
-          </div>
-          <AvailabilityToggle isAvailable={profile.isAvailable} />
-        </div>
+    <AccountShell
+      user={user}
+      title="Panelim"
+      description="Bölgene ve kategorilerine uygun açık talepler ile verdiğin teklifler."
+      actions={<AvailabilityToggle isAvailable={profile.isAvailable} />}
+    >
 
-        <div className="mt-6 grid grid-cols-3 gap-3 rounded-lg border border-border bg-surface p-4 shadow-sm sm:gap-6 sm:p-5">
+        <div className="grid grid-cols-3 gap-3 rounded-lg border border-border bg-surface p-4 shadow-sm sm:gap-6 sm:p-5">
           <div className="text-center">
             <div className="text-xl font-extrabold text-primary sm:text-2xl">{matchingRequests.length}</div>
             <div className="mt-1 text-xs text-text-muted">uygun açık talep</div>
@@ -197,7 +192,6 @@ export default async function UstaPanelPage() {
             </div>
           )}
         </section>
-      </div>
-    </div>
+    </AccountShell>
   );
 }

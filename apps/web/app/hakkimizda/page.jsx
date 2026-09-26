@@ -1,4 +1,3 @@
-import { SiteFooter } from "../site-footer";
 
 export const metadata = {
   title: "Hakkımızda — Teklifler Cepte",
@@ -33,7 +32,6 @@ export default function HakkimizdaPage() {
           </p>
         </div>
       </div>
-      <SiteFooter />
     </div>
   );
 }

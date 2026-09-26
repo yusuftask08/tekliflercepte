@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "@tekliflercepte/ui";
 import { AccountMenu } from "./account-menu";
 import { NotificationBell } from "./notification-bell";
+import { BrandLogo } from "./brand-logo";
 
 // These two sections only exist on the homepage, but SiteHeader is shared by
 // every page — a plain "#id" href would just tack a dead hash onto whatever
@@ -38,9 +39,7 @@ export function SiteHeader({ user, unreadCount }) {
   return (
     <header className="sticky top-0 z-header border-b border-border bg-surface/90 backdrop-blur">
       <div className="relative mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <Link href="/" className="text-lg font-extrabold sm:text-xl">
-          Teklifler Cepte
-        </Link>
+        <BrandLogo />
 
         <nav className="hidden items-center gap-8 text-sm font-medium text-text-muted lg:flex">
           {NAV_LINKS.map((link) =>

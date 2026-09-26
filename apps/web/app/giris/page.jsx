@@ -13,8 +13,8 @@ export default async function GirisPage({ searchParams }) {
 
   return (
     <AuthShell
-      icon="lock"
       title="Giriş Yap"
+      subtitle="Tekrar hoş geldin! Taleplerini ve gelen teklifleri görmek için giriş yap."
       footer={
         <span className="flex items-center justify-center gap-1.5 text-xs">
           <TrustIcon name="lock" size={14} />

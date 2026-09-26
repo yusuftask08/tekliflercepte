@@ -4,6 +4,7 @@ import { Avatar, Button, EmptyState } from "@tekliflercepte/ui";
 import { apiUrl } from "@/lib/api";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import { EmptyIcon } from "../empty-icons";
+import { AccountShell } from "../account-shell";
 
 async function getConversations(token) {
   const res = await fetch(apiUrl("/me/conversations"), {
@@ -24,12 +25,18 @@ export default async function MesajlarimPage() {
   const apiOrigin = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
   return (
-    <div className="flex min-h-screen flex-col bg-bg">
-      <div className="mx-auto w-full max-w-2xl flex-1 px-4 py-8 sm:px-6 sm:py-12 lg:max-w-4xl lg:px-8">
-        <h1 className="text-2xl font-bold sm:text-3xl">Mesajlarım</h1>
+    <AccountShell
+      user={user}
+      title="Mesajlarım"
+      description={
+        isProvider
+          ? "Teklif verdiğin müşterilerle olan görüşmelerin."
+          : "Teklif aldığın ustalarla olan görüşmelerin."
+      }
+    >
 
         {conversations.length === 0 ? (
-          <div className="mt-6">
+          <div>
             <EmptyState
               icon={<EmptyIcon name="chat" />}
               title="Henüz bir görüşmen yok"
@@ -46,7 +53,7 @@ export default async function MesajlarimPage() {
             />
           </div>
         ) : (
-          <div className="mt-6 flex flex-col gap-2">
+          <div className="flex flex-col gap-2">
             {conversations.map((conversation) => (
               <Link
                 key={conversation.offerId}
@@ -78,7 +85,6 @@ export default async function MesajlarimPage() {
             ))}
           </div>
         )}
-      </div>
-    </div>
+    </AccountShell>
   );
 }

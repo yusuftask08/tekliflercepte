@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EmptyState } from "@tekliflercepte/ui";
-import { SiteFooter } from "../../../site-footer";
 import { EmptyIcon } from "../../../empty-icons";
 import { ProviderCard } from "../../../provider-card";
 import { findCityBySlug, slugifyTr } from "../../../../lib/turkey-locations";
@@ -168,7 +167,6 @@ export default async function HizmetSehirPage({ params }) {
           </>
         )}
       </div>
-      <SiteFooter />
     </div>
   );
 }

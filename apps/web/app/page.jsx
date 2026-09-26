@@ -6,7 +6,6 @@ import { HowItWorksIcon } from "./how-it-works-icon";
 import { TrustIcon } from "./trust-icon";
 import { HomeFab } from "./home-fab";
 import { HeroSearch } from "./hero-search";
-import { SiteFooter } from "./site-footer";
 import { getSessionUser } from "@/lib/session";
 import { getNonce } from "@/lib/nonce";
 
@@ -389,7 +388,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <SiteFooter />
       <HomeFab categories={categories} />
     </div>
   );

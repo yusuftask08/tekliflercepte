@@ -5,6 +5,7 @@ import { apiUrl } from "@/lib/api";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import { EmptyIcon } from "../empty-icons";
 import { STATUS_LABEL, STATUS_TONE } from "./status-labels";
+import { AccountShell } from "../account-shell";
 
 async function getMyRequests(token) {
   const res = await fetch(apiUrl("/me/requests"), {
@@ -23,12 +24,21 @@ export default async function TaleplerimPage() {
   const requests = await getMyRequests(token);
 
   return (
-    <div className="flex min-h-screen flex-col bg-bg">
-      <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        <h1 className="text-2xl font-bold sm:text-3xl">Taleplerim</h1>
+    <AccountShell
+      user={user}
+      title="Taleplerim"
+      description="Oluşturduğun talepleri ve gelen teklifleri buradan takip et."
+      actions={
+        requests.length > 0 && (
+          <Link href="/talep-olustur" className="lg:hidden">
+            <Button size="md">+ Yeni Talep</Button>
+          </Link>
+        )
+      }
+    >
 
         {requests.length === 0 ? (
-          <div className="mt-8">
+          <div>
             <EmptyState
               icon={<EmptyIcon name="clipboard" />}
               title="Henüz talebin yok"
@@ -41,7 +51,7 @@ export default async function TaleplerimPage() {
             />
           </div>
         ) : (
-          <div className="mt-6 flex flex-col gap-3">
+          <div className="flex flex-col gap-3">
             {requests.map((request) => (
               <Link
                 key={request.id}
@@ -72,7 +82,6 @@ export default async function TaleplerimPage() {
             ))}
           </div>
         )}
-      </div>
-    </div>
+    </AccountShell>
   );
 }

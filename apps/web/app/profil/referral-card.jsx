@@ -19,8 +19,8 @@ export function ReferralCard({ referralCode, totalReferred, isProvider }) {
   };
 
   return (
-    <div className="mt-8 rounded-lg border border-border bg-surface p-5 shadow-sm">
-      <div className="text-sm font-bold">Arkadaşını Davet Et</div>
+    <div className="rounded-lg border border-border bg-surface p-5 shadow-sm sm:p-6">
+      <h2 className="text-base font-bold">Arkadaşını Davet Et</h2>
       <p className="mt-1 text-sm text-text-muted">
         {isProvider
           ? "Linkinle katılan bir usta profilini tamamladığında günlük ücretsiz teklif limitin kalkar."

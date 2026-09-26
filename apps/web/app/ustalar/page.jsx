@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { EmptyState } from "@tekliflercepte/ui";
-import { SiteFooter } from "../site-footer";
 import { EmptyIcon } from "../empty-icons";
 import { ProviderCard } from "../provider-card";
 import { Filters } from "./filters";
@@ -162,7 +161,6 @@ export default async function UstalarPage({ searchParams }) {
           </>
         )}
       </div>
-      <SiteFooter />
     </div>
   );
 }

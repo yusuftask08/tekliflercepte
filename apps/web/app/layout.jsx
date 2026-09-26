@@ -2,6 +2,8 @@ import { ThemeProvider } from "@tekliflercepte/ui";
 import { ToastProvider } from "./toast-provider";
 import { BottomNavWrapper } from "./bottom-nav-wrapper";
 import { SiteHeaderWrapper } from "./site-header-wrapper";
+import { SiteFooterWrapper } from "./site-footer-wrapper";
+import { SiteFooter } from "./site-footer";
 import { getUnreadCount } from "@/lib/api";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import "./globals.css";
@@ -56,6 +58,9 @@ export default async function RootLayout({ children }) {
         <ThemeProvider>
           <SiteHeaderWrapper user={user} unreadCount={unreadCount} />
           {children}
+          <SiteFooterWrapper>
+            <SiteFooter />
+          </SiteFooterWrapper>
         </ThemeProvider>
         <ToastProvider />
         <BottomNavWrapper user={user} unreadCount={unreadCount} />

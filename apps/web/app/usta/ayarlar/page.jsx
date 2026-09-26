@@ -5,6 +5,7 @@ import { getSessionToken, getSessionUser } from "@/lib/session";
 import { LogoutButton } from "../../logout-button";
 import { AvailabilityToggle } from "../panel/availability-toggle";
 import { ShareAppButton } from "./share-app-button";
+import { AccountShell } from "../../account-shell";
 
 async function getMyProviderProfile(token) {
   const res = await fetch(apiUrl("/me/provider-profile"), {
@@ -40,9 +41,7 @@ export default async function UstaAyarlarPage() {
   const profile = await getMyProviderProfile(token);
 
   return (
-    <div className="flex min-h-screen flex-col bg-bg">
-      <div className="mx-auto w-full max-w-xl flex-1 px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        <h1 className="mb-6 text-2xl font-bold">Ayarlar</h1>
+    <AccountShell user={user} title="Ayarlar" description="Profil tercihlerin, belgelerin ve destek bağlantıları.">
 
         <div className="mb-3 text-xs font-bold uppercase tracking-wide text-text-muted">Profil</div>
         <div className="mb-6 divide-y divide-border rounded-lg border border-border bg-surface shadow-sm">
@@ -67,12 +66,12 @@ export default async function UstaAyarlarPage() {
           <MenuRow href="/gizlilik-politikasi" label="Veri Gizliliği" />
         </div>
 
-        <div className="rounded-lg border border-border bg-surface shadow-sm">
+        {/* Desktop has logout in the sidebar menu */}
+        <div className="rounded-lg border border-border bg-surface shadow-sm lg:hidden">
           <div className="px-4 py-3.5">
             <LogoutButton className="text-danger" />
           </div>
         </div>
-      </div>
-    </div>
+    </AccountShell>
   );
 }

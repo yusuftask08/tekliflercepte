@@ -5,6 +5,7 @@ import { EmptyIcon } from "../empty-icons";
 import { ProviderCard } from "../provider-card";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import { apiUrl } from "@/lib/api";
+import { AccountShell } from "../account-shell";
 
 async function getFavorites(token) {
   const res = await fetch(apiUrl("/me/favorites"), {
@@ -23,15 +24,14 @@ export default async function FavorilerimPage() {
   const favorites = await getFavorites(token);
 
   return (
-    <div className="flex min-h-screen flex-col bg-bg">
-      <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
-        <h1 className="text-3xl font-extrabold sm:text-4xl">Favori Ustalarım</h1>
-        <p className="mt-3 max-w-2xl text-text-muted">
-          Beğendiğin ustaları buradan takip et, ihtiyaç olduğunda kolayca ulaş.
-        </p>
+    <AccountShell
+      user={user}
+      title="Favori Ustalarım"
+      description="Beğendiğin ustaları buradan takip et, ihtiyaç olduğunda kolayca ulaş."
+    >
 
         {favorites.length === 0 ? (
-          <div className="mt-8">
+          <div>
             <EmptyState
               icon={<EmptyIcon name="offer" />}
               title="Henüz favori usta yok"
@@ -44,13 +44,12 @@ export default async function FavorilerimPage() {
             />
           </div>
         ) : (
-          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {favorites.map((provider) => (
               <ProviderCard key={provider.id} provider={provider} />
             ))}
           </div>
         )}
-      </div>
-    </div>
+    </AccountShell>
   );
 }

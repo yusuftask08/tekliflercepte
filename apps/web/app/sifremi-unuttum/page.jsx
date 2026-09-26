@@ -9,7 +9,6 @@ export const metadata = {
 export default function SifremiUnuttumPage() {
   return (
     <AuthShell
-      icon="mail"
       title="Şifremi Unuttum"
       subtitle="Hesabına kayıtlı email adresini gir, şifre sıfırlama bağlantısı gönderelim."
       footer={

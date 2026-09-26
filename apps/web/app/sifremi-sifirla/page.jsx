@@ -12,8 +12,8 @@ export default async function SifremiSifirlaPage({ searchParams }) {
 
   return (
     <AuthShell
-      icon="lock"
       title="Yeni Şifre Belirle"
+      subtitle="Hesabın için yeni ve güçlü bir şifre belirle."
       footer={
         <Link href="/giris" className="font-semibold text-primary">
           Giriş sayfasına dön

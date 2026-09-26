@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { AccountShell } from "../account-shell";
 import { LogoutButton } from "../logout-button";
 import { apiUrl } from "@/lib/api";
 import { getSessionToken, getSessionUser } from "@/lib/session";
@@ -8,11 +9,15 @@ import { PasswordForm } from "./password-form";
 import { ProviderProfileForm } from "./provider-profile-form";
 import { ReferralCard } from "./referral-card";
 
-const ROLE_LABEL = {
-  CUSTOMER: "Müşteri",
-  PROVIDER: "Usta",
-  ADMIN: "Yönetici",
-};
+function SectionCard({ title, description, children }) {
+  return (
+    <section className="rounded-lg border border-border bg-surface p-5 shadow-sm sm:p-6">
+      <h2 className="text-base font-bold">{title}</h2>
+      {description && <p className="mt-1 text-sm text-text-muted">{description}</p>}
+      <div className="mt-5">{children}</div>
+    </section>
+  );
+}
 
 async function getFullUser(token) {
   const res = await fetch(apiUrl("/auth/me"), {
@@ -53,88 +58,62 @@ export default async function ProfilPage() {
 
   const token = await getSessionToken();
   const user = (await getFullUser(token)) ?? sessionUser;
+  const isProvider = user.role === "PROVIDER";
 
-  const [providerProfile, categories] =
-    user.role === "PROVIDER"
-      ? await Promise.all([getMyProviderProfile(token), getCategories()])
-      : [null, []];
+  const [providerProfile, categories] = isProvider
+    ? await Promise.all([getMyProviderProfile(token), getCategories()])
+    : [null, []];
   const referrals = await getMyReferrals(token);
 
   return (
-    <div className="flex min-h-screen flex-col bg-bg">
-      <div className="mx-auto w-full max-w-md flex-1 px-4 py-8 sm:max-w-2xl sm:px-6 sm:py-12 lg:max-w-5xl lg:px-8 lg:py-16">
-        <div className="text-sm font-semibold uppercase tracking-wide text-text-muted">
-          {ROLE_LABEL[user.role] ?? user.role}
-        </div>
+    <AccountShell
+      user={sessionUser}
+      title={isProvider ? "Profilim" : "Hesap Ayarları"}
+      description={
+        isProvider
+          ? "Kişisel bilgilerin, usta profilin ve hesap güvenliğin."
+          : "Kişisel bilgilerini ve hesap güvenliğini buradan yönet."
+      }
+    >
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] xl:items-start">
+        <SectionCard title="Kişisel Bilgiler" description="Adın, fotoğrafın ve iletişim bilgilerin.">
+          <AccountForm user={user} />
+        </SectionCard>
 
-        <div className="mt-6 lg:grid lg:grid-cols-[1.3fr_1fr] lg:items-start lg:gap-10">
-          <div>
-            <AccountForm user={user} />
-
-            <div className="mt-8 flex flex-col gap-2">
-              {user.role === "PROVIDER" ? (
-                <Link
-                  href="/usta/panel"
-                  className="flex items-center justify-between rounded-md border border-border bg-surface px-4 py-3.5 text-sm font-medium shadow-sm"
-                >
-                  Açık İşler
-                  <span className="text-text-muted">›</span>
-                </Link>
-              ) : (
-                <Link
-                  href="/taleplerim"
-                  className="flex items-center justify-between rounded-md border border-border bg-surface px-4 py-3.5 text-sm font-medium shadow-sm"
-                >
-                  Taleplerim
-                  <span className="text-text-muted">›</span>
-                </Link>
-              )}
-              <Link
-                href="/mesajlar"
-                className="flex items-center justify-between rounded-md border border-border bg-surface px-4 py-3.5 text-sm font-medium shadow-sm"
-              >
-                Mesajlarım
-                <span className="text-text-muted">›</span>
-              </Link>
-            </div>
-          </div>
-
-          <div>
-            <div className="mt-8 rounded-lg border border-border bg-surface p-5 shadow-sm lg:mt-0">
-              <div className="mb-3 text-sm font-bold">Şifre Değiştir</div>
-              <PasswordForm />
-            </div>
-          </div>
-        </div>
-
-        {user.role === "PROVIDER" && (
-          <div className="mt-8">
-            {providerProfile ? (
-              <ProviderProfileForm categories={categories} initialProfile={providerProfile} />
-            ) : (
-              <Link
-                href="/usta/kurulum"
-                className="flex items-center justify-between rounded-lg border border-border bg-surface px-4 py-3.5 text-sm font-medium shadow-sm"
-              >
-                Usta profilini tamamla
-                <span className="text-text-muted">›</span>
-              </Link>
-            )}
-          </div>
-        )}
-
-        {referrals && (
-          <ReferralCard
-            referralCode={referrals.referralCode}
-            totalReferred={referrals.totalReferred}
-            isProvider={user.role === "PROVIDER"}
-          />
-        )}
-
-        <div className="mt-8 rounded-lg border border-border bg-surface p-4 shadow-sm">
-          <LogoutButton className="text-danger" />
+        <div className="flex flex-col gap-6">
+          <SectionCard title="Şifre Değiştir" description="Güvenliğin için en az 6 karakterli, tahmin edilmesi zor bir şifre kullan.">
+            <PasswordForm />
+          </SectionCard>
+          {referrals && (
+            <ReferralCard
+              referralCode={referrals.referralCode}
+              totalReferred={referrals.totalReferred}
+              isProvider={isProvider}
+            />
+          )}
         </div>
       </div>
-    </div>
+
+      {isProvider && (
+        <div className="mt-6">
+          {providerProfile ? (
+            <ProviderProfileForm categories={categories} initialProfile={providerProfile} />
+          ) : (
+            <Link
+              href="/usta/kurulum"
+              className="flex items-center justify-between rounded-lg border border-border bg-surface px-5 py-4 text-sm font-semibold shadow-sm"
+            >
+              Usta profilini tamamla
+              <span className="text-text-muted">›</span>
+            </Link>
+          )}
+        </div>
+      )}
+
+      {/* Desktop has logout in the sidebar menu */}
+      <div className="mt-6 rounded-lg border border-border bg-surface px-5 py-4 shadow-sm lg:hidden">
+        <LogoutButton className="text-danger" />
+      </div>
+    </AccountShell>
   );
 }

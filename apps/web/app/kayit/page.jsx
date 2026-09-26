@@ -14,8 +14,8 @@ export default async function KayitPage({ searchParams }) {
 
   return (
     <AuthShell
-      icon="user"
       title="Kayıt Ol"
+      subtitle="Ücretsiz hesabını oluştur, dakikalar içinde teklif almaya başla."
       footer={
         <span className="flex items-center justify-center gap-1.5 text-xs">
           <TrustIcon name="lock" size={14} />

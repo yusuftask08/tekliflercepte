@@ -4,6 +4,7 @@ import { EmptyState } from "@tekliflercepte/ui";
 import { apiUrl } from "@/lib/api";
 import { getSessionToken, getSessionUser } from "@/lib/session";
 import { EmptyIcon } from "../empty-icons";
+import { AccountShell } from "../account-shell";
 
 const TYPE_ICON = {
   REQUEST_APPROVED: (
@@ -64,16 +65,18 @@ export default async function BildirimlerPage() {
   const notifications = await getNotifications(token);
 
   return (
-    <div className="flex min-h-screen flex-col bg-bg">
-      <div className="mx-auto w-full max-w-2xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        <h1 className="text-2xl font-bold sm:text-3xl">Bildirimler</h1>
+    <AccountShell
+      user={user}
+      title="Bildirimler"
+      description="Talep onayları, yeni teklifler ve mesajlarla ilgili tüm güncellemeler."
+    >
 
         {notifications.length === 0 ? (
-          <div className="mt-8">
+          <div>
             <EmptyState icon={<EmptyIcon name="offer" />} title="Henüz bildirimin yok" />
           </div>
         ) : (
-          <div className="mt-6 flex flex-col gap-2">
+          <div className="flex flex-col gap-2">
             {notifications.map((notification) => (
               <Link
                 key={notification.id}
@@ -108,7 +111,6 @@ export default async function BildirimlerPage() {
             ))}
           </div>
         )}
-      </div>
-    </div>
+    </AccountShell>
   );
 }
